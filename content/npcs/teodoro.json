@@ -1,0 +1,109 @@
+{
+  "id": "teodoro",
+  "nome": "Teodoro",
+  "titulo": "Irmão da Vigília",
+  "nomeado": true,
+  "faccao": "vigilia",
+  "aparencia": {
+    "genero": 1.0,
+    "idade_anos": 46,
+    "peso": 0.4,
+    "musculo": 0.4,
+    "altura": 0.62,
+    "proporcoes": 0.55,
+    "etnia": {
+      "african": 0.5,
+      "caucasian": 0.3,
+      "asian": 0.2
+    },
+    "pele": [
+      0.58,
+      0.4,
+      0.28
+    ],
+    "cabelo": {
+      "tipo": "raspado",
+      "cor": [
+        0.05,
+        0.04,
+        0.035
+      ]
+    },
+    "cabeca": {
+      "tipo": "capuz",
+      "cor": [
+        0.72,
+        0.52,
+        0.18
+      ]
+    },
+    "roupa": {
+      "camisa": [
+        0.66,
+        0.58,
+        0.44
+      ],
+      "calca": [
+        0.3,
+        0.22,
+        0.16
+      ],
+      "casaco": [
+        0.62,
+        0.5,
+        0.16
+      ],
+      "botas": [
+        0.36,
+        0.22,
+        0.12
+      ]
+    },
+    "olhos": [
+      0.15,
+      0.1,
+      0.06
+    ],
+    "semente": 202,
+    "rosto": {
+      "head-oval": 0.5,
+      "nose-hump": 0.4,
+      "eyebrows-angle-up": 0.5,
+      "chin-height": 0.3
+    }
+  },
+  "rotina": {
+    "primeiro_turno": {
+      "atividade": "trabalho",
+      "area": "capela",
+      "x": -139,
+      "acao": "rezar",
+      "z": 1.6,
+      "olhar": "direita"
+    },
+    "segundo_turno": {
+      "atividade": "trabalho",
+      "area": "galerias",
+      "x": 80,
+      "acao": "conversar",
+      "z": 1.2,
+      "olhar": "camera"
+    },
+    "vigilia": {
+      "atividade": "culto",
+      "area": "capela",
+      "x": -140,
+      "acao": "conversar",
+      "z": 0.6,
+      "olhar": "camera"
+    },
+    "descanso": {
+      "atividade": "descanso",
+      "area": "capela",
+      "x": -134,
+      "acao": "sentar",
+      "z": 1.55,
+      "olhar": "camera"
+    }
+  }
+}

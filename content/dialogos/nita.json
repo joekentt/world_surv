@@ -1,0 +1,151 @@
+{
+ "npc": "nita",
+ "entradas": [
+  {
+   "se": {
+    "missao": "m1",
+    "etapa": 1,
+    "item": "peca_ventilador"
+   },
+   "no": "m1_peca"
+  },
+  {
+   "se": {
+    "missao": "t2",
+    "estado": "ativa",
+    "item": "componente",
+    "min": 3
+   },
+   "no": "t2_entrega"
+  },
+  {
+   "se": {
+    "missao": "m4",
+    "etapa": 1,
+    "item": "gravador_darci",
+    "naoFlag": "nita_viu"
+   },
+   "no": "nita_gravador"
+  },
+  {
+   "no": "padrao"
+  }
+ ],
+ "nos": {
+  "m1_peca": {
+   "falas": [
+    "Até que enfim. Sem esse ventilador, as Galerias respiram a poeira dos outros.",
+    "Então você é o aprendiz do Darci. Ele me devia três filtros.",
+    "Faz um favor: avisa o irmão Teodoro que o ventilador da Capela fica pronto amanhã. Ele me paga em vela."
+   ],
+   "efeitos": [
+    {
+     "tirar": "peca_ventilador"
+    },
+    {
+     "cotas": 2
+    },
+    {
+     "missao": "m1",
+     "estado": "ativa",
+     "etapa": 2
+    }
+   ]
+  },
+  "padrao": {
+   "falas": [
+    "Precisa de alguma coisa? Aqui embaixo tudo tem preço, mas o preço é justo."
+   ],
+   "opcoes": [
+    {
+     "texto": "Ver a banca de filtros recondicionados.",
+     "efeitos": [
+      {
+       "abrirLoja": "nita"
+      }
+     ],
+     "ir": null
+    },
+    {
+     "texto": "Tem trabalho para mim?",
+     "se": {
+      "todas": [
+       {
+        "missao": "t2",
+        "estado": "inativa"
+       },
+       {
+        "missao": "m1",
+        "estado": "concluida"
+       }
+      ]
+     },
+     "ir": "t2_inicio"
+    },
+    {
+     "texto": "O que você acha da Vigília?",
+     "ir": "p_vigilia"
+    },
+    {
+     "texto": "Até mais.",
+     "ir": null
+    }
+   ]
+  },
+  "t2_inicio": {
+   "falas": [
+    "Me traz três componentes da superfície. Placa, chip, qualquer coisa que ainda acenda.",
+    "Com eles eu monto filtro recondicionado. Te dou dois e fico com o resto."
+   ],
+   "efeitos": [
+    {
+     "missao": "t2",
+     "estado": "ativa",
+     "etapa": 0
+    }
+   ]
+  },
+  "t2_entrega": {
+   "falas": [
+    "Três componentes. Do jeito que eu gosto.",
+    "Toma: dois filtros. Não são novos, mas seguram uma subida cada."
+   ],
+   "efeitos": [
+    {
+     "tirar": "componente",
+     "qtd": 3
+    },
+    {
+     "dar": "filtro_reposicao",
+     "qtd": 2
+    },
+    {
+     "cotas": 2
+    },
+    {
+     "missao": "t2",
+     "estado": "concluida",
+     "etapa": 0
+    }
+   ]
+  },
+  "p_vigilia": {
+   "falas": [
+    "A Vigília dá luz e sopa para quem perdeu a cota. O Conselho dá fila.",
+    "Eu não rezo. Mas também não fecho a porta para quem reza."
+   ]
+  },
+  "nita_gravador": {
+   "falas": [
+    "Você voltou da Antena com cara de quem ouviu coisa demais.",
+    "Não precisa me contar. Mas decide logo para quem vai contar."
+   ],
+   "efeitos": [
+    {
+     "flag": "nita_viu",
+     "valor": true
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,22 @@
+{
+ "id": "m4",
+ "titulo": "O registro de Darci",
+ "tipo": "principal",
+ "ordem": 4,
+ "resumo": "Descobrir o que aconteceu com Darci.",
+ "etapas": [
+  {
+   "texto": "Darci falava da Antena, no fim da superfície. Compre o filtro nível 3 e chegue até lá.",
+   "local": "superficie_antena"
+  },
+  {
+   "texto": "Volte à vila e decida o destino da gravação: o Conselho, a Vigília ou guardar com você (no Muro dos Subidores).",
+   "local": "praca"
+  },
+  {
+   "texto": "Feito.",
+   "local": "praca"
+  }
+ ],
+ "conclusao": "A gravação de Darci tem dono agora."
+}

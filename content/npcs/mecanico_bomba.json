@@ -1,0 +1,97 @@
+{
+  "id": "mecanico_bomba",
+  "nome": "Mecânico da bomba",
+  "nomeado": false,
+  "faccao": "moradores",
+  "aparencia": {
+    "genero": 1.0,
+    "idade_anos": 40,
+    "peso": 0.5,
+    "musculo": 0.7,
+    "altura": 0.633,
+    "proporcoes": 0.5,
+    "pele": [
+      0.72,
+      0.52,
+      0.38
+    ],
+    "cabelo": {
+      "tipo": "curto",
+      "cor": [
+        0.05,
+        0.04,
+        0.035
+      ]
+    },
+    "cabeca": {
+      "tipo": "gorro",
+      "cor": [
+        0.82,
+        0.42,
+        0.1
+      ]
+    },
+    "roupa": {
+      "camisa": [
+        0.3,
+        0.34,
+        0.18
+      ],
+      "calca": [
+        0.26,
+        0.34,
+        0.44
+      ],
+      "botas": [
+        0.08,
+        0.08,
+        0.09
+      ],
+      "luvas": [
+        0.36,
+        0.22,
+        0.12
+      ],
+      "mangas": "curtas"
+    },
+    "olhos": [
+      0.18,
+      0.12,
+      0.07
+    ],
+    "semente": 1333,
+    "rosto": {}
+  },
+  "rotina": {
+    "primeiro_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": 18,
+      "acao": "consertar",
+      "z": 2.1,
+      "olhar": "fundo"
+    },
+    "segundo_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": 18,
+      "acao": "consertar",
+      "z": 2.1,
+      "olhar": "fundo"
+    },
+    "vigilia": {
+      "atividade": "fila",
+      "area": "praca",
+      "x": 0,
+      "acao": "parado"
+    },
+    "descanso": {
+      "atividade": "descanso",
+      "area": "praca",
+      "x": 25,
+      "acao": "sentar",
+      "z": 2.65,
+      "olhar": "camera"
+    }
+  }
+}

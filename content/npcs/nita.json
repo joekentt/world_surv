@@ -1,0 +1,111 @@
+{
+  "id": "nita",
+  "nome": "Nita Farpa",
+  "titulo": "Remendeira das Galerias",
+  "nomeado": true,
+  "faccao": "galerias",
+  "aparencia": {
+    "genero": 0.0,
+    "idade_anos": 27,
+    "peso": 0.35,
+    "musculo": 0.6,
+    "altura": 0.48,
+    "proporcoes": 0.65,
+    "etnia": {
+      "african": 0.6,
+      "caucasian": 0.25,
+      "asian": 0.15
+    },
+    "pele": [
+      0.36,
+      0.24,
+      0.17
+    ],
+    "cabelo": {
+      "tipo": "raspado",
+      "cor": [
+        0.05,
+        0.04,
+        0.035
+      ]
+    },
+    "cabeca": {
+      "tipo": "nenhum"
+    },
+    "roupa": {
+      "camisa": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "calca": [
+        0.2,
+        0.22,
+        0.14
+      ],
+      "casaco": [
+        0.22,
+        0.4,
+        0.38
+      ],
+      "botas": [
+        0.08,
+        0.08,
+        0.09
+      ],
+      "luvas": [
+        0.36,
+        0.22,
+        0.12
+      ],
+      "mangas": "curtas"
+    },
+    "olhos": [
+      0.12,
+      0.08,
+      0.05
+    ],
+    "semente": 505,
+    "rosto": {
+      "l-eye-scale": 0.3,
+      "r-eye-scale": 0.3,
+      "nose-scale-horiz": -0.2,
+      "chin-triangle": 0.4,
+      "mouth-upperlip-volume": 0.3
+    }
+  },
+  "rotina": {
+    "primeiro_turno": {
+      "atividade": "trabalho",
+      "area": "galerias",
+      "x": 100,
+      "acao": "consertar",
+      "z": 1.1,
+      "olhar": "fundo"
+    },
+    "segundo_turno": {
+      "atividade": "trabalho",
+      "area": "galerias",
+      "x": 100,
+      "acao": "consertar",
+      "z": 1.1,
+      "olhar": "fundo"
+    },
+    "vigilia": {
+      "atividade": "trabalho",
+      "area": "galerias",
+      "x": 100,
+      "acao": "conversar",
+      "z": 1.1,
+      "olhar": "fundo"
+    },
+    "descanso": {
+      "atividade": "descanso",
+      "area": "galerias",
+      "x": 108,
+      "acao": "sentar",
+      "z": 2.65,
+      "olhar": "camera"
+    }
+  }
+}

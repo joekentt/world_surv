@@ -1,0 +1,23 @@
+{
+  "precoFiltroAposAjudarVigilia": {
+    "bento": 4,
+    "nita": 2
+  },
+  "finais": {
+    "vigilia": {
+      "desfecho": "vigilia",
+      "mundo": "superficie",
+      "mascaraNoInventario": 0
+    },
+    "conselho": {
+      "desfecho": "conselho",
+      "mundo": "superficie",
+      "mascaraNoInventario": 0
+    },
+    "guardou": {
+      "desfecho": "guardou",
+      "mundo": "superficie",
+      "mascaraNoInventario": 1
+    }
+  }
+}

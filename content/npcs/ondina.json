@@ -1,0 +1,115 @@
+{
+  "id": "ondina",
+  "nome": "Ondina",
+  "titulo": "Guardiã da eclusa",
+  "nomeado": true,
+  "faccao": "moradores",
+  "aparencia": {
+    "genero": 0.1,
+    "idade_anos": 72,
+    "peso": 0.4,
+    "musculo": 0.4,
+    "altura": 0.4,
+    "proporcoes": 0.5,
+    "etnia": {
+      "african": 0.3,
+      "caucasian": 0.3,
+      "asian": 0.4
+    },
+    "pele": [
+      0.86,
+      0.68,
+      0.56
+    ],
+    "cabelo": {
+      "tipo": "curto",
+      "cor": [
+        0.82,
+        0.8,
+        0.76
+      ]
+    },
+    "cabeca": {
+      "tipo": "capuz",
+      "cor": [
+        0.32,
+        0.36,
+        0.42
+      ]
+    },
+    "roupa": {
+      "camisa": [
+        0.78,
+        0.72,
+        0.6
+      ],
+      "calca": [
+        0.32,
+        0.36,
+        0.42
+      ],
+      "casaco": [
+        0.82,
+        0.42,
+        0.1
+      ],
+      "botas": [
+        0.08,
+        0.08,
+        0.09
+      ],
+      "luvas": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "olhos": [
+      0.3,
+      0.32,
+      0.34
+    ],
+    "semente": 606,
+    "rosto": {
+      "head-age": 0.6,
+      "l-eye-bag": 0.5,
+      "r-eye-bag": 0.5,
+      "nose-point-down": 0.4,
+      "chin-prominent": 0.2
+    }
+  },
+  "rotina": {
+    "primeiro_turno": {
+      "atividade": "trabalho",
+      "area": "boca",
+      "x": 6,
+      "acao": "conversar",
+      "z": 1.0,
+      "olhar": "camera"
+    },
+    "segundo_turno": {
+      "atividade": "trabalho",
+      "area": "boca",
+      "x": 6,
+      "acao": "consertar",
+      "z": 1.0,
+      "olhar": "camera"
+    },
+    "vigilia": {
+      "atividade": "trabalho",
+      "area": "boca",
+      "x": 6,
+      "acao": "parado",
+      "z": 1.0,
+      "olhar": "camera"
+    },
+    "descanso": {
+      "atividade": "descanso",
+      "area": "boca",
+      "x": 7,
+      "acao": "sentar",
+      "z": 3.85,
+      "olhar": "camera"
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+ "npc": "samira",
+ "entradas": [
+  {
+   "se": {
+    "missao": "m4",
+    "etapa": 1,
+    "item": "gravador_darci",
+    "naoFlag": "samira_viu"
+   },
+   "no": "samira_gravador"
+  },
+  {
+   "no": "padrao"
+  }
+ ],
+ "nos": {
+  "padrao": {
+   "falas": [
+    "Caravana de Qarar. Filtro novo, roupa que aguenta tempestade, cilindro extra. Tudo com selo da cidade funda."
+   ],
+   "opcoes": [
+    {
+     "texto": "Ver o equipamento de Qarar.",
+     "efeitos": [
+      {
+       "abrirLoja": "samira"
+      }
+     ],
+     "ir": null
+    },
+    {
+     "texto": "Como é Qarar?",
+     "ir": "p_qarar"
+    },
+    {
+     "texto": "O rádio fala de outras cidades?",
+     "ir": "p_radio"
+    },
+    {
+     "texto": "Até mais.",
+     "ir": null
+    }
+   ]
+  },
+  "p_qarar": {
+   "falas": [
+    "Qarar fica a trezentos e quarenta quilômetros, a cem metros de profundidade. Lá a água corre e o ar passa por dois filtros.",
+    "Somos a primeira cidade de uma rota longa. Um dia você vai ver."
+   ]
+  },
+  "p_radio": {
+   "falas": [
+    "O rádio fala com Sétimo Poço, Nova Halab, Poço Seco. Cidades fundas, cidades rasas.",
+    "Não leve a mal, mas a Cisterna é das menores da rota."
+   ]
+  },
+  "samira_gravador": {
+   "falas": [
+    "Você voltou da Antena. Muita gente volta de lá falando sozinha.",
+    "Se ouviu alguma coisa no rádio, lembre que rádio também mente."
+   ],
+   "efeitos": [
+    {
+     "flag": "samira_viu",
+     "valor": true
+    }
+   ],
+   "ir": "padrao"
+  }
+ }
+}

@@ -1,0 +1,108 @@
+{
+  "id": "bento",
+  "nome": "Bento",
+  "titulo": "Tio Bento, sucateiro",
+  "nomeado": true,
+  "faccao": "moradores",
+  "aparencia": {
+    "genero": 1.0,
+    "idade_anos": 66,
+    "peso": 0.7,
+    "musculo": 0.45,
+    "altura": 0.42,
+    "proporcoes": 0.4,
+    "etnia": {
+      "african": 0.35,
+      "caucasian": 0.45,
+      "asian": 0.2
+    },
+    "pele": [
+      0.72,
+      0.52,
+      0.38
+    ],
+    "cabelo": {
+      "tipo": "curto",
+      "cor": [
+        0.82,
+        0.8,
+        0.76
+      ]
+    },
+    "cabeca": {
+      "tipo": "gorro",
+      "cor": [
+        0.3,
+        0.34,
+        0.18
+      ]
+    },
+    "roupa": {
+      "camisa": [
+        0.26,
+        0.34,
+        0.44
+      ],
+      "calca": [
+        0.3,
+        0.22,
+        0.16
+      ],
+      "avental": [
+        0.36,
+        0.22,
+        0.12
+      ],
+      "botas": [
+        0.08,
+        0.08,
+        0.09
+      ]
+    },
+    "olhos": [
+      0.2,
+      0.14,
+      0.08
+    ],
+    "semente": 404,
+    "rosto": {
+      "nose-volume": 0.6,
+      "nose-point-width": 0.4,
+      "head-fat": 0.3,
+      "neck-double": 0.4,
+      "mouth-lowerlip-volume": 0.3
+    }
+  },
+  "rotina": {
+    "primeiro_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": -25,
+      "acao": "consertar",
+      "z": 2.9,
+      "olhar": "camera"
+    },
+    "segundo_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": -25,
+      "acao": "conversar",
+      "z": 2.9,
+      "olhar": "camera"
+    },
+    "vigilia": {
+      "atividade": "fila",
+      "area": "praca",
+      "x": 0,
+      "acao": "parado"
+    },
+    "descanso": {
+      "atividade": "descanso",
+      "area": "praca",
+      "x": -28,
+      "acao": "sentar",
+      "z": 3.65,
+      "olhar": "camera"
+    }
+  }
+}

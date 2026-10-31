@@ -1,0 +1,26 @@
+{
+ "id": "m1",
+ "titulo": "O primeiro dia",
+ "tipo": "principal",
+ "ordem": 1,
+ "resumo": "Conhecer a vila antes da primeira subida.",
+ "etapas": [
+  {
+   "texto": "Fale com a Conselheira Mirela no balcão das cotas, na Praça do Reservatório.",
+   "local": "praca"
+  },
+  {
+   "texto": "Leve a peça de ventilador até Nita, nas Galerias Secas, a leste da praça.",
+   "local": "galerias"
+  },
+  {
+   "texto": "Leve o recado de Nita ao irmão Teodoro, na Capela da Vigília, a oeste.",
+   "local": "capela"
+  },
+  {
+   "texto": "Volte à Conselheira Mirela, na praça.",
+   "local": "praca"
+  }
+ ],
+ "conclusao": "Você conheceu as três zonas da vila. O Conselho quer você lá em cima."
+}

@@ -1,0 +1,456 @@
+{
+ "id": "superficie_sucata",
+ "nome": "Superfície: sucata próxima",
+ "mundo": "superficie",
+ "estetica": "superficie",
+ "kit": "superficie",
+ "inicio": 0,
+ "fim": 140,
+ "solidos": [
+  {
+   "x": 70,
+   "y": -0.5,
+   "w": 140,
+   "h": 1
+  },
+  {
+   "x": -0.5,
+   "y": 10,
+   "w": 1,
+   "h": 30
+  },
+  {
+   "x": 38,
+   "y": 0.55,
+   "w": 4.0,
+   "h": 1.1
+  },
+  {
+   "x": 96,
+   "y": 0.55,
+   "w": 4.0,
+   "h": 1.1
+  },
+  {
+   "x": 66.0,
+   "y": 2.675,
+   "w": 6,
+   "h": 0.25
+  },
+  {
+   "x": 63.2,
+   "y": 1.4,
+   "w": 0.3,
+   "h": 2.8
+  }
+ ],
+ "escadas": [
+  {
+   "x": 64,
+   "y0": 0,
+   "y1": 2.8,
+   "tipo": "escada"
+  }
+ ],
+ "pecas": [
+  {
+   "m": "chao_areia",
+   "x": 5.0,
+   "y": 0.0,
+   "z": -2
+  },
+  {
+   "m": "chao_areia",
+   "x": 15.0,
+   "y": 0.0,
+   "z": -2
+  },
+  {
+   "m": "chao_areia",
+   "x": 25.0,
+   "y": 0.0,
+   "z": -2
+  },
+  {
+   "m": "chao_areia",
+   "x": 35.0,
+   "y": 0.0,
+   "z": -2
+  },
+  {
+   "m": "chao_areia",
+   "x": 45.0,
+   "y": 0.0,
+   "z": -2
+  },
+  {
+   "m": "chao_areia",
+   "x": 55.0,
+   "y": 0.0,
+   "z": -2
+  },
+  {
+   "m": "chao_areia",
+   "x": 65.0,
+   "y": 0.0,
+   "z": -2
+  },
+  {
+   "m": "chao_areia",
+   "x": 75.0,
+   "y": 0.0,
+   "z": -2
+  },
+  {
+   "m": "chao_areia",
+   "x": 85.0,
+   "y": 0.0,
+   "z": -2
+  },
+  {
+   "m": "chao_areia",
+   "x": 95.0,
+   "y": 0.0,
+   "z": -2
+  },
+  {
+   "m": "chao_areia",
+   "x": 105.0,
+   "y": 0.0,
+   "z": -2
+  },
+  {
+   "m": "chao_areia",
+   "x": 115.0,
+   "y": 0.0,
+   "z": -2
+  },
+  {
+   "m": "chao_areia",
+   "x": 125.0,
+   "y": 0.0,
+   "z": -2
+  },
+  {
+   "m": "chao_areia",
+   "x": 135.0,
+   "y": 0.0,
+   "z": -2
+  },
+  {
+   "m": "escotilha_superficie",
+   "x": 4,
+   "y": 0,
+   "z": 1.2
+  },
+  {
+   "m": "carro_soterrado",
+   "x": 38,
+   "y": 0,
+   "z": -0.6
+  },
+  {
+   "m": "carro_soterrado",
+   "x": 96,
+   "y": 0,
+   "z": -0.6
+  },
+  {
+   "m": "predio_ruina_b",
+   "x": 66,
+   "y": 0,
+   "z": -0.5
+  },
+  {
+   "m": "escada_mao",
+   "x": 64,
+   "y": 0,
+   "z": 0.35,
+   "e": [
+    1,
+    3.6999999999999997,
+    1
+   ]
+  },
+  {
+   "m": "duna",
+   "x": 80,
+   "y": -0.3,
+   "z": 1.5,
+   "e": 0.7
+  },
+  {
+   "m": "placa_estrada",
+   "x": 22,
+   "y": 0,
+   "z": 1.5
+  },
+  {
+   "m": "sucata_pilha",
+   "x": 30,
+   "y": 0,
+   "z": 2.0
+  },
+  {
+   "m": "sucata_pilha",
+   "x": 52,
+   "y": 0,
+   "z": 2.0
+  },
+  {
+   "m": "sucata_pilha",
+   "x": 74,
+   "y": 0,
+   "z": 2.0
+  },
+  {
+   "m": "sucata_pilha",
+   "x": 88,
+   "y": 0,
+   "z": 2.0
+  },
+  {
+   "m": "sucata_pilha",
+   "x": 110,
+   "y": 0,
+   "z": 2.0
+  },
+  {
+   "m": "sucata_pilha",
+   "x": 124,
+   "y": 0,
+   "z": 2.0
+  }
+ ],
+ "fundo": [
+  {
+   "m": "skyline",
+   "x": 8.353,
+   "y": -2,
+   "z": 149.071,
+   "e": 1.9587711653316249
+  },
+  {
+   "m": "skyline",
+   "x": 81.526,
+   "y": -2,
+   "z": 187.041,
+   "e": 1.750920905791109
+  },
+  {
+   "m": "skyline",
+   "x": 115.287,
+   "y": -2,
+   "z": 136.237,
+   "e": 1.8333360836808612
+  },
+  {
+   "m": "predio_ruina_b",
+   "x": 11.635,
+   "y": -0.5,
+   "z": 23.835,
+   "r": 180
+  },
+  {
+   "m": "predio_ruina_a",
+   "x": 26.039,
+   "y": -0.5,
+   "z": 35.107,
+   "r": 180
+  },
+  {
+   "m": "predio_ruina_a",
+   "x": 57.667,
+   "y": -0.5,
+   "z": 34.496
+  },
+  {
+   "m": "predio_ruina_b",
+   "x": 84.593,
+   "y": -0.5,
+   "z": 42.959,
+   "r": 180
+  },
+  {
+   "m": "predio_ruina_b",
+   "x": 101.586,
+   "y": -0.5,
+   "z": 21.313,
+   "r": 180
+  },
+  {
+   "m": "predio_ruina_a",
+   "x": 122.669,
+   "y": -0.5,
+   "z": 49.509,
+   "r": 180
+  },
+  {
+   "m": "poste",
+   "x": 1.099,
+   "y": 0,
+   "z": 10.007
+  },
+  {
+   "m": "rocha",
+   "x": 17.002,
+   "y": 0,
+   "z": 5.513
+  },
+  {
+   "m": "rocha",
+   "x": 43.489,
+   "y": 0,
+   "z": 10.137
+  },
+  {
+   "m": "rocha",
+   "x": 59.743,
+   "y": 0,
+   "z": 10.141
+  },
+  {
+   "m": "poste",
+   "x": 74.344,
+   "y": 0,
+   "z": 13.555
+  },
+  {
+   "m": "cerca",
+   "x": 89.742,
+   "y": 0,
+   "z": 5.154
+  },
+  {
+   "m": "duna",
+   "x": 111.931,
+   "y": 0,
+   "z": 8.66
+  },
+  {
+   "m": "duna",
+   "x": 122.119,
+   "y": 0,
+   "z": 5.441
+  },
+  {
+   "m": "cerca",
+   "x": 143.404,
+   "y": 0,
+   "z": 8.786
+  },
+  {
+   "m": "antena",
+   "x": 300,
+   "y": -2,
+   "z": 165,
+   "e": 1.6
+  }
+ ],
+ "saidas": [
+  {
+   "x": 4,
+   "y": 0,
+   "destino": "boca_do_poco",
+   "entrada": "superficie",
+   "rotulo": "Descer pela escotilha",
+   "tipo": "eclusa"
+  }
+ ],
+ "entradas": {
+  "boca": {
+   "x": 7,
+   "y": 0.0
+  }
+ },
+ "luzes": [],
+ "coletaveis": [
+  {
+   "id": "sup_sucata_0",
+   "item": "sucata",
+   "x": 26,
+   "y": 0.0,
+   "qtd": 1
+  },
+  {
+   "id": "sup_sucata_1",
+   "item": "sucata",
+   "x": 33,
+   "y": 0.0,
+   "qtd": 1
+  },
+  {
+   "id": "sup_sucata_2",
+   "item": "sucata",
+   "x": 47,
+   "y": 0.0,
+   "qtd": 1
+  },
+  {
+   "id": "sup_sucata_3",
+   "item": "sucata",
+   "x": 57,
+   "y": 0.0,
+   "qtd": 1
+  },
+  {
+   "id": "sup_sucata_4",
+   "item": "sucata",
+   "x": 85,
+   "y": 0.0,
+   "qtd": 1
+  },
+  {
+   "id": "sup_sucata_5",
+   "item": "sucata",
+   "x": 92,
+   "y": 0.0,
+   "qtd": 1
+  },
+  {
+   "id": "sup_sucata_6",
+   "item": "sucata",
+   "x": 104,
+   "y": 0.0,
+   "qtd": 1
+  },
+  {
+   "id": "sup_sucata_7",
+   "item": "sucata",
+   "x": 117,
+   "y": 0.0,
+   "qtd": 1
+  },
+  {
+   "id": "sup_vidro_0",
+   "item": "vidro",
+   "x": 66,
+   "y": 2.8,
+   "qtd": 1
+  },
+  {
+   "id": "sup_componente_0",
+   "item": "componente",
+   "x": 121,
+   "y": 0.0,
+   "qtd": 1
+  }
+ ],
+ "interativos": [],
+ "zonas": [
+  {
+   "x0": 0,
+   "x1": 140,
+   "tipo": "poeira",
+   "intensidade": 1.0
+  }
+ ],
+ "marcos": [
+  {
+   "id": "sucata",
+   "x": 60,
+   "rotulo": "Sucata próxima"
+  }
+ ],
+ "superficie": true
+}

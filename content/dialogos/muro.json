@@ -1,0 +1,31 @@
+{
+ "npc": "muro",
+ "entradas": [
+  {
+   "no": "decidir"
+  }
+ ],
+ "nos": {
+  "decidir": {
+   "falas": [
+    "Dezessete máscaras. Um gancho vazio no fim da fila, guardado para Darci.",
+    "No bolso, o gravador pesa mais do que deveria."
+   ],
+   "opcoes": [
+    {
+     "texto": "Guardar a máscara e a gravação comigo.",
+     "efeitos": [
+      {
+       "desfecho": "guardou"
+      }
+     ],
+     "ir": null
+    },
+    {
+     "texto": "Ainda não sei.",
+     "ir": null
+    }
+   ]
+  }
+ }
+}

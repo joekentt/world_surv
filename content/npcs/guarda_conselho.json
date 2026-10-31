@@ -1,0 +1,100 @@
+{
+  "id": "guarda_conselho",
+  "nome": "Guarda do Conselho",
+  "nomeado": false,
+  "faccao": "conselho",
+  "aparencia": {
+    "genero": 1.0,
+    "idade_anos": 34,
+    "peso": 0.55,
+    "musculo": 0.75,
+    "altura": 0.672,
+    "proporcoes": 0.5,
+    "pele": [
+      0.86,
+      0.68,
+      0.56
+    ],
+    "cabelo": {
+      "tipo": "curto",
+      "cor": [
+        0.2,
+        0.12,
+        0.07
+      ]
+    },
+    "cabeca": {
+      "tipo": "gorro",
+      "cor": [
+        0.32,
+        0.36,
+        0.42
+      ]
+    },
+    "roupa": {
+      "camisa": [
+        0.32,
+        0.36,
+        0.42
+      ],
+      "calca": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "casaco": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "botas": [
+        0.08,
+        0.08,
+        0.09
+      ],
+      "luvas": [
+        0.08,
+        0.08,
+        0.09
+      ]
+    },
+    "olhos": [
+      0.18,
+      0.12,
+      0.07
+    ],
+    "semente": 1222,
+    "rosto": {}
+  },
+  "rotina": {
+    "primeiro_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": -54,
+      "acao": "parado",
+      "z": 1.0
+    },
+    "segundo_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": -46,
+      "acao": "parado",
+      "z": 1.0
+    },
+    "vigilia": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": -54,
+      "acao": "parado",
+      "z": 1.0
+    },
+    "descanso": {
+      "atividade": "descanso",
+      "area": "praca",
+      "x": -72,
+      "acao": "parado",
+      "z": 6.0,
+      "entrarEmCasa": true
+    }
+  }
+}

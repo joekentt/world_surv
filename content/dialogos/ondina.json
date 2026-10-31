@@ -1,0 +1,65 @@
+{
+ "npc": "ondina",
+ "entradas": [
+  {
+   "se": {
+    "missao": "m2",
+    "etapa": 0
+   },
+   "no": "m2_aula"
+  },
+  {
+   "no": "padrao"
+  }
+ ],
+ "nos": {
+  "m2_aula": {
+   "falas": [
+    "Então você é o novo subidor. Chega mais.",
+    "Na eclusa eu troco o seu filtro. Cada subida gasta um filtro de reposição, então nunca suba sem outro na mochila.",
+    "No visor, o número grande é o ar. Quando ele apitar, comece a voltar. Quando apitar rápido, corra.",
+    "A barra embaixo é a roupa. A poeira come devagar, a queda come de uma vez.",
+    "Se a sirene tocar, é tempestade. O ar acaba duas vezes mais rápido.",
+    "Hoje é fácil: cinco sucatas perto da saída e volta pela escotilha. Não queime o filtro por orgulho."
+   ],
+   "efeitos": [
+    {
+     "missao": "m2",
+     "estado": "ativa",
+     "etapa": 1
+    }
+   ]
+  },
+  "padrao": {
+   "falas": [
+    "A eclusa está pronta quando você estiver."
+   ],
+   "opcoes": [
+    {
+     "texto": "Explica o EPI de novo?",
+     "ir": "p_epi"
+    },
+    {
+     "texto": "Você conheceu Darci?",
+     "ir": "p_darci"
+    },
+    {
+     "texto": "Até mais.",
+     "ir": null
+    }
+   ]
+  },
+  "p_epi": {
+   "falas": [
+    "Número grande, ar. Barra, roupa. Apito, volta. Sirene, corre.",
+    "E sempre leve um filtro de reposição."
+   ]
+  },
+  "p_darci": {
+   "falas": [
+    "Eu fechei a eclusa atrás dele doze dias atrás. Ele levou dois cilindros extras.",
+    "Ninguém leva dois cilindros para catar sucata."
+   ]
+  }
+ }
+}

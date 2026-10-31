@@ -1,0 +1,62 @@
+{
+ "id": "m2",
+ "titulo": "A primeira subida",
+ "tipo": "principal",
+ "ordem": 2,
+ "resumo": "Subir pela primeira vez e voltar com sucata.",
+ "etapas": [
+  {
+   "texto": "Suba a escada no leste da praça, desça o Duto Norte e fale com Ondina na Boca do Poço.",
+   "local": "boca_do_poco"
+  },
+  {
+   "texto": "Colete 5 sucatas perto da saída e volte pela escotilha antes que o filtro acabe.",
+   "local": "superficie_sucata"
+  },
+  {
+   "texto": "Venda a sucata ao Tio Bento, no mercado da praça.",
+   "local": "praca"
+  }
+ ],
+ "conclusao": "Primeira subida feita. A sucata virou cota.",
+ "gatilhos": [
+  {
+   "evento": "voltou",
+   "se": {
+    "missao": "m2",
+    "etapa": 1,
+    "item": "sucata",
+    "min": 5
+   },
+   "efeitos": [
+    {
+     "missao": "m2",
+     "estado": "ativa",
+     "etapa": 2
+    }
+   ]
+  },
+  {
+   "evento": "vendeu:sucata",
+   "se": {
+    "missao": "m2",
+    "etapa": 2
+   },
+   "efeitos": [
+    {
+     "missao": "m2",
+     "estado": "concluida",
+     "etapa": 2
+    },
+    {
+     "cotas": 3
+    },
+    {
+     "missao": "m3",
+     "estado": "ativa",
+     "etapa": 0
+    }
+   ]
+  }
+ ]
+}

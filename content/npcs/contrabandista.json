@@ -1,0 +1,103 @@
+{
+  "id": "contrabandista",
+  "nome": "Contrabandista das Galerias",
+  "nomeado": false,
+  "faccao": "galerias",
+  "aparencia": {
+    "genero": 1.0,
+    "idade_anos": 30,
+    "peso": 0.45,
+    "musculo": 0.55,
+    "altura": 0.6920000000000002,
+    "proporcoes": 0.5,
+    "pele": [
+      0.86,
+      0.68,
+      0.56
+    ],
+    "cabelo": {
+      "tipo": "curto",
+      "cor": [
+        0.45,
+        0.18,
+        0.08
+      ]
+    },
+    "cabeca": {
+      "tipo": "lenco",
+      "cor": [
+        0.08,
+        0.08,
+        0.09
+      ]
+    },
+    "roupa": {
+      "camisa": [
+        0.08,
+        0.08,
+        0.09
+      ],
+      "calca": [
+        0.2,
+        0.22,
+        0.14
+      ],
+      "casaco": [
+        0.3,
+        0.22,
+        0.16
+      ],
+      "botas": [
+        0.08,
+        0.08,
+        0.09
+      ],
+      "luvas": [
+        0.08,
+        0.08,
+        0.09
+      ]
+    },
+    "olhos": [
+      0.18,
+      0.12,
+      0.07
+    ],
+    "semente": 1592,
+    "rosto": {}
+  },
+  "rotina": {
+    "primeiro_turno": {
+      "atividade": "trabalho",
+      "area": "galerias",
+      "x": 86,
+      "acao": "conversar",
+      "z": 0.9,
+      "olhar": "camera"
+    },
+    "segundo_turno": {
+      "atividade": "trabalho",
+      "area": "galerias",
+      "x": 86,
+      "acao": "conversar",
+      "z": 0.9,
+      "olhar": "camera"
+    },
+    "vigilia": {
+      "atividade": "trabalho",
+      "area": "galerias",
+      "x": 112,
+      "acao": "conversar",
+      "z": 1.4,
+      "olhar": "camera"
+    },
+    "descanso": {
+      "atividade": "descanso",
+      "area": "galerias",
+      "x": 128,
+      "acao": "sentar",
+      "z": 2.65,
+      "olhar": "camera"
+    }
+  }
+}

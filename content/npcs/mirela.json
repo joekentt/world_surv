@@ -1,0 +1,109 @@
+{
+  "id": "mirela",
+  "nome": "Mirela Arruda",
+  "titulo": "Conselheira",
+  "nomeado": true,
+  "faccao": "conselho",
+  "aparencia": {
+    "genero": 0.0,
+    "idade_anos": 58,
+    "peso": 0.55,
+    "musculo": 0.35,
+    "altura": 0.55,
+    "proporcoes": 0.6,
+    "etnia": {
+      "african": 0.25,
+      "caucasian": 0.55,
+      "asian": 0.2
+    },
+    "pele": [
+      0.72,
+      0.52,
+      0.38
+    ],
+    "cabelo": {
+      "tipo": "preso",
+      "cor": [
+        0.55,
+        0.53,
+        0.5
+      ]
+    },
+    "cabeca": {
+      "tipo": "lenco",
+      "cor": [
+        0.42,
+        0.12,
+        0.14
+      ]
+    },
+    "roupa": {
+      "camisa": [
+        0.78,
+        0.72,
+        0.6
+      ],
+      "calca": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "casaco": [
+        0.32,
+        0.36,
+        0.42
+      ],
+      "botas": [
+        0.08,
+        0.08,
+        0.09
+      ]
+    },
+    "olhos": [
+      0.25,
+      0.18,
+      0.1
+    ],
+    "semente": 101,
+    "rosto": {
+      "chin-prominent": 0.4,
+      "nose-scale-vert": 0.3,
+      "mouth-angles-down": 0.3,
+      "l-cheek-bones": 0.4,
+      "r-cheek-bones": 0.4
+    }
+  },
+  "rotina": {
+    "primeiro_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": -62,
+      "acao": "conversar",
+      "z": 3.0,
+      "olhar": "camera"
+    },
+    "segundo_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": -62,
+      "acao": "conversar",
+      "z": 3.0,
+      "olhar": "camera"
+    },
+    "vigilia": {
+      "atividade": "culto",
+      "area": "praca",
+      "x": -58,
+      "acao": "parado",
+      "z": 1.6
+    },
+    "descanso": {
+      "atividade": "descanso",
+      "area": "praca",
+      "x": -70,
+      "acao": "parado",
+      "z": 6.0,
+      "entrarEmCasa": true
+    }
+  }
+}
