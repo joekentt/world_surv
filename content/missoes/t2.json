@@ -1,0 +1,14 @@
+{
+ "id": "t2",
+ "titulo": "Peças para Nita",
+ "tipo": "opcional",
+ "ordem": 6,
+ "resumo": "Componentes para filtros recondicionados.",
+ "etapas": [
+  {
+   "texto": "Leve 3 componentes a Nita, nas Galerias Secas.",
+   "local": "galerias"
+  }
+ ],
+ "conclusao": "Nita montou dois filtros recondicionados com as peças."
+}

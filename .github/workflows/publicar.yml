@@ -1,0 +1,33 @@
+# Publica o build estático no Cloudflare Pages a cada push na main.
+# Requer os segredos do repositório CLOUDFLARE_API_TOKEN (permissão "Cloudflare Pages: Edit")
+# e CLOUDFLARE_ACCOUNT_ID, e um projeto Pages chamado "vila-cisterna" (ou ajuste PROJETO).
+name: Publicar no Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  PROJETO: vila-cisterna
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Enviar para o Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ env.PROJETO }} --branch=main

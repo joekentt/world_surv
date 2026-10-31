@@ -425,7 +425,12 @@
   }
  ],
  "saidas": [],
- "entradas": {},
+ "entradas": {
+  "epilogo": {
+   "x": 456,
+   "y": 0.0
+  }
+ },
  "luzes": [
   {
    "x": 452,

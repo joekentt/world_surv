@@ -1,0 +1,14 @@
+{
+ "id": "t1",
+ "titulo": "Vidro para os vitrais",
+ "tipo": "opcional",
+ "ordem": 5,
+ "resumo": "Garrafas para a Capela.",
+ "etapas": [
+  {
+   "texto": "Leve 3 vidros ao irmão Teodoro para os vitrais da Capela.",
+   "local": "capela"
+  }
+ ],
+ "conclusao": "Os vitrais ganharam garrafas novas."
+}

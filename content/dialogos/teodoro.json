@@ -1,0 +1,260 @@
+{
+ "npc": "teodoro",
+ "entradas": [
+  {
+   "se": {
+    "missao": "m1",
+    "etapa": 2
+   },
+   "no": "m1_recado"
+  },
+  {
+   "se": {
+    "missao": "m3",
+    "etapa": 0
+   },
+   "no": "m3_pedido"
+  },
+  {
+   "se": {
+    "missao": "m4",
+    "etapa": 1,
+    "item": "gravador_darci"
+   },
+   "no": "m4_gravacao"
+  },
+  {
+   "se": {
+    "missao": "m3",
+    "etapa": 2,
+    "item": "amostra_terra"
+   },
+   "no": "m3_amostra"
+  },
+  {
+   "se": {
+    "missao": "t1",
+    "estado": "ativa",
+    "item": "vidro",
+    "min": 3
+   },
+   "no": "t1_entrega"
+  },
+  {
+   "no": "padrao"
+  }
+ ],
+ "nos": {
+  "m1_recado": {
+   "falas": [
+    "Nita mandou dizer que o ventilador fica pronto amanhã? Que o sol a abençoe.",
+    "Você carrega o EPI de Darci. Ele rezava aqui antes de cada subida.",
+    "Lá em cima, olhe para o céu de vez em quando. Ele ainda é nosso."
+   ],
+   "efeitos": [
+    {
+     "missao": "m1",
+     "estado": "ativa",
+     "etapa": 3
+    }
+   ]
+  },
+  "m3_pedido": {
+   "falas": [
+    "Subidor. Preciso de um favor que o Conselho não vai gostar.",
+    "No Marco, no meio da superfície, a terra mudou de cor. Os antigos diziam que isso é sinal de cura.",
+    "Traga uma amostra. Se o solo está curando, as pessoas precisam saber."
+   ],
+   "opcoes": [
+    {
+     "texto": "Eu trago a amostra.",
+     "efeitos": [
+      {
+       "missao": "m3",
+       "estado": "ativa",
+       "etapa": 1
+      },
+      {
+       "flag": "m3_aceitou",
+       "valor": true
+      }
+     ],
+     "ir": null
+    },
+    {
+     "texto": "Não vou desobedecer o Conselho.",
+     "efeitos": [
+      {
+       "flag": "m3_ajudou_vigilia",
+       "valor": false
+      },
+      {
+       "flag": "m3_recusou",
+       "valor": true
+      },
+      {
+       "missao": "m3",
+       "estado": "concluida",
+       "etapa": 0
+      },
+      {
+       "missao": "m4",
+       "estado": "ativa",
+       "etapa": 0
+      }
+     ],
+     "ir": "m3_recusa"
+    }
+   ]
+  },
+  "m3_recusa": {
+   "falas": [
+    "Entendo. O medo também é uma forma de fé.",
+    "Mas pense em Darci. Ele falava da Antena, no fim da superfície. Dizia que lá em cima dava para ouvir o mundo."
+   ]
+  },
+  "m3_amostra": {
+   "falas": [
+    "A terra do Marco. Deixe-me ver."
+   ],
+   "opcoes": [
+    {
+     "texto": "Entregar a amostra à Vigília.",
+     "efeitos": [
+      {
+       "tirar": "amostra_terra"
+      },
+      {
+       "flag": "m3_ajudou_vigilia",
+       "valor": true
+      },
+      {
+       "cotas": 6
+      },
+      {
+       "missao": "m3",
+       "estado": "concluida",
+       "etapa": 2
+      },
+      {
+       "missao": "m4",
+       "estado": "ativa",
+       "etapa": 0
+      }
+     ],
+     "ir": "m3_entregue"
+    },
+    {
+     "texto": "Ainda não decidi.",
+     "ir": null
+    }
+   ]
+  },
+  "m3_entregue": {
+   "falas": [
+    "Mais escura do que eu lembrava. Está mudando, eu sinto.",
+    "Hoje à noite o sermão é seu, subidor.",
+    "E escute: Darci rezava pela Antena. Se ele deixou algum sinal, foi lá, no fim da superfície."
+   ]
+  },
+  "t1_inicio": {
+   "falas": [
+    "Os vitrais da Capela perderam garrafas na última tempestade.",
+    "Traga três vidros da superfície e a luz volta a ter cor."
+   ],
+   "efeitos": [
+    {
+     "missao": "t1",
+     "estado": "ativa",
+     "etapa": 0
+    }
+   ]
+  },
+  "t1_entrega": {
+   "falas": [
+    "Verde, âmbar e um azul quase de céu. Obrigado."
+   ],
+   "efeitos": [
+    {
+     "tirar": "vidro",
+     "qtd": 3
+    },
+    {
+     "cotas": 7
+    },
+    {
+     "missao": "t1",
+     "estado": "concluida",
+     "etapa": 0
+    }
+   ]
+  },
+  "m4_gravacao": {
+   "falas": [
+    "Você traz alguma coisa da Antena. Eu vejo no seu rosto."
+   ],
+   "opcoes": [
+    {
+     "texto": "Entregar a máscara e a gravação à Vigília.",
+     "efeitos": [
+      {
+       "desfecho": "vigilia"
+      }
+     ],
+     "ir": null
+    },
+    {
+     "texto": "Ainda não.",
+     "ir": null
+    }
+   ]
+  },
+  "padrao": {
+   "falas": [
+    "Que o sol te encontre, subidor."
+   ],
+   "opcoes": [
+    {
+     "texto": "A Capela precisa de alguma coisa?",
+     "se": {
+      "todas": [
+       {
+        "missao": "t1",
+        "estado": "inativa"
+       },
+       {
+        "missao": "m1",
+        "estado": "concluida"
+       }
+      ]
+     },
+     "ir": "t1_inicio"
+    },
+    {
+     "texto": "O que foi a Queima?",
+     "ir": "p_queima"
+    },
+    {
+     "texto": "Por que a Vigília cresce nas Galerias?",
+     "ir": "p_galerias"
+    },
+    {
+     "texto": "Até mais.",
+     "ir": null
+    }
+   ]
+  },
+  "p_queima": {
+   "falas": [
+    "Há quatro gerações o céu deixou de nos proteger. O sol passou a queimar e a poeira a corroer.",
+    "O Conselho chama de catástrofe. Eu chamo de castigo. A diferença é que castigo acaba."
+   ]
+  },
+  "p_galerias": {
+   "falas": [
+    "Porque lá ninguém tem cota e todo mundo tem tempo para pensar.",
+    "E porque a Capela tem luz quando as lâmpadas da praça baixam."
+   ]
+  }
+ }
+}

@@ -1,0 +1,242 @@
+{
+ "npc": "mirela",
+ "entradas": [
+  {
+   "se": {
+    "missao": "m1",
+    "etapa": 0
+   },
+   "no": "m1_inicio"
+  },
+  {
+   "se": {
+    "missao": "m1",
+    "etapa": 3
+   },
+   "no": "m1_fim"
+  },
+  {
+   "se": {
+    "missao": "m4",
+    "etapa": 1,
+    "item": "gravador_darci"
+   },
+   "no": "m4_gravacao"
+  },
+  {
+   "se": {
+    "missao": "m3",
+    "etapa": 2,
+    "item": "amostra_terra"
+   },
+   "no": "m3_amostra"
+  },
+  {
+   "se": {
+    "missao": "m3",
+    "etapa": 1,
+    "naoFlag": "m3_mirela_avisou"
+   },
+   "no": "m3_aviso"
+  },
+  {
+   "se": {
+    "todas": [
+     {
+      "missao": "m3",
+      "estado": "concluida"
+     },
+     {
+      "missao": "m4",
+      "estado": "inativa"
+     }
+    ]
+   },
+   "no": "m4_inicio"
+  },
+  {
+   "no": "padrao"
+  }
+ ],
+ "nos": {
+  "m1_inicio": {
+   "falas": [
+    "Você chegou. Ótimo.",
+    "Darci subiu há doze dias. Ninguém fica doze dias lá em cima e volta.",
+    "A vila precisa de um subidor. Você é o que temos.",
+    "Este é o EPI dele. Remendado, mas segura a poeira.",
+    "Antes de subir, conheça a vila. Leve esta peça para a Nita, nas Galerias Secas. O ventilador de lá parou."
+   ],
+   "efeitos": [
+    {
+     "dar": "peca_ventilador"
+    },
+    {
+     "missao": "m1",
+     "estado": "ativa",
+     "etapa": 1
+    }
+   ],
+   "opcoes": [
+    {
+     "texto": "E se Darci estiver vivo?",
+     "ir": "m1_vivo"
+    },
+    {
+     "texto": "Vou levar a peça.",
+     "ir": null
+    }
+   ]
+  },
+  "m1_vivo": {
+   "falas": [
+    "Então ele volta sozinho e eu peço desculpas pelo EPI.",
+    "Agora vá. As Galerias ficam a leste."
+   ]
+  },
+  "m1_fim": {
+   "falas": [
+    "Nita, Teodoro, a praça. Agora você conhece a vila inteira.",
+    "Lá em cima não tem vila. Tem sucata, vidro e o que a poeira deixou.",
+    "Desça pelo Duto Norte até a Boca do Poço. A Ondina vai te ensinar a voltar viva.",
+    "A escada fica no leste da praça."
+   ],
+   "efeitos": [
+    {
+     "missao": "m1",
+     "estado": "concluida",
+     "etapa": 3
+    },
+    {
+     "missao": "m2",
+     "estado": "ativa",
+     "etapa": 0
+    },
+    {
+     "salvar": true
+    }
+   ]
+  },
+  "m3_aviso": {
+   "falas": [
+    "Soube que o Teodoro te pediu terra do Marco.",
+    "A Vigília quer provar que a superfície está curando. Não está.",
+    "Se trouxer essa terra, traga para mim. Não quero gente subindo sem máscara por causa de um frasco."
+   ],
+   "efeitos": [
+    {
+     "flag": "m3_mirela_avisou",
+     "valor": true
+    }
+   ]
+  },
+  "m3_amostra": {
+   "falas": [
+    "Essa é a terra do Marco?"
+   ],
+   "opcoes": [
+    {
+     "texto": "Entregar a amostra ao Conselho.",
+     "efeitos": [
+      {
+       "tirar": "amostra_terra"
+      },
+      {
+       "flag": "m3_ajudou_vigilia",
+       "valor": false
+      },
+      {
+       "cotas": 8
+      },
+      {
+       "missao": "m3",
+       "estado": "concluida",
+       "etapa": 2
+      },
+      {
+       "missao": "m4",
+       "estado": "ativa",
+       "etapa": 0
+      }
+     ],
+     "ir": "m3_entregue"
+    },
+    {
+     "texto": "Ainda não decidi.",
+     "ir": null
+    }
+   ]
+  },
+  "m3_entregue": {
+   "falas": [
+    "Obrigada. Isso evita mortes, mesmo que ninguém agradeça.",
+    "Mais uma coisa. Darci falava da Antena, no fim da superfície. Se ele deixou alguma coisa, foi lá.",
+    "Com o filtro nível 3 da Caravana, você vai e volta."
+   ]
+  },
+  "m4_inicio": {
+   "falas": [
+    "Darci sempre falava da Antena. Dizia que lá em cima dava para ouvir o mundo.",
+    "Se ele deixou alguma coisa, foi lá. Você precisa do filtro nível 3 da Caravana para ir e voltar."
+   ],
+   "efeitos": [
+    {
+     "missao": "m4",
+     "estado": "ativa",
+     "etapa": 0
+    }
+   ]
+  },
+  "m4_gravacao": {
+   "falas": [
+    "Você foi à Antena. Achou alguma coisa?"
+   ],
+   "opcoes": [
+    {
+     "texto": "Entregar a máscara e a gravação ao Conselho.",
+     "efeitos": [
+      {
+       "desfecho": "conselho"
+      }
+     ],
+     "ir": null
+    },
+    {
+     "texto": "Ainda não.",
+     "ir": null
+    }
+   ]
+  },
+  "padrao": {
+   "falas": [
+    "O Conselho cuida das cotas. Se precisar de algo, entre na fila como todo mundo."
+   ],
+   "opcoes": [
+    {
+     "texto": "Quanto tempo dura o estoque de filtros?",
+     "ir": "p_estoque"
+    },
+    {
+     "texto": "Quem é a Caravana de Qarar?",
+     "ir": "p_caravana"
+    },
+    {
+     "texto": "Até mais.",
+     "ir": null
+    }
+   ]
+  },
+  "p_estoque": {
+   "falas": [
+    "O suficiente.",
+    "Não me olhe assim. Se eu disser outro número, a fila vira motim."
+   ]
+  },
+  "p_caravana": {
+   "falas": [
+    "Comerciantes de Qarar, uma cidade funda. Os únicos que fabricam filtro novo.",
+    "Quem controla os filtros controla a vila. Eles sabem disso."
+   ]
+  }
+ }
+}

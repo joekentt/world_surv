@@ -8,6 +8,14 @@ import { TurnosDeLuz } from "../world/turnos";
 import { Navegacao } from "../npc/navegacao";
 import { GerenciadorNpcs } from "../npc/npcs";
 import { Baloes } from "../ui/baloes";
+import { DialogoUI } from "../ui/dialogoUI";
+import { Paineis } from "../ui/paineis";
+import { Dialogo, temDialogo } from "../quests/dialogo";
+import { Missoes } from "../quests/missoes";
+import { Roteiro } from "../quests/roteiro";
+import { aplicarEfeitos } from "../quests/efeitos";
+import { carregarJogo, salvarJogo } from "../save/save";
+import { textos } from "../ui/textos";
 import { Audio } from "./audio";
 import { Estado } from "./estado";
 import { Iluminacao } from "../world/iluminacao";
@@ -50,6 +58,45 @@ export class Jogo {
   navegacao!: Navegacao;
   npcs!: GerenciadorNpcs;
   baloes!: Baloes;
+  ui!: { dialogo: DialogoUI };
+  paineis!: Paineis;
+  dialogo!: Dialogo;
+  missoes!: Missoes;
+  roteiro!: Roteiro;
+  pausado = false;
+  depoisDoDialogo: (() => void) | null = null;
+
+  get loja(): { abrir: (id: string) => void } {
+    return { abrir: (id: string) => this.paineis.abrirLoja(id) };
+  }
+
+  /** Trava jogador e interação enquanto há diálogo, painel ou cena de roteiro. */
+  travarParaDialogo(sim: boolean): void {
+    this.entrada.bloqueada = sim;
+    this.jogador.travar(sim);
+    this.interacao.bloqueado = sim;
+    this.camera.distanciaExtra = sim && this.dialogo?.ativo ? -2.5 : this.roteiro?.emEpilogo ? this.camera.distanciaExtra : 0;
+  }
+
+  async salvar(): Promise<void> {
+    const a = this.areaAtual;
+    if (a && a.mundo === "vila") this.estado.d.local = { area: a.id, entrada: "inicio" };
+    try {
+      await salvarJogo(this.estado.d);
+      this.hud.mensagemCurta(textos("salvoAuto"), 1.5);
+    } catch (e) {
+      console.warn("[save] falhou", e);
+    }
+  }
+
+  async carregarSave(): Promise<boolean> {
+    const d = await carregarJogo();
+    if (!d) return false;
+    this.estado.carregar(d);
+    await this.transicionar(d.local.area, d.local.entrada);
+    this.roteiro.atualizarMuro();
+    return true;
+  }
   /** Executado uma vez ao fim da próxima transição (antes de clarear a tela). */
   aposTransicao: (() => void) | null = null;
   interacao!: SistemaInteracao;
@@ -115,6 +162,15 @@ export class Jogo {
       console.warn("[navegacao] Recast indisponível, NPCs andam em linha reta", e);
     }
     this.npcs = new GerenciadorNpcs(this, this.turnos, this.navegacao, this.baloes);
+    this.ui = { dialogo: new DialogoUI(this.hud.raiz, this.entrada, () => this.audio.tocar("clique", 0.4)) };
+    this.paineis = new Paineis(this, this.hud.raiz);
+    this.paineis.ligarVolume();
+    this.dialogo = new Dialogo(this);
+    this.missoes = new Missoes(this);
+    this.roteiro = new Roteiro(this);
+    this.npcs.aoFalar = (n) => {
+      if (temDialogo(n.def.id)) void this.dialogo.iniciar(n.def.id, n.def.nome);
+    };
     this.jogador.aoPular = () => this.audio.tocar("pulo", 0.35, 0.9 + Math.random() * 0.2);
     this.lanterna = new SpotLight("lanterna", new Vector3(0, 1.75, -0.2), new Vector3(1, -0.25, 0), Math.PI / 3.2, 6, cena);
     this.lanterna.diffuse = new Color3(1, 0.92, 0.75);
@@ -146,8 +202,16 @@ export class Jogo {
   private quadro(): void {
     // Passo máximo de 1/20 s: com fps muito baixo o jogo fica mais lento, mas a física continua estável.
     const dt = Math.min(this.motor.engine.getDeltaTime() / 1000, 0.05);
-    this.tempo += dt;
     this.entrada.atualizar();
+    this.ui.dialogo.atualizar();
+    this.paineis.atualizarInput();
+    this.hud.atualizar(dt);
+    if (this.pausado) {
+      this.cena.physicsEnabled = false;
+      return;
+    }
+    this.cena.physicsEnabled = true;
+    this.tempo += dt;
     this.jogador.atualizar(dt);
     const p = this.jogador.pes;
     const [min, max] = this.areas.limites();
@@ -165,12 +229,12 @@ export class Jogo {
     this.lanterna.intensity += (querLanterna - this.lanterna.intensity) * Math.min(1, dt * 3);
     this.lanterna.setEnabled(this.lanterna.intensity > 0.05);
     this.iluminacao.atualizar(dt, new Vector3(p.x, p.y + 1, 0), this.tempo);
-    this.hud.atualizar(dt);
     this.epi.atualizar(dt);
     this.turnos.atualizar(dt);
     this.iluminacao.fatorLampadas = this.turnos.fatorLuz;
     this.npcs.atualizar(dt);
     this.baloes.atualizar();
+    this.roteiro.atualizar(dt);
     this.coletaveis.atualizar(dt);
     this.audio.atualizar(dt, p.x, p.y);
     this.estado.d.tempoJogo += dt;
@@ -192,11 +256,58 @@ export class Jogo {
         this.epi.entrarSuperficie();
       } else if (!a.superficie && this.epi.ativo) this.epi.sairSuperficie();
       this.ambienteSonoro(a);
+      this.estado.avisar(`area:${a.id}`);
+      if (a.mundo === "vila" && anterior && anterior.mundo !== "vila" && !this.roteiro?.emEpilogo) void this.salvar();
+      if (anterior && anterior.mundo === "superficie" && a.mundo !== "superficie") {
+        this.estado.definirFlag("voltou_recente", true);
+        this.estado.definirFlag("voltou_dificil", this.epi.filtro < this.estado.capacidadeFiltro() * 0.25);
+        setTimeout(() => this.estado.definirFlag("voltou_recente", false), 150_000);
+      }
       this.aoMudarArea?.(a);
     }
   }
 
   aoMudarArea: ((a: AreaDef) => void) | null = null;
+
+  usarInterativo(id: string, tipo: string): void {
+    const e = this.estado;
+    e.avisar(`interativo:${id}`);
+    switch (tipo) {
+      case "muro":
+        if (e.missao("m4").estado === "ativa" && e.missao("m4").etapa === 1 && e.qtd("gravador_darci") > 0) void this.dialogo.iniciar("muro", "Muro dos Subidores");
+        else this.hud.mensagemCurta(this.roteiro.textoMuro(), 5);
+        break;
+      case "fotos":
+        this.hud.mensagemCurta(this.roteiro.textoFotos(), 4);
+        break;
+      case "banca":
+        this.paineis.abrirLoja("nita");
+        break;
+      case "conselho":
+        this.hud.mensagemCurta(textos("balcao"), 3);
+        break;
+      case "armario":
+        this.hud.mensagemCurta(textos("armario", { n: e.qtd("filtro_reposicao"), s: e.capacidadeFiltro() }), 4);
+        break;
+      case "amostra":
+        if (!(e.missao("m3").estado === "ativa" && e.missao("m3").etapa === 1)) this.hud.mensagemCurta(textos("amostraSemMissao"), 3.5);
+        break;
+      case "achado":
+        if (e.missao("m4").estado === "ativa" && e.missao("m4").etapa === 0) void this.roteiro.achado();
+        else this.hud.mensagemCurta(textos("achadoSemMissao"), 3.5);
+        break;
+      case "descontaminacao":
+        this.hud.mensagemCurta(textos("chuveiros"), 3);
+        break;
+    }
+  }
+
+  /** Novo jogo: estado inicial, primeira missão e introdução. */
+  async novoJogo(): Promise<void> {
+    aplicarEfeitos(this, [{ missao: "m1", estado: "ativa", etapa: 0 }]);
+    this.teleportar(-56);
+    await this.roteiro.introducao();
+  }
 
   private somPasso(): void {
     const est = this.areaAtual?.estetica;
@@ -236,6 +347,14 @@ export class Jogo {
         acao: () => void this.usarSaida(s.destino, s.entrada, s.tipo ?? "porta"),
       });
     }
+    for (const it of a.def.interativos ?? []) {
+      if (it.tipo === "ambiente" || it.tipo === "fila") continue;
+      this.interacao.adicionar({
+        id: `${a.def.id}:int:${it.id}`, x: it.x, y: it.y, raio: 1.6, prioridade: 1,
+        rotulo: it.rotulo ?? it.id, acao: () => this.usarInterativo(it.id, it.tipo),
+      });
+    }
+    if (a.def.id === "praca") this.roteiro?.atualizarMuro();
     if (a.def.escadas) {
       const todas = [...this.areas.carregadas.values()].flatMap((c) => c.def.escadas ?? []);
       this.jogador.escadas = todas;
@@ -289,6 +408,11 @@ export class Jogo {
     vc.tecla = (codigo: string, pressionada: boolean) => this.entrada.simular(codigo, pressionada);
     vc.teleportar = (x: number, y = 0) => this.teleportar(x, y);
     vc.npcs = () => this.npcs.contagem();
+    vc.missoes = () => JSON.parse(JSON.stringify(this.estado.d.missoes));
+    vc.dados = () => JSON.parse(JSON.stringify(this.estado.d));
+    vc.escolher = (trecho: string) => this.ui.dialogo.escolherPorTexto(trecho);
+    vc.avancar = () => this.ui.dialogo.avancarTexto();
+    vc.falar = (id: string) => { const n = this.npcs.porId(id); if (n) void this.dialogo.iniciar(id, n.def.nome); };
     vc.turno = () => this.turnos.turno;
     vc.epi = () => ({ filtro: this.epi.filtro, roupa: this.epi.roupa, saude: this.epi.saude, ativo: this.epi.ativo, tempestade: this.epi.tempestade, morto: this.epi.morto });
   }

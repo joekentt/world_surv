@@ -1,0 +1,36 @@
+{
+ "variantes": [
+  {
+   "se": {
+    "flag": "m3_ajudou_vigilia",
+    "valor": true
+   },
+   "falas": [
+    "A terra do Marco está curando, irmãos. Um subidor trouxe a prova.",
+    "O sol não castiga quem tem fé. Castiga quem esconde filtro.",
+    "Quando a poeira baixar, subiremos sem máscara. Juntos.",
+    "O Conselho conta cotas. Nós contamos os dias até o perdão."
+   ]
+  },
+  {
+   "se": {
+    "flag": "m3_ajudou_vigilia",
+    "valor": false
+   },
+   "falas": [
+    "Há quem prefira servir ao Conselho a servir à luz.",
+    "A terra do Marco foi entregue a quem tem medo dela. Rezemos por quem a levou.",
+    "Ainda assim, irmãos, o sol perdoa até quem se recusa a olhar para ele.",
+    "Não odeiem o subidor. Ele ainda não viu a luz."
+   ]
+  },
+  {
+   "falas": [
+    "Quatro gerações sem céu. Quatro gerações pagando pela Queima.",
+    "O sol não nos odeia, irmãos. Ele espera.",
+    "Lá em cima, a poeira está baixando. Quem tem fé, sente.",
+    "Rezem por Darci. Quem sobe perto do sol às vezes fica com ele."
+   ]
+  }
+ ]
+}

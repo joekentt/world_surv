@@ -420,6 +420,7 @@ def superficie_antena():
     for i, x in enumerate((316, 346, 364, 396, 412, 440, 460)):
         a.coletavel(f"antena_coleta_{i}", ["vidro", "componente", "sucata"][i % 3], x)
     a.luz(452, 43, 6, VERMELHA, 2.0, 30, piscar=True)
+    a.entrada("epilogo", 456)
     a.d["marcos"].append(dict(id="antena", x=452, rotulo="A Antena"))
     return a
 

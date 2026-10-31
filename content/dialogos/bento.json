@@ -1,0 +1,58 @@
+{
+ "npc": "bento",
+ "entradas": [
+  {
+   "se": {
+    "missao": "m2",
+    "etapa": 2
+   },
+   "no": "m2_venda"
+  },
+  {
+   "no": "padrao"
+  }
+ ],
+ "nos": {
+  "m2_venda": {
+   "falas": [
+    "Sucata da sua primeira subida? Deixa eu ver isso.",
+    "Uma cota por peça. Não faço cara feia nem desconto."
+   ],
+   "efeitos": [
+    {
+     "abrirLoja": "bento"
+    }
+   ]
+  },
+  "padrao": {
+   "falas": [
+    "Compro sucata, componente e vidro. Vendo filtro de reposição. Sem filtro, a eclusa não abre, viu?"
+   ],
+   "opcoes": [
+    {
+     "texto": "Vender e comprar.",
+     "efeitos": [
+      {
+       "abrirLoja": "bento"
+      }
+     ],
+     "ir": null
+    },
+    {
+     "texto": "Por que tanta gente compra foto do céu?",
+     "ir": "p_fotos"
+    },
+    {
+     "texto": "Até mais.",
+     "ir": null
+    }
+   ]
+  },
+  "p_fotos": {
+   "falas": [
+    "Foto do céu vende mais que filtro em dia de festa.",
+    "O povo compra para lembrar de uma coisa que nunca viu. Eu vendo para lembrar de comer."
+   ]
+  }
+ }
+}

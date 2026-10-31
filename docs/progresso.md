@@ -131,3 +131,28 @@ Subida pela eclusa, dreno de filtro e roupa, coleta, mochila cheia, aviso e temp
 | Praça com 13 moradores visíveis e 20 carregados | 2,2 |
 
 O critério de 60 fps com todos os NPCs no hardware mínimo (notebook com GPU integrada) **não pode ser medido aqui**. Pontos de atenção para essa medição: cada morador tem 11 a 13 mil triângulos no LOD0 e é uma malha com esqueleto próprio; se faltar desempenho, reduzir a decimação do LOD0, baixar a distância do LOD e limitar o número de NPCs animados ao mesmo tempo.
+
+## Fase 5: missões e economia
+
+### Feito
+
+- `src/quests/dialogo.ts` e `src/ui/dialogoUI.ts`: diálogos em árvore (JSON em `content/dialogos/`), com entrada escolhida por condição, falas digitadas, opções por teclado, gamepad ou mouse, e efeitos (missão, flag, item, cotas, loja, desfecho, save). Câmera aproxima durante a conversa.
+- `src/quests/condicoes.ts` e `efeitos.ts`: a mesma linguagem de condições e efeitos serve a diálogos, gatilhos de missão, conversas de fundo e sermões.
+- `src/quests/missoes.ts`: missões em `content/missoes/` com etapas para o diário, avisos na tela e gatilhos por evento (voltar da superfície, vender sucata, colher a amostra).
+- Roteiro "O último registro": M1 O primeiro dia (Mirela → Nita → Teodoro → Mirela, apresenta as três zonas), M2 A primeira subida (Ondina explica o EPI dentro da história, cinco sucatas, venda ao Bento), M3 A escolha (amostra do Marco para a Vigília ou para o Conselho, ou recusar o pedido), M4 O registro de Darci (Antena, máscara e gravação). Tarefas opcionais: T1 Vidro para os vitrais (Teodoro) e T2 Peças para Nita.
+- Escolha da M3 altera falas (conversas de fundo condicionadas), preços (Bento e Nita ficam 25% mais caros ou 20% mais baratos conforme o lado) e o sermão da Capela (três variantes, em balões durante a vigília).
+- Economia: Bento compra sucata, componente e vidro e vende filtro de reposição; Nita vende filtro recondicionado; a Caravana (Samira) vende filtro nível 2 e 3, roupa reforçada e cilindro extra.
+- Três desfechos: entregar ao Conselho (máscara vai para o Muro, cota dobrada, gravação escondida), entregar à Vigília (gravação tocada na Capela, vila dividida) ou guardar (no Muro dos Subidores; ninguém sabe). Cada um tem reação própria e epílogo na superfície, à noite, com a luz piscando no horizonte e a tela de fim.
+- Profundidade de mundo sem exposição: rádio da Caravana cita Sétimo Poço, Nova Halab e Poço Seco; fotos do céu à venda; placa "Qarar 340" na superfície; gírias ("queimar o filtro", "ver o céu"); Muro dos Subidores com texto que muda conforme o desfecho.
+- Interface: diário (J), inventário (I), menu de pausa (Esc) com volume e controles, lojas, tela de título com novo jogo e continuar.
+- `src/save/save.ts`: um slot no IndexedDB; save automático ao entrar na vila, ao fechar a M1 e no desfecho.
+
+### Teste (`tests/fase5.spec.ts`)
+
+Campanha conduzida pelos diálogos e gatilhos reais: introdução, M1 completa, T1 e T2, M2 (aula de Ondina, volta com sucata, venda ao Bento pela loja), M3 com aviso de Mirela, compra do filtro nível 2, amostra do Marco e entrega à Vigília (preço do filtro: Bento 4 cotas, Nita 2), M4 com filtro nível 3, achado na Antena e gravação, save no IndexedDB conferido, e os três desfechos a partir do mesmo ponto (Vigília, Conselho e guardar), cada um terminando na superfície com a tela de fim. Passou em 2,3 min.
+
+### Decisões
+
+- A recusa ao pedido da Vigília também conclui a M3 (conta como lado do Conselho), para que a escolha exista mesmo sem subir ao Marco.
+- O destino "guardar" fica no Muro dos Subidores: é o lugar onde a ausência da máscara de Darci tem significado.
+- A subida em si não é repetida neste teste (coberta pela fase 3); o gatilho de volta é disparado direto.

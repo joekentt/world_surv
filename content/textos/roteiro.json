@@ -1,0 +1,187 @@
+{
+ "intro": [
+  "Há quatro gerações, o céu deixou de proteger quem vivia embaixo dele.",
+  "A Vila Cisterna ocupa o reservatório de uma cidade que não existe mais, a 40 metros de profundidade.",
+  "Darci, o subidor mais experiente da vila, subiu há doze dias e não voltou.",
+  "Hoje o Conselho entrega a você o EPI dele. Remendado."
+ ],
+ "achado": [
+  "Na base da Antena, meio enterrada na areia, uma máscara com a viseira rachada.",
+  "Por dentro, riscado a faca: DARCI.",
+  "Ao lado, um gravador de bolso. A luz vermelha ainda acende quando você aperta o botão.",
+  "Nenhum sinal do corpo."
+ ],
+ "gravacao": [
+  {
+   "quem": "Darci (gravação)",
+   "texto": "Dia nove. Se alguém achou isso, é porque eu não consegui descer."
+  },
+  {
+   "quem": "Darci (gravação)",
+   "texto": "Fiquei três noites na cabine da Antena, ouvindo o rádio da Caravana."
+  },
+  {
+   "quem": "Darci (gravação)",
+   "texto": "Eles falam em código, mas não é difícil. Qarar manda menos filtro para as vilas rasas. De propósito."
+  },
+  {
+   "quem": "Darci (gravação)",
+   "texto": "A Cisterna está no fim da lista. Dizem que vila rasa não compensa."
+  },
+  {
+   "quem": "Darci (gravação)",
+   "texto": "Tem outra coisa. À noite, no horizonte, para o leste, tem luz acesa."
+  },
+  {
+   "quem": "Darci (gravação)",
+   "texto": "Luz elétrica, firme. Ninguém devia estar vivo lá em cima."
+  },
+  {
+   "quem": "Darci (gravação)",
+   "texto": "Vou andar até ela. Se eu estiver errado, pendurem minha máscara no muro."
+  }
+ ],
+ "radio": [
+  "…comboio sete saindo de Qarar para Sétimo Poço, carga completa…",
+  "…Nova Halab confirma o recebimento de quarenta caixas…",
+  "…cota das vilas rasas mantida em um terço até segunda ordem…",
+  "…tempestade no corredor de Qarar, comboio atrasa dois dias…",
+  "…Cisterna e Poço Seco no fim da rota, como combinado…"
+ ],
+ "muro": {
+  "antes": "Dezessete máscaras. Um gancho vazio no fim da fila, guardado para Darci.",
+  "conselho": "A máscara de Darci está no gancho que esperava por ela. Alguém deixou uma vela acesa embaixo.",
+  "vigilia": "O gancho de Darci continua vazio. Alguém riscou embaixo: ELE CAMINHA SOB O SOL.",
+  "guardou": "O gancho de Darci continua vazio. Você sabe por quê. Ninguém mais sabe."
+ },
+ "fotos": [
+  "Um céu azul de verdade, sem poeira. A vendedora jura que é original.",
+  "Uma praia, um céu azul e gente sem máscara. Parece mentira.",
+  "Um campo verde sob um céu claro. No verso: Antes da Queima."
+ ],
+ "desfechos": {
+  "conselho": {
+   "reacao": [
+    {
+     "quem": "Mirela Arruda",
+     "texto": "Então ele está morto. Era o que eu temia."
+    },
+    {
+     "quem": "Mirela Arruda",
+     "texto": "Essa gravação não sai desta sala. Se a vila souber da Caravana, a fila vira motim."
+    },
+    {
+     "quem": "Mirela Arruda",
+     "texto": "Vou mandar pendurar a máscara dele no muro. E dobrar a sua cota por três meses."
+    },
+    {
+     "quem": "Você",
+     "texto": "E as luzes no horizonte?"
+    },
+    {
+     "quem": "Mirela Arruda",
+     "texto": "Darci estava sem ar havia dias. Ele viu o que queria ver."
+    }
+   ],
+   "efeitos": [
+    {
+     "cotas": 12
+    },
+    {
+     "flag": "cota_dobrada",
+     "valor": true
+    },
+    {
+     "tirarTodos": "mascara_darci"
+    },
+    {
+     "tirarTodos": "gravador_darci"
+    }
+   ],
+   "epilogo": [
+    "A máscara de Darci foi para o muro na manhã seguinte. A vila rezou por ele, até quem não reza.",
+    "A fila das cotas continuou crescendo. Com a cota dobrada, você passa por ela sem olhar para o lado.",
+    "Mas de noite você sobe mais uma vez. Sozinho, sem missão.",
+    "E a luz continua lá, piscando no horizonte."
+   ]
+  },
+  "vigilia": {
+   "reacao": [
+    {
+     "quem": "Teodoro",
+     "texto": "A Caravana nos condena e o Conselho sabia. Está tudo nesta fita."
+    },
+    {
+     "quem": "Teodoro",
+     "texto": "E Darci viu a luz. O sol está perdoando, subidor. Ele foi chamado."
+    },
+    {
+     "quem": "Teodoro",
+     "texto": "Hoje a Capela vai tocar essa gravação para quem quiser ouvir."
+    },
+    {
+     "quem": "Você",
+     "texto": "Ele pode estar morto."
+    },
+    {
+     "quem": "Teodoro",
+     "texto": "Ninguém que caminha para a luz está morto."
+    }
+   ],
+   "efeitos": [
+    {
+     "cotas": 4
+    },
+    {
+     "flag": "capela_tocou",
+     "valor": true
+    },
+    {
+     "tirarTodos": "mascara_darci"
+    },
+    {
+     "tirarTodos": "gravador_darci"
+    }
+   ],
+   "epilogo": [
+    "A gravação tocou na Capela três noites seguidas. Na quarta, o Conselho fechou as portas e ninguém obedeceu.",
+    "Metade das Galerias saiu da fila das cotas. A outra metade passou a dormir nela.",
+    "Nessa noite você sobe mais uma vez, porque já não sabe em quem acreditar lá embaixo.",
+    "A luz está lá, piscando no horizonte, do jeito que Darci contou."
+   ]
+  },
+  "guardou": {
+   "reacao": [
+    {
+     "quem": "Você",
+     "texto": "Ainda não."
+    },
+    {
+     "quem": "",
+     "texto": "Você guarda o gravador no fundo da mochila e embrulha a máscara num pano."
+    },
+    {
+     "quem": "",
+     "texto": "O Conselho vai continuar escondendo o estoque. A Vigília vai continuar rezando. E ninguém sabe o que Darci ouviu."
+    }
+   ],
+   "efeitos": [
+    {
+     "flag": "guardou",
+     "valor": true
+    }
+   ],
+   "epilogo": [
+    "Ninguém soube da gravação. O gancho de Darci continuou vazio.",
+    "Nita perguntou uma vez o que você tinha trazido da Antena. Você disse que era só sucata.",
+    "Nessa noite você sobe mais uma vez, com o gravador no bolso.",
+    "A luz está lá, piscando no horizonte. Lá embaixo, só você sabe que ela existe."
+   ]
+  }
+ },
+ "fim": {
+  "titulo": "Fim da fatia",
+  "subtitulo": "Vila Cisterna · O último registro",
+  "obrigado": "Obrigado por jogar. O resto do mundo ainda está lá em cima."
+ }
+}

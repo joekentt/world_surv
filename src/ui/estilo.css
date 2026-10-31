@@ -67,3 +67,47 @@ kbd { display: inline-block; min-width: 1.5em; padding: 1px 6px; border: 1px sol
 .balao-sermao { background: rgba(70, 52, 22, 0.92); color: #f6dc9c; font-style: italic; }
 .balao-sermao::after { border-top-color: rgba(70, 52, 22, 0.92); }
 .balao-reacao { transform: translate(-50%, -165%); }
+.dialogo { position: absolute; left: 50%; bottom: 4%; transform: translateX(-50%); width: min(820px, 92vw); padding: 16px 22px 18px;
+  background: rgba(20, 16, 12, 0.93); border: 1px solid rgba(227, 163, 59, 0.35); border-radius: 10px; opacity: 0; pointer-events: none;
+  transition: opacity 0.2s; }
+.dialogo.visivel { opacity: 1; pointer-events: auto; }
+.dialogo .nome { color: var(--ambar); font-weight: 700; letter-spacing: 0.05em; margin-bottom: 6px; }
+.dialogo.do-jogador .nome { color: #9fd4c9; }
+.dialogo .texto { font-size: 18px; line-height: 1.45; min-height: 52px; }
+.dialogo .opcoes { margin: 10px 0 0; padding-left: 22px; }
+.dialogo .opcoes li { padding: 5px 8px; border-radius: 5px; cursor: pointer; font-size: 17px; color: #d7cbb0; }
+.dialogo .opcoes li.sel, .dialogo .opcoes li:hover { background: rgba(227, 163, 59, 0.18); color: #fff3d6; }
+.dialogo .dica { position: absolute; right: 16px; bottom: 10px; color: var(--ambar); animation: pulsar 0.7s infinite alternate; }
+.painel { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(640px, 92vw); max-height: 82vh; overflow: auto;
+  padding: 20px 26px; background: rgba(20, 16, 12, 0.95); border: 1px solid rgba(227, 163, 59, 0.35); border-radius: 12px; display: none; }
+.painel.visivel { display: block; }
+.painel h2 { margin: 0 0 12px; color: #f0dcae; } .painel h2 small { font-size: 14px; color: #bfb399; font-weight: 400; margin-left: 8px; }
+.painel h3 { color: var(--ambar); margin: 16px 0 6px; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; }
+.painel ul { list-style: none; padding: 0; margin: 0; } .painel li { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
+.painel li p { margin: 3px 0 0; color: #bfb399; font-size: 14px; } .painel li span { color: #e9c77e; margin: 0 8px; }
+.painel .diario li.concluida b { color: #8fb39b; text-decoration: line-through; }
+.painel button { margin: 6px 6px 0 0; padding: 6px 12px; background: #3a2c1c; color: #f3e3c0; border: 1px solid #8a6a3a; border-radius: 6px; cursor: pointer; font: inherit; }
+.painel button:disabled { opacity: 0.4; cursor: default; } .painel button:hover:not(:disabled) { background: #57401f; }
+.painel .controles { color: #a99c83; font-size: 13px; margin-top: 16px; } .painel .volume { display: block; margin: 14px 0; }
+.preco-bom { color: #8fd19e; } .preco-ruim { color: #e7836f; }
+.aviso-missao { position: absolute; top: 24%; right: 22px; width: 300px; padding: 12px 16px; background: var(--painel); border-left: 3px solid var(--ambar);
+  border-radius: 6px; opacity: 0; transform: translateX(20px); transition: opacity 0.4s, transform 0.4s; }
+.aviso-missao.visivel { opacity: 1; transform: none; }
+.aviso-missao .rot { color: var(--ambar); font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
+.aviso-missao b { display: block; margin: 2px 0 4px; } .aviso-missao p { margin: 0; color: #cfc2a6; font-size: 14px; }
+.tela-fim { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(620px, 90vw); text-align: center;
+  padding: 26px 30px; background: rgba(8, 10, 18, 0.72); border-radius: 12px; opacity: 0; transition: opacity 2s; z-index: 7; }
+.tela-fim.visivel { opacity: 1; }
+.tela-fim h1 { color: #f0dcae; letter-spacing: 0.1em; margin: 0 0 10px; } .tela-fim p { color: #d6cbb3; line-height: 1.5; }
+.tela-fim small { display: block; color: #9a8f79; margin: 12px 0; }
+.tela-fim button { padding: 8px 16px; background: #3a2c1c; color: #f3e3c0; border: 1px solid #8a6a3a; border-radius: 6px; cursor: pointer; font: inherit; }
+.titulo { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20;
+  background: radial-gradient(ellipse at 50% 35%, rgba(60, 40, 20, 0.55), rgba(6, 5, 4, 0.94)); transition: opacity 0.6s; }
+.titulo.saindo { opacity: 0; }
+.titulo h1 { font-size: clamp(42px, 7vw, 84px); letter-spacing: 0.14em; color: #f0d9a4; margin: 0; text-transform: uppercase; text-shadow: 0 4px 24px #000; }
+.titulo .sub { color: #b9a98a; letter-spacing: 0.3em; text-transform: uppercase; margin: 6px 0 34px; }
+.titulo .botoes { display: flex; flex-direction: column; gap: 10px; }
+.titulo button { min-width: 230px; padding: 11px 18px; font: 600 18px/1 inherit; color: #f3e3c0; background: #33261a; border: 1px solid #8a6a3a;
+  border-radius: 8px; cursor: pointer; }
+.titulo button:focus, .titulo button:hover { background: #5a3f1e; outline: 2px solid #e3a33b; }
+.titulo .controles { margin-top: 40px; color: #8f846f; font-size: 13px; text-align: center; max-width: 90vw; }

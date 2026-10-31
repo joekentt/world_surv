@@ -1,0 +1,45 @@
+{
+ "id": "m3",
+ "titulo": "A escolha",
+ "tipo": "principal",
+ "ordem": 3,
+ "resumo": "A Vigília quer terra do Marco. O Conselho proíbe.",
+ "etapas": [
+  {
+   "texto": "O irmão Teodoro quer falar com você na Capela da Vigília.",
+   "local": "capela"
+  },
+  {
+   "texto": "Compre o filtro nível 2 com Samira, da Caravana de Qarar, e colha terra no Marco, na superfície.",
+   "local": "superficie_marco"
+  },
+  {
+   "texto": "Decida o que fazer com a amostra: entregar ao irmão Teodoro ou à Conselheira Mirela.",
+   "local": "praca"
+  }
+ ],
+ "conclusao": "A escolha está feita. A vila vai lembrar.",
+ "gatilhos": [
+  {
+   "evento": "interativo:amostra_marco",
+   "se": {
+    "missao": "m3",
+    "etapa": 1,
+    "semItem": "amostra_terra"
+   },
+   "efeitos": [
+    {
+     "dar": "amostra_terra"
+    },
+    {
+     "missao": "m3",
+     "estado": "ativa",
+     "etapa": 2
+    },
+    {
+     "mensagem": "Você enche o frasco com a terra escura do Marco."
+    }
+   ]
+  }
+ ]
+}

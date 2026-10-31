@@ -10,21 +10,37 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls: string, pai: HTM
 /** Camada de interface em HTML sobre o canvas: avisos, nome da área e escurecimento. */
 export class Hud {
   readonly raiz: HTMLElement;
-  private aviso: HTMLElement;
+  private avisoInteracao: HTMLElement;
   private nomeArea: HTMLElement;
   private cortina: HTMLElement;
   private mensagem: HTMLElement;
   private morte: HTMLElement;
+  private avisoMissao: HTMLElement;
+  private tempoAviso = 0;
   private tempoNome = 0;
   private tempoMsg = 0;
 
   constructor() {
     this.raiz = document.getElementById("ui")!;
-    this.aviso = el("div", "aviso-interacao", this.raiz);
+    this.avisoInteracao = el("div", "aviso-interacao", this.raiz);
     this.nomeArea = el("div", "nome-area", this.raiz);
     this.mensagem = el("div", "mensagem", this.raiz);
     this.cortina = el("div", "cortina", this.raiz);
     this.morte = el("div", "tela-morte", this.raiz);
+    this.avisoMissao = el("div", "aviso-missao", this.raiz);
+  }
+
+  telaFim(titulo: string, texto: string, rodape: string): void {
+    const fim = el("div", "tela-fim interativo", this.raiz);
+    fim.innerHTML = `<h1>${titulo}</h1><p>${texto}</p><small>${rodape}</small><button>Continuar explorando</button>`;
+    fim.querySelector("button")!.addEventListener("click", () => fim.remove());
+    requestAnimationFrame(() => fim.classList.add("visivel"));
+  }
+
+  aviso(rotulo: string, titulo: string, texto: string): void {
+    this.avisoMissao.innerHTML = `<div class="rot">${rotulo}</div>${titulo ? `<b>${titulo}</b>` : ""}<p>${texto}</p>`;
+    this.avisoMissao.classList.add("visivel");
+    this.tempoAviso = 6;
   }
 
   telaMorte(titulo: string | null, texto: string | null): void {
@@ -42,12 +58,12 @@ export class Hud {
 
   mostrarAviso(rotulo: string | null, gamepad: boolean): void {
     if (!rotulo) {
-      this.aviso.classList.remove("visivel");
+      this.avisoInteracao.classList.remove("visivel");
       return;
     }
     const tecla = gamepad ? UI.botaoInteragir : UI.teclaInteragir;
-    this.aviso.innerHTML = `<kbd>${tecla}</kbd> ${rotulo}`;
-    this.aviso.classList.add("visivel");
+    this.avisoInteracao.innerHTML = `<kbd>${tecla}</kbd> ${rotulo}`;
+    this.avisoInteracao.classList.add("visivel");
   }
 
   anunciarArea(nome: string): void {
@@ -71,5 +87,6 @@ export class Hud {
   atualizar(dt: number): void {
     if (this.tempoNome > 0 && (this.tempoNome -= dt) <= 0) this.nomeArea.classList.remove("visivel");
     if (this.tempoMsg > 0 && (this.tempoMsg -= dt) <= 0) this.mensagem.classList.remove("visivel");
+    if (this.tempoAviso > 0 && (this.tempoAviso -= dt) <= 0) this.avisoMissao.classList.remove("visivel");
   }
 }
