@@ -1,0 +1,101 @@
+{
+  "_sobre": "Todos os valores numéricos do jogo. Tempos em segundos, distâncias em metros, pesos em kg, preços em cotas de filtro.",
+  "movimento": {
+    "andar": 3.2,
+    "correr": 6.2,
+    "agachado": 1.5,
+    "aceleracaoChao": 34,
+    "aceleracaoAr": 16,
+    "frenagemChao": 40,
+    "velocidadePulo": 8.4,
+    "gravidade": -22,
+    "corteDoPulo": 0.45,
+    "tempoCoiote": 0.1,
+    "bufferPulo": 0.12,
+    "velocidadeEscada": 2.4,
+    "alturaCapsula": 1.66,
+    "alturaAgachado": 1.05,
+    "raioCapsula": 0.28,
+    "velocidadeQuedaDano": 13,
+    "danoRoupaPorQueda": 12,
+    "velocidadeMaxQueda": 24
+  },
+  "camera": {
+    "distancia": 11.5,
+    "altura": 1.9,
+    "alvoAltura": 1.25,
+    "antecipacao": 1.6,
+    "suavizacao": 5.5,
+    "fov": 0.62
+  },
+  "epi": {
+    "filtroBasico": 90,
+    "filtroNivel2": 150,
+    "filtroNivel3": 240,
+    "cilindroExtra": 45,
+    "drenoFiltroPorSegundo": 1,
+    "roupaMaxima": 100,
+    "roupaReforcada": 160,
+    "drenoRoupaPoeira": 0.35,
+    "multiplicadorReforcada": 0.6,
+    "saudeMaxima": 100,
+    "danoSemProtecao": 9,
+    "regeneracaoSaude": 4,
+    "alertaFiltro": 0.3,
+    "criticoFiltro": 0.12
+  },
+  "tempestade": {
+    "intervaloMin": 70,
+    "intervaloMax": 120,
+    "aviso": 9,
+    "duracao": 26,
+    "multiplicadorFiltro": 2.6,
+    "multiplicadorRoupa": 3.5,
+    "empurraoVento": 1.6,
+    "primeiraNaoAntesDe": 40
+  },
+  "inventario": {
+    "pesoMaximo": 20,
+    "itens": {
+      "sucata": { "peso": 2.0, "preco": 1 },
+      "componente": { "peso": 1.0, "preco": 3 },
+      "vidro": { "peso": 1.5, "preco": 2 },
+      "amostra_terra": { "peso": 0.5, "preco": 0 },
+      "peca_ventilador": { "peso": 3.0, "preco": 0 },
+      "filtro_reposicao": { "peso": 0.5, "preco": 0 },
+      "mascara_darci": { "peso": 1.0, "preco": 0 },
+      "gravador_darci": { "peso": 0.5, "preco": 0 },
+      "foto_ceu": { "peso": 0.1, "preco": 0 }
+    }
+  },
+  "economia": {
+    "cotasIniciais": 4,
+    "filtrosIniciais": 2,
+    "precoFiltroReposicao": 3,
+    "upgrades": {
+      "filtro2": 14,
+      "filtro3": 26,
+      "roupa_reforcada": 12,
+      "cilindro_extra": 10
+    },
+    "descontoAliado": 0.2,
+    "acrescimoHostil": 0.25
+  },
+  "turnos": {
+    "duracaoTurno": 150,
+    "ordem": ["primeiro_turno", "segundo_turno", "vigilia", "descanso"],
+    "luzDescanso": 0.32
+  },
+  "npc": {
+    "velocidadeAndar": 1.25,
+    "raioConversaFundo": 6,
+    "intervaloConversa": 9,
+    "raioReacao": 3.2,
+    "distanciaAnimacaoReduzida": 26,
+    "distanciaLod": 16
+  },
+  "coleta": {
+    "tempoColeta": 0.6,
+    "raioInteracao": 1.4
+  }
+}
