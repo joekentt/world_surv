@@ -1,0 +1,19 @@
+{
+  "teclaInteragir": "E",
+  "botaoInteragir": "X",
+  "carregando": "Carregando…",
+  "areaDesconhecida": "",
+  "titulo": "Vila Cisterna",
+  "subtitulo": "Uma fatia jogável",
+  "novoJogo": "Novo jogo",
+  "continuar": "Continuar",
+  "controles": "A/D andar · Shift correr · Espaço pular · C agachar · W/S escadas · E interagir · I inventário · J diário · Esc menu",
+  "controlesGamepad": "Analógico andar · RT correr · A pular · B agachar · X interagir · Y inventário · Back diário · Start menu",
+  "eclusaPressurizando": "Eclusa: equalizando pressão…",
+  "eclusaDescontaminando": "Descontaminação: chuveiros ligados…",
+  "pausado": "Pausado",
+  "voltar": "Voltar ao jogo",
+  "reiniciarDia": "Voltar à última vila salva",
+  "salvoAuto": "Jogo salvo",
+  "volume": "Volume"
+}

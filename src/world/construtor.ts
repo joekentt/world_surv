@@ -1,5 +1,5 @@
 import {
-  Color3, Mesh, MeshBuilder, PhysicsAggregate, PhysicsShapeType, PointLight, SpotLight, StandardMaterial,
+  Color3, Matrix, Mesh, MeshBuilder, PhysicsAggregate, PhysicsShapeType, PointLight, SpotLight, StandardMaterial,
   TransformNode, Vector3, type AbstractMesh, type AssetContainer, type Light, type Scene,
 } from "@babylonjs/core";
 import type { Carregador } from "../core/carregador";
@@ -44,6 +44,15 @@ async function fontesDoKit(carregador: Carregador, kit: string): Promise<Map<str
     };
     coletar(no as TransformNode);
     for (const m of malhas) {
+      // Assa a conversão do glTF (raiz com escala -1 em Z) e gira 180° em Y, para que o eixo
+      // X do Blender vire o X do jogo e o Y do Blender (profundidade) vire o Z do jogo.
+      const mundo = m.computeWorldMatrix(true).multiply(Matrix.RotationY(Math.PI));
+      m.parent = null;
+      m.position.setAll(0);
+      m.rotationQuaternion = null;
+      m.rotation.setAll(0);
+      m.scaling.setAll(1);
+      m.bakeTransformIntoVertices(mundo);
       m.setEnabled(true);
       m.isVisible = false;
       m.isPickable = false;

@@ -1,0 +1,320 @@
+{
+ "id": "boca_do_poco",
+ "nome": "Boca do Poço",
+ "mundo": "boca",
+ "estetica": "boca",
+ "kit": "eclusa",
+ "inicio": 0,
+ "fim": 42,
+ "solidos": [
+  {
+   "x": 21,
+   "y": -0.5,
+   "w": 42,
+   "h": 1
+  },
+  {
+   "x": -0.5,
+   "y": 6,
+   "w": 1,
+   "h": 14
+  },
+  {
+   "x": 42.5,
+   "y": 6,
+   "w": 1,
+   "h": 14
+  }
+ ],
+ "escadas": [],
+ "pecas": [
+  {
+   "m": "piso_eclusa",
+   "x": 3.0,
+   "y": 0.0,
+   "z": -3
+  },
+  {
+   "m": "piso_eclusa",
+   "x": 9.0,
+   "y": 0.0,
+   "z": -3
+  },
+  {
+   "m": "piso_eclusa",
+   "x": 15.0,
+   "y": 0.0,
+   "z": -3
+  },
+  {
+   "m": "piso_eclusa",
+   "x": 21.0,
+   "y": 0.0,
+   "z": -3
+  },
+  {
+   "m": "piso_eclusa",
+   "x": 27.0,
+   "y": 0.0,
+   "z": -3
+  },
+  {
+   "m": "piso_eclusa",
+   "x": 33.0,
+   "y": 0.0,
+   "z": -3
+  },
+  {
+   "m": "piso_eclusa",
+   "x": 39.0,
+   "y": 0.0,
+   "z": -3
+  },
+  {
+   "m": "armario_epi",
+   "x": 5,
+   "y": 0,
+   "z": 5.4
+  },
+  {
+   "m": "armario_epi",
+   "x": 7,
+   "y": 0,
+   "z": 5.4
+  },
+  {
+   "m": "armario_epi",
+   "x": 9,
+   "y": 0,
+   "z": 5.4
+  },
+  {
+   "m": "banco",
+   "x": 7,
+   "y": 0,
+   "z": 3.6
+  },
+  {
+   "m": "painel_controle",
+   "x": 13,
+   "y": 0,
+   "z": 5.4
+  },
+  {
+   "m": "chuveiro",
+   "x": 19,
+   "y": 0,
+   "z": 1.6
+  },
+  {
+   "m": "chuveiro",
+   "x": 21.5,
+   "y": 0,
+   "z": 1.6
+  },
+  {
+   "m": "chuveiro",
+   "x": 24,
+   "y": 0,
+   "z": 1.6
+  },
+  {
+   "m": "placa_eclusa",
+   "x": 29,
+   "y": 4.3,
+   "z": 5.9
+  },
+  {
+   "m": "porta_eclusa",
+   "x": 36,
+   "y": 0,
+   "z": 3.0
+  },
+  {
+   "m": "luz_alerta",
+   "x": 4,
+   "y": 6.3,
+   "z": 3.0
+  },
+  {
+   "m": "luz_alerta",
+   "x": 16,
+   "y": 6.3,
+   "z": 3.0
+  },
+  {
+   "m": "luz_alerta",
+   "x": 28,
+   "y": 6.3,
+   "z": 3.0
+  },
+  {
+   "m": "luz_alerta",
+   "x": 38,
+   "y": 6.3,
+   "z": 3.0
+  }
+ ],
+ "fundo": [
+  {
+   "m": "parede_eclusa",
+   "x": 3.0,
+   "y": 0.0,
+   "z": 6
+  },
+  {
+   "m": "parede_eclusa",
+   "x": 9.0,
+   "y": 0.0,
+   "z": 6
+  },
+  {
+   "m": "parede_eclusa",
+   "x": 15.0,
+   "y": 0.0,
+   "z": 6
+  },
+  {
+   "m": "parede_eclusa",
+   "x": 21.0,
+   "y": 0.0,
+   "z": 6
+  },
+  {
+   "m": "parede_eclusa",
+   "x": 27.0,
+   "y": 0.0,
+   "z": 6
+  },
+  {
+   "m": "parede_eclusa",
+   "x": 33.0,
+   "y": 0.0,
+   "z": 6
+  },
+  {
+   "m": "parede_eclusa",
+   "x": 39.0,
+   "y": 0.0,
+   "z": 6
+  }
+ ],
+ "saidas": [
+  {
+   "x": 0.6,
+   "y": 0,
+   "destino": "duto_norte",
+   "entrada": "boca",
+   "rotulo": "Voltar ao Duto Norte",
+   "tipo": "porta"
+  },
+  {
+   "x": 36,
+   "y": 0,
+   "destino": "superficie_sucata",
+   "entrada": "boca",
+   "rotulo": "Abrir a eclusa",
+   "tipo": "eclusa"
+  }
+ ],
+ "entradas": {
+  "duto": {
+   "x": 2,
+   "y": 0.0
+  },
+  "superficie": {
+   "x": 34,
+   "y": 0.0
+  }
+ },
+ "luzes": [
+  {
+   "x": 4,
+   "y": 5.8,
+   "z": 2.0,
+   "cor": [
+    1.0,
+    0.12,
+    0.06
+   ],
+   "i": 1.4,
+   "alcance": 14,
+   "piscar": false
+  },
+  {
+   "x": 16,
+   "y": 5.8,
+   "z": 2.0,
+   "cor": [
+    1.0,
+    0.12,
+    0.06
+   ],
+   "i": 1.4,
+   "alcance": 14,
+   "piscar": true
+  },
+  {
+   "x": 28,
+   "y": 5.8,
+   "z": 2.0,
+   "cor": [
+    1.0,
+    0.12,
+    0.06
+   ],
+   "i": 1.4,
+   "alcance": 14,
+   "piscar": false
+  },
+  {
+   "x": 38,
+   "y": 5.8,
+   "z": 2.0,
+   "cor": [
+    1.0,
+    0.12,
+    0.06
+   ],
+   "i": 1.4,
+   "alcance": 14,
+   "piscar": true
+  },
+  {
+   "x": 8,
+   "y": 3.2,
+   "z": 1.0,
+   "cor": [
+    0.9,
+    0.85,
+    0.75
+   ],
+   "i": 0.6,
+   "alcance": 8
+  }
+ ],
+ "coletaveis": [],
+ "interativos": [
+  {
+   "id": "armario",
+   "tipo": "armario",
+   "x": 7,
+   "y": 0.0,
+   "rotulo": "Armário de EPI"
+  },
+  {
+   "id": "chuveiros",
+   "tipo": "descontaminacao",
+   "x": 21.5,
+   "y": 0.0
+  }
+ ],
+ "zonas": [],
+ "marcos": [
+  {
+   "id": "boca",
+   "x": 20,
+   "rotulo": "Boca do Poço"
+  }
+ ]
+}

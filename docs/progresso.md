@@ -64,3 +64,24 @@ Os números acima medem renderização por software e só servem para comparar v
 - O passo da simulação é limitado a 1/20 s: em fps muito baixo o jogo desacelera em vez de atravessar paredes.
 - Combate segue fora do MVP; o controle usa estados (chão, ar, escada, travado, morto), então ações novas entram como estados extras sem mexer na câmera nem na física.
 - A precisão "sentida" do pulo e da corrida só se avalia jogando com GPU real; os testes automáticos garantem resposta e valores.
+
+## Fase 2: cenário em blocos
+
+### Feito
+
+- `tools/blender/kits/gerar_kits.py`: sete kits gerados por script, um GLB por estética (cisterna, gueto, capela, túnel, eclusa, superfície) mais um kit comum de objetos e itens coletáveis. São 70 módulos com bisel, ruído de forma, sujeira e oclusão em cor de vértice, placas com texto real ("Reservatório Municipal nº 3", "Conselho da Cisterna", "Os que subiram", "Estação Norte", "Qarar 340", pichações).
+- `tools/areas/gerar_areas.py`: layouts das oito áreas em `content/areas/` (Capela, Praça e Galerias formam o mundo da vila; Duto Norte; Boca do Poço; superfície dividida em Sucata próxima, Marco e Antena). Cada layout tem colisão, peças de frente e de fundo, escadas, luzes, saídas, entradas, coletáveis e pontos de interação.
+- Carregamento sob demanda: áreas do mesmo mundo entram quando o jogador chega a 45 m da borda e saem a 70 m. Mundos diferentes se ligam por saídas com escurecimento.
+- Camadas de fundo em 3D real (paredes, colunas, prédios a 18–50 m, silhueta de cidade a 120–190 m e a Antena no horizonte), que dão paralaxe pela própria perspectiva.
+- Perfis de luz por estética (`src/world/iluminacao.ts`) com transição suave e seleção das luzes pontuais mais próximas (6 em WebGPU, 4 em WebGL2); luzes fluorescentes e de alerta piscam. Lanterna do capacete liga no Duto Norte.
+- Sistema de interação com aviso na tela (`src/world/interacao.ts`) e HUD em HTML.
+
+### Teste (`tests/fase2.spec.ts`)
+
+Percurso Galerias → Praça → Capela → escotilha → Duto Norte (túnel e caverna) → Boca do Poço → eclusa → Sucata → ruínas → Marco → Antena, conferindo a carga e a descarga de áreas. Passou, com screenshots em `tests/screenshots/fase-2/`.
+
+### Decisões
+
+- O kit é instanciado (`createInstance`) a partir de malhas-fonte em que a conversão de eixos do glTF foi assada nos vértices; assim o layout usa diretamente x lateral, y para cima e z profundidade.
+- Capela, Praça e Galerias são áreas separadas (cada uma com seu kit e layout), mas contíguas: o jogador anda entre elas sem tela de carga, e a mais distante é descarregada.
+- A iluminação ainda é de bloqueio; a direção de arte final é da fase 6.

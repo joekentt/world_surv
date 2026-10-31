@@ -6,3 +6,18 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--fundo)
 #selo-render { position: fixed; right: 10px; bottom: 8px; font: 12px/1.2 monospace; color: #cbbfa8;
   background: rgba(0,0,0,0.45); padding: 3px 7px; border-radius: 3px; pointer-events: none; z-index: 50; }
 .erro-fatal { position: fixed; inset: 20px; color: #ffb4a6; background: #200; padding: 16px; white-space: pre-wrap; z-index: 99; }
+#ui { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
+#ui .interativo { pointer-events: auto; }
+kbd { display: inline-block; min-width: 1.5em; padding: 1px 6px; border: 1px solid #c9b48a; border-radius: 4px;
+  background: rgba(40, 32, 22, 0.9); color: #f3e3c0; font: 600 0.85em/1.4 monospace; text-align: center; }
+.aviso-interacao { position: absolute; left: 50%; bottom: 13%; transform: translateX(-50%); padding: 8px 16px;
+  background: var(--painel); border-radius: 6px; font-size: 17px; opacity: 0; transition: opacity 0.18s; white-space: nowrap; }
+.aviso-interacao.visivel { opacity: 1; }
+.nome-area { position: absolute; top: 9%; left: 50%; transform: translateX(-50%); font-size: 30px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #f0dcae; text-shadow: 0 2px 12px #000; opacity: 0; transition: opacity 0.8s; }
+.nome-area.visivel { opacity: 1; }
+.mensagem { position: absolute; top: 18%; left: 50%; transform: translateX(-50%); padding: 6px 14px; background: var(--painel);
+  border-radius: 5px; font-size: 16px; opacity: 0; transition: opacity 0.3s; max-width: 70vw; text-align: center; }
+.mensagem.visivel { opacity: 1; }
+.cortina { position: absolute; inset: 0; background: #000; opacity: 0; transition-property: opacity; }
+.cortina.ativa { opacity: 1; }
