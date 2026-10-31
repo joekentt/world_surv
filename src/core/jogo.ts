@@ -5,6 +5,8 @@ import { SistemaEPI } from "../epi/epi";
 import { Subida } from "../epi/subida";
 import { Coletaveis } from "../world/coletaveis";
 import { TurnosDeLuz } from "../world/turnos";
+import { PosProcessamento } from "../world/posprocessamento";
+import { Particulas } from "../world/particulas";
 import { Navegacao } from "../npc/navegacao";
 import { GerenciadorNpcs } from "../npc/npcs";
 import { Baloes } from "../ui/baloes";
@@ -64,6 +66,8 @@ export class Jogo {
   missoes!: Missoes;
   roteiro!: Roteiro;
   pausado = false;
+  pos!: PosProcessamento;
+  particulas!: Particulas;
   depoisDoDialogo: (() => void) | null = null;
 
   get loja(): { abrir: (id: string) => void } {
@@ -135,10 +139,13 @@ export class Jogo {
       this.iluminacao.removerLuzes(a.luzes);
       this.interacao.removerPrefixo(`${a.def.id}:`);
       this.coletaveis.aoDescarregar(a);
+      this.particulas.aoDescarregar(a.def.id);
       this.aoAreaDescarregada?.(a);
     };
     this.iluminacao = new Iluminacao(cena, this.luzAmbiente, this.sol, this.motor.qualidade);
     this.aoTransicao = (sim) => this.hud.escurecer(sim);
+    this.pos = new PosProcessamento(cena, this.camera.camera, this.motor.qualidade);
+    this.particulas = new Particulas(cena, this.motor.qualidade);
     const audioPronto = this.audio.iniciar();
     this.biblioteca = await BibliotecaAnimacoes.carregar(this.carregador);
     const per = await Personagem.criar(cena, this.carregador, this.biblioteca, "protagonista");
@@ -229,6 +236,8 @@ export class Jogo {
     this.lanterna.intensity += (querLanterna - this.lanterna.intensity) * Math.min(1, dt * 3);
     this.lanterna.setEnabled(this.lanterna.intensity > 0.05);
     this.iluminacao.atualizar(dt, new Vector3(p.x, p.y + 1, 0), this.tempo);
+    this.pos.atualizar(dt, this.iluminacao.poeiraExtra);
+    this.particulas.atualizar(p.x, p.y, !!this.areaAtual?.superficie, this.iluminacao.poeiraExtra, Math.sign(this.jogador.empurrao), this.tempo);
     this.epi.atualizar(dt);
     this.turnos.atualizar(dt);
     this.iluminacao.fatorLampadas = this.turnos.fatorLuz;
@@ -246,8 +255,11 @@ export class Jogo {
     if (a && a !== this.areaAtual) {
       const anterior = this.areaAtual;
       this.areaAtual = a;
-      this.iluminacao.definirPerfil(a.estetica, !anterior || anterior.mundo !== a.mundo);
-      if (anterior?.id !== a.id) this.hud.anunciarArea(a.nome);
+      if (!this.roteiro?.emEpilogo) {
+        this.iluminacao.definirPerfil(a.estetica, !anterior || anterior.mundo !== a.mundo);
+        this.pos.definir(a.estetica);
+      }
+      if (anterior?.id !== a.id && !this.roteiro?.emEpilogo) this.hud.anunciarArea(a.nome);
       const epi = a.mundo === "superficie" || a.mundo === "boca";
       this.jogador.personagem.mostrar("_epi", epi);
       this.jogador.personagem.mostrar("_roupa", !epi);
@@ -341,6 +353,7 @@ export class Jogo {
   private aoCarregarArea(a: AreaCarregada): void {
     this.iluminacao.registrarLuzes(a.luzes);
     void this.coletaveis.aoCarregar(a);
+    this.particulas.aoCarregar(a.def.id);
     for (const [i, s] of (a.def.saidas ?? []).entries()) {
       this.interacao.adicionar({
         id: `${a.def.id}:saida${i}`, x: s.x, y: s.y, rotulo: s.rotulo, raio: 1.5, prioridade: 1,

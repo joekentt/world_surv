@@ -1,0 +1,18 @@
+{
+  "renderizador_webgpu": {
+    "praca": "webgpu",
+    "galerias": "webgpu",
+    "capela": "webgpu",
+    "duto_tunel": "webgpu",
+    "boca_do_poco": "webgpu",
+    "superficie": "webgpu"
+  },
+  "renderizador_webgl2": {
+    "praca": "webgl2",
+    "galerias": "webgl2",
+    "capela": "webgl2",
+    "duto_tunel": "webgl2",
+    "boca_do_poco": "webgl2",
+    "superficie": "webgl2"
+  }
+}

@@ -19,7 +19,7 @@ export const PERFIS: Record<string, Perfil> = {
   praca: { fundo: [0.06, 0.045, 0.03], ambiente: [1.0, 0.78, 0.55], ambienteInt: 0.45, chao: [0.25, 0.18, 0.1], nevoa: [0.12, 0.085, 0.05], densidadeNevoa: 0.018, sol: 0, lanterna: false },
   galerias: { fundo: [0.02, 0.05, 0.05], ambiente: [0.55, 0.9, 0.85], ambienteInt: 0.36, chao: [0.08, 0.14, 0.13], nevoa: [0.03, 0.07, 0.07], densidadeNevoa: 0.022, sol: 0, lanterna: false },
   capela: { fundo: [0.05, 0.035, 0.025], ambiente: [1.0, 0.85, 0.6], ambienteInt: 0.22, chao: [0.2, 0.12, 0.08], nevoa: [0.1, 0.07, 0.04], densidadeNevoa: 0.02, sol: 0, lanterna: false },
-  duto: { fundo: [0.005, 0.008, 0.01], ambiente: [0.45, 0.6, 0.65], ambienteInt: 0.22, chao: [0.02, 0.04, 0.04], nevoa: [0.0, 0.01, 0.012], densidadeNevoa: 0.04, sol: 0, lanterna: true },
+  duto: { fundo: [0.005, 0.008, 0.01], ambiente: [0.45, 0.6, 0.65], ambienteInt: 0.3, chao: [0.02, 0.04, 0.04], nevoa: [0.0, 0.01, 0.012], densidadeNevoa: 0.04, sol: 0, lanterna: true },
   boca: { fundo: [0.05, 0.01, 0.01], ambiente: [1.0, 0.5, 0.45], ambienteInt: 0.32, chao: [0.15, 0.05, 0.04], nevoa: [0.18, 0.08, 0.07], densidadeNevoa: 0.045, sol: 0, lanterna: false },
   superficie_noite: { fundo: [0.02, 0.03, 0.07], ambiente: [0.35, 0.42, 0.65], ambienteInt: 0.35, chao: [0.05, 0.05, 0.08], nevoa: [0.03, 0.04, 0.08], densidadeNevoa: 0.006, sol: 0.5, corSol: [0.5, 0.6, 0.9], lanterna: true },
   superficie: { fundo: [0.95, 0.9, 0.74], ambiente: [1.0, 0.96, 0.85], ambienteInt: 0.85, chao: [0.6, 0.55, 0.45], nevoa: [0.9, 0.85, 0.7], densidadeNevoa: 0.012, sol: 3.2, corSol: [1.0, 0.95, 0.82], lanterna: false },

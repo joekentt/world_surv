@@ -156,3 +156,23 @@ Campanha conduzida pelos diálogos e gatilhos reais: introdução, M1 completa, 
 - A recusa ao pedido da Vigília também conclui a M3 (conta como lado do Conselho), para que a escolha exista mesmo sem subir ao Marco.
 - O destino "guardar" fica no Muro dos Subidores: é o lugar onde a ausência da máscara de Darci tem significado.
 - A subida em si não é repetida neste teste (coberta pela fase 3); o gatilho de volta é disparado direto.
+
+## Fase 6: arte final e áudio
+
+### Feito
+
+- `src/world/posprocessamento.ts`: tone mapping ACES, bloom, vinheta colorida, curva de saturação e grão por estética, com transição entre áreas e reação à tempestade (exposição, contraste e saturação caem com a poeira). GlowLayer para lâmpadas, vitrais, musgo, janelas e luz de alerta.
+- WebGPU ("alta") recebe SSAO2, grão, nitidez, partículas da tempestade em GPU, bloom e brilho de maior resolução e 6 luzes por material. WebGL2 ("media") recebe a versão simplificada: sem SSAO, partículas em CPU com metade da densidade, bloom mais barato e 4 luzes.
+- `src/world/particulas.ts`: poeira caindo das frestas (praça, galerias, capela, no facho do altar), vapor da bomba d'água, fumaça das cozinhas, faíscas na oficina da Nita, gotas no Duto Norte, névoa de descontaminação na eclusa e poeira da superfície (leve sempre, densa e com vento na tempestade). Textura gerada em tempo de execução.
+- Iluminação por área conforme a seção 6 (perfis em `iluminacao.ts`), mais o perfil noturno do epílogo.
+- Personagens finais com roupas em camadas, remendos e EPI completo (macacão, capacete com lanterna, viseira, máscara com filtros e cilindro) desde a fase 0.
+- Efeitos sonoros completos desde a fase 3, com laços por área e emissores posicionados.
+
+### Teste (`tests/fase6.spec.ts`)
+
+Um screenshot por área nos dois renderizadores (`tests/screenshots/fase-6/`). As seis áreas se distinguem pela cor dominante e por elementos próprios. A primeira rodada saiu escura demais por causa do tone mapping ACES; a exposição foi corrigida por área.
+
+### Pendências
+
+- **Vozes:** não geradas. A seção 2 pede conferir se o plano da ElevenLabs permite uso comercial antes; essa conferência depende da conta do usuário. O conector da ElevenLabs está disponível nesta sessão e as falas já estão em JSON, prontas para virar áudio quando houver autorização.
+- Materiais sem textura (cor de vértice e PBR liso). Texturas KTX2 ficam para depois do MVP, se a avaliação visual pedir.

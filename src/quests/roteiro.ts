@@ -94,6 +94,7 @@ export class Roteiro {
     });
     j.epi.sairSuperficie();
     j.iluminacao.definirPerfil("superficie_noite", true);
+    j.pos.definir("superficie_noite");
     j.jogador.travar(true);
     j.jogador.personagem.virar(1);
     this.criarLuzHorizonte();
