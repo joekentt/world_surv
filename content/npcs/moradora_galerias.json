@@ -68,21 +68,23 @@
       "area": "galerias",
       "x": 92,
       "acao": "cozinhar",
-      "z": 2.2
+      "z": 2.2,
+      "olhar": "fundo"
     },
     "vigilia": {
       "atividade": "culto",
       "area": "capela",
       "x": -116,
       "acao": "rezar",
-      "z": 1.6
+      "z": 0.9,
+      "olhar": "esquerda"
     },
     "descanso": {
       "atividade": "descanso",
       "area": "galerias",
       "x": 96,
       "acao": "parado",
-      "z": 3.0,
+      "z": 4.3,
       "entrarEmCasa": true
     }
   }

@@ -78,7 +78,8 @@
       "area": "galerias",
       "x": 80,
       "acao": "sentar",
-      "z": 2.6
+      "z": 2.65,
+      "olhar": "camera"
     }
   }
 }

@@ -151,6 +151,8 @@ def praca():
     a.peca("mascara_darci_muro", 33.0, 1.5, 3.2)
     a.peca("banco", -10, 0, 3.0)
     a.peca("banco", 25, 0, 2.4)
+    a.peca("banco", 10.5, 0, 2.6)
+    a.peca("banco", -28, 0, 3.4)
     for x in (-48, -24, 0):
         a.peca("varal", x, 4.6, 3.6)
     a.peca("barril", -30, 0, 3.2)
@@ -217,6 +219,8 @@ def galerias():
     for x in range(55, 140, 6):
         a.peca("fiacao", x, 5.8, 1.5)
     a.peca("oficina", 100, 0, 1.6)
+    for xb in (80, 108, 128):
+        a.peca("banco", xb, 0, 2.4)
     a.peca("banca_filtros", 86, 0, 1.4)
     a.peca("caixote", 58, 0, 2.2)
     a.peca("saco", 59, 0, 2.6)

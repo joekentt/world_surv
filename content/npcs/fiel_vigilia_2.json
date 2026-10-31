@@ -62,7 +62,8 @@
       "area": "capela",
       "x": -130,
       "acao": "rezar",
-      "z": 1.6
+      "z": 0.9,
+      "olhar": "esquerda"
     },
     "segundo_turno": {
       "atividade": "trabalho",
@@ -76,14 +77,15 @@
       "area": "capela",
       "x": -128,
       "acao": "rezar",
-      "z": 1.6
+      "z": 0.9,
+      "olhar": "esquerda"
     },
     "descanso": {
       "atividade": "descanso",
       "area": "galerias",
       "x": 118,
       "acao": "parado",
-      "z": 3.0,
+      "z": 4.3,
       "entrarEmCasa": true
     }
   }

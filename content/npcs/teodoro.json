@@ -76,30 +76,34 @@
     "primeiro_turno": {
       "atividade": "trabalho",
       "area": "capela",
-      "x": -140,
+      "x": -139,
       "acao": "rezar",
-      "z": 0.6
+      "z": 1.6,
+      "olhar": "direita"
     },
     "segundo_turno": {
       "atividade": "trabalho",
       "area": "galerias",
       "x": 80,
       "acao": "conversar",
-      "z": 1.2
+      "z": 1.2,
+      "olhar": "camera"
     },
     "vigilia": {
       "atividade": "culto",
       "area": "capela",
       "x": -140,
       "acao": "conversar",
-      "z": 0.6
+      "z": 0.6,
+      "olhar": "camera"
     },
     "descanso": {
       "atividade": "descanso",
       "area": "capela",
-      "x": -146,
+      "x": -134,
       "acao": "sentar",
-      "z": 2.5
+      "z": 1.55,
+      "olhar": "camera"
     }
   }
 }

@@ -62,7 +62,8 @@
       "area": "praca",
       "x": -8,
       "acao": "sentar",
-      "z": 2.6
+      "z": 2.45,
+      "olhar": "camera"
     },
     "segundo_turno": {
       "atividade": "fila",
@@ -75,14 +76,16 @@
       "area": "capela",
       "x": -108,
       "acao": "sentar",
-      "z": 1.6
+      "z": 2.85,
+      "olhar": "camera"
     },
     "descanso": {
       "atividade": "descanso",
       "area": "praca",
       "x": -8,
       "acao": "sentar",
-      "z": 2.6
+      "z": 2.45,
+      "olhar": "camera"
     }
   }
 }

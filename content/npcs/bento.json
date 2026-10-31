@@ -77,16 +77,18 @@
     "primeiro_turno": {
       "atividade": "trabalho",
       "area": "praca",
-      "x": -24,
+      "x": -25,
       "acao": "consertar",
-      "z": 0.8
+      "z": 2.9,
+      "olhar": "camera"
     },
     "segundo_turno": {
       "atividade": "trabalho",
       "area": "praca",
-      "x": -24,
+      "x": -25,
       "acao": "conversar",
-      "z": 0.8
+      "z": 2.9,
+      "olhar": "camera"
     },
     "vigilia": {
       "atividade": "fila",
@@ -99,7 +101,8 @@
       "area": "praca",
       "x": -28,
       "acao": "sentar",
-      "z": 2.4
+      "z": 3.65,
+      "olhar": "camera"
     }
   }
 }

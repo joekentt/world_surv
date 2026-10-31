@@ -1,0 +1,377 @@
+{
+ "_sobre": "Conversas de fundo, disparadas por proximidade entre dois NPCs parados perto um do outro. 'se' usa as mesmas condições dos diálogos.",
+ "conversas": [
+  {
+   "id": "estoque1",
+   "falas": [
+    [
+     "a",
+     "A fila dobrou desde a semana passada."
+    ],
+    [
+     "b",
+     "O Conselho diz que é só atraso da Caravana."
+    ],
+    [
+     "a",
+     "Atraso de três meses?"
+    ]
+   ]
+  },
+  {
+   "id": "estoque2",
+   "falas": [
+    [
+     "a",
+     "Recondicionei esse filtro quatro vezes."
+    ],
+    [
+     "b",
+     "Na quinta ele queima com você dentro."
+    ]
+   ]
+  },
+  {
+   "id": "estoque3",
+   "falas": [
+    [
+     "a",
+     "Ouvi dizer que a sede tem um depósito trancado."
+    ],
+    [
+     "b",
+     "Se tivesse filtro lá, ninguém dormia na fila."
+    ]
+   ]
+  },
+  {
+   "id": "vigilia1",
+   "falas": [
+    [
+     "a",
+     "O irmão Teodoro diz que a poeira está baixando."
+    ],
+    [
+     "b",
+     "A poeira ou a fé?"
+    ]
+   ]
+  },
+  {
+   "id": "vigilia2",
+   "falas": [
+    [
+     "a",
+     "Minha sobrinha largou a fila e foi rezar na Capela."
+    ],
+    [
+     "b",
+     "Lá pelo menos tem luz o dia todo."
+    ]
+   ]
+  },
+  {
+   "id": "vigilia3",
+   "falas": [
+    [
+     "a",
+     "Querem subir sem máscara no dia do perdão."
+    ],
+    [
+     "b",
+     "Vão ver o céu bem de perto."
+    ]
+   ],
+   "se": {
+    "flag": "m3_ajudou_vigilia",
+    "valor": true
+   }
+  },
+  {
+   "id": "vigilia4",
+   "falas": [
+    [
+     "a",
+     "O Conselho mandou fechar a Capela mais cedo."
+    ],
+    [
+     "b",
+     "Medo de sermão é medo de verdade."
+    ]
+   ],
+   "se": {
+    "flag": "m3_ajudou_vigilia",
+    "valor": true
+   }
+  },
+  {
+   "id": "darci1",
+   "falas": [
+    [
+     "a",
+     "Doze dias. Ninguém aguenta doze dias lá em cima."
+    ],
+    [
+     "b",
+     "O Darci não é ninguém."
+    ]
+   ]
+  },
+  {
+   "id": "darci2",
+   "falas": [
+    [
+     "a",
+     "Deram o EPI do Darci para o aprendiz."
+    ],
+    [
+     "b",
+     "Remendado. Que sorte a dele."
+    ]
+   ]
+  },
+  {
+   "id": "darci3",
+   "falas": [
+    [
+     "a",
+     "A máscara do Darci ainda não foi para o muro."
+    ],
+    [
+     "b",
+     "Enquanto não vai, ele está vivo."
+    ]
+   ],
+   "se": {
+    "naoFlag": "desfecho"
+   }
+  },
+  {
+   "id": "qarar1",
+   "falas": [
+    [
+     "a",
+     "Em Qarar tem água corrente. Corrente, sabe?"
+    ],
+    [
+     "b",
+     "E tem preço corrente também."
+    ]
+   ]
+  },
+  {
+   "id": "qarar2",
+   "falas": [
+    [
+     "a",
+     "O rádio da Caravana falou de Nova Halab e de Sétimo Poço."
+    ],
+    [
+     "b",
+     "Cidades que nunca vamos ver."
+    ]
+   ]
+  },
+  {
+   "id": "qarar3",
+   "falas": [
+    [
+     "a",
+     "A Caravana chega com menos caixas a cada viagem."
+    ],
+    [
+     "b",
+     "E com mais guardas."
+    ]
+   ]
+  },
+  {
+   "id": "ceu1",
+   "falas": [
+    [
+     "a",
+     "Comprei uma foto do céu. Azul mesmo."
+    ],
+    [
+     "b",
+     "Pintaram. Ninguém viu aquilo."
+    ]
+   ]
+  },
+  {
+   "id": "ceu2",
+   "falas": [
+    [
+     "a",
+     "Meu avô dizia que o céu tinha cheiro."
+    ],
+    [
+     "b",
+     "Cheiro de quê?"
+    ],
+    [
+     "a",
+     "Ele nunca soube dizer."
+    ]
+   ]
+  },
+  {
+   "id": "girias1",
+   "falas": [
+    [
+     "a",
+     "Ele queimou o filtro inteiro no Marco."
+    ],
+    [
+     "b",
+     "E voltou? Então nasceu de novo."
+    ]
+   ]
+  },
+  {
+   "id": "galerias1",
+   "falas": [
+    [
+     "a",
+     "A Nita conserta qualquer coisa por duas sucatas."
+    ],
+    [
+     "b",
+     "Menos a cota que tiraram de mim."
+    ]
+   ]
+  },
+  {
+   "id": "galerias2",
+   "falas": [
+    [
+     "a",
+     "Perdi a cota por um dia de atraso."
+    ],
+    [
+     "b",
+     "Aqui embaixo ninguém confere atraso de ninguém."
+    ]
+   ]
+  },
+  {
+   "id": "pos_marco1",
+   "falas": [
+    [
+     "a",
+     "Dizem que o aprendiz chegou no Marco."
+    ],
+    [
+     "b",
+     "Com o filtro novo da Caravana, qualquer um chega."
+    ]
+   ],
+   "se": {
+    "missao": "m3",
+    "estado": "concluida"
+   }
+  },
+  {
+   "id": "pos_gravacao1",
+   "falas": [
+    [
+     "a",
+     "A Caravana corta filtro das vilas rasas. De propósito."
+    ],
+    [
+     "b",
+     "Quem te disse isso?"
+    ],
+    [
+     "a",
+     "Todo mundo, desde ontem."
+    ]
+   ],
+   "se": {
+    "flag": "desfecho",
+    "valor": "vigilia"
+   }
+  },
+  {
+   "id": "pos_gravacao2",
+   "falas": [
+    [
+     "a",
+     "O Conselho prometeu dobrar a cota no mês que vem."
+    ],
+    [
+     "b",
+     "Prometer não custa filtro."
+    ]
+   ],
+   "se": {
+    "flag": "desfecho",
+    "valor": "conselho"
+   }
+  },
+  {
+   "id": "pos_gravacao3",
+   "falas": [
+    [
+     "a",
+     "Viram o aprendiz? Anda calado desde que voltou da Antena."
+    ],
+    [
+     "b",
+     "Quem volta de lá sempre traz alguma coisa."
+    ]
+   ],
+   "se": {
+    "flag": "desfecho",
+    "valor": "guardou"
+   }
+  }
+ ],
+ "reacoes": [
+  {
+   "texto": "Bom turno, subidor.",
+   "se": {}
+  },
+  {
+   "texto": "Ei, é o aprendiz do Darci.",
+   "se": {}
+  },
+  {
+   "texto": "Você está coberto de poeira. Passa longe da comida.",
+   "se": {
+    "flag": "voltou_recente",
+    "valor": true
+   }
+  },
+  {
+   "texto": "Voltou com o filtro no fim, hein? Por pouco.",
+   "se": {
+    "flag": "voltou_dificil",
+    "valor": true
+   }
+  },
+  {
+   "texto": "Ouvi que você viu o céu e voltou. Teimoso.",
+   "se": {
+    "flagMaior": "mortes",
+    "valor": 0
+   }
+  },
+  {
+   "texto": "Esse EPI remendado ainda aguenta?",
+   "se": {}
+  },
+  {
+   "texto": "Traz uma foto do céu pra mim um dia?",
+   "se": {
+    "criancas": true
+   }
+  },
+  {
+   "texto": "Olha o subidor! Brinca de subida com a gente?",
+   "se": {
+    "criancas": true
+   }
+  }
+ ]
+}

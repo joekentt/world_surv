@@ -68,14 +68,16 @@
       "area": "praca",
       "x": 18,
       "acao": "consertar",
-      "z": 1.6
+      "z": 2.1,
+      "olhar": "fundo"
     },
     "segundo_turno": {
       "atividade": "trabalho",
       "area": "praca",
       "x": 18,
       "acao": "consertar",
-      "z": 1.6
+      "z": 2.1,
+      "olhar": "fundo"
     },
     "vigilia": {
       "atividade": "fila",
@@ -86,9 +88,10 @@
     "descanso": {
       "atividade": "descanso",
       "area": "praca",
-      "x": 24,
+      "x": 25,
       "acao": "sentar",
-      "z": 2.6
+      "z": 2.65,
+      "olhar": "camera"
     }
   }
 }

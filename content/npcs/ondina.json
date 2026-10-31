@@ -84,28 +84,32 @@
       "area": "boca",
       "x": 6,
       "acao": "conversar",
-      "z": 0.8
+      "z": 1.0,
+      "olhar": "camera"
     },
     "segundo_turno": {
       "atividade": "trabalho",
       "area": "boca",
       "x": 6,
       "acao": "consertar",
-      "z": 0.8
+      "z": 1.0,
+      "olhar": "camera"
     },
     "vigilia": {
       "atividade": "trabalho",
       "area": "boca",
-      "x": 4,
+      "x": 6,
       "acao": "parado",
-      "z": 0.8
+      "z": 1.0,
+      "olhar": "camera"
     },
     "descanso": {
       "atividade": "descanso",
       "area": "boca",
-      "x": -4,
+      "x": 7,
       "acao": "sentar",
-      "z": 2.0
+      "z": 3.85,
+      "olhar": "camera"
     }
   }
 }

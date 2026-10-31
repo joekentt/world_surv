@@ -79,14 +79,16 @@
       "area": "praca",
       "x": -62,
       "acao": "conversar",
-      "z": 0.8
+      "z": 3.0,
+      "olhar": "camera"
     },
     "segundo_turno": {
       "atividade": "trabalho",
       "area": "praca",
       "x": -62,
       "acao": "conversar",
-      "z": 0.8
+      "z": 3.0,
+      "olhar": "camera"
     },
     "vigilia": {
       "atividade": "culto",
@@ -100,7 +102,7 @@
       "area": "praca",
       "x": -70,
       "acao": "parado",
-      "z": 3.2,
+      "z": 6.0,
       "entrarEmCasa": true
     }
   }

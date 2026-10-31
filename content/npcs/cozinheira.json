@@ -67,28 +67,31 @@
       "area": "praca",
       "x": -4,
       "acao": "cozinhar",
-      "z": 2.2
+      "z": 1.8,
+      "olhar": "fundo"
     },
     "segundo_turno": {
       "atividade": "trabalho",
       "area": "praca",
       "x": -4,
       "acao": "cozinhar",
-      "z": 2.2
+      "z": 1.8,
+      "olhar": "fundo"
     },
     "vigilia": {
       "atividade": "culto",
       "area": "capela",
       "x": -118,
       "acao": "rezar",
-      "z": 1.6
+      "z": 0.9,
+      "olhar": "esquerda"
     },
     "descanso": {
       "atividade": "descanso",
       "area": "praca",
       "x": -40,
       "acao": "parado",
-      "z": 3.2,
+      "z": 6.0,
       "entrarEmCasa": true
     }
   }

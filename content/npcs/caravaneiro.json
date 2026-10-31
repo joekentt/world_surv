@@ -67,28 +67,32 @@
       "area": "praca",
       "x": 8,
       "acao": "consertar",
-      "z": 1.6
+      "z": 1.6,
+      "olhar": "fundo"
     },
     "segundo_turno": {
       "atividade": "trabalho",
       "area": "praca",
       "x": 0,
       "acao": "conversar",
-      "z": 1.6
+      "z": 1.6,
+      "olhar": "camera"
     },
     "vigilia": {
       "atividade": "trabalho",
       "area": "praca",
       "x": 2,
       "acao": "conversar",
-      "z": 1.6
+      "z": 1.6,
+      "olhar": "camera"
     },
     "descanso": {
       "atividade": "descanso",
       "area": "praca",
-      "x": 12,
+      "x": 10.5,
       "acao": "sentar",
-      "z": 2.6
+      "z": 2.85,
+      "olhar": "camera"
     }
   }
 }

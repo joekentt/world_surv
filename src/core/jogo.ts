@@ -4,6 +4,10 @@ import { Medidores } from "../ui/medidores";
 import { SistemaEPI } from "../epi/epi";
 import { Subida } from "../epi/subida";
 import { Coletaveis } from "../world/coletaveis";
+import { TurnosDeLuz } from "../world/turnos";
+import { Navegacao } from "../npc/navegacao";
+import { GerenciadorNpcs } from "../npc/npcs";
+import { Baloes } from "../ui/baloes";
 import { Audio } from "./audio";
 import { Estado } from "./estado";
 import { Iluminacao } from "../world/iluminacao";
@@ -42,6 +46,10 @@ export class Jogo {
   epi!: SistemaEPI;
   coletaveis!: Coletaveis;
   subida!: Subida;
+  turnos!: TurnosDeLuz;
+  navegacao!: Navegacao;
+  npcs!: GerenciadorNpcs;
+  baloes!: Baloes;
   /** Executado uma vez ao fim da próxima transição (antes de clarear a tela). */
   aposTransicao: (() => void) | null = null;
   interacao!: SistemaInteracao;
@@ -97,6 +105,16 @@ export class Jogo {
     this.coletaveis = new Coletaveis(this, cena);
     this.subida = new Subida(this);
     this.jogador.aoPisar = () => this.somPasso();
+    this.turnos = new TurnosDeLuz(this.estado);
+    this.baloes = new Baloes(cena, this.hud.raiz);
+    this.navegacao = new Navegacao(cena);
+    try {
+      await this.navegacao.iniciar();
+      this.navegacao.construir("vila", this.areas.areasDoMundo("vila"));
+    } catch (e) {
+      console.warn("[navegacao] Recast indisponível, NPCs andam em linha reta", e);
+    }
+    this.npcs = new GerenciadorNpcs(this, this.turnos, this.navegacao, this.baloes);
     this.jogador.aoPular = () => this.audio.tocar("pulo", 0.35, 0.9 + Math.random() * 0.2);
     this.lanterna = new SpotLight("lanterna", new Vector3(0, 1.75, -0.2), new Vector3(1, -0.25, 0), Math.PI / 3.2, 6, cena);
     this.lanterna.diffuse = new Color3(1, 0.92, 0.75);
@@ -149,6 +167,10 @@ export class Jogo {
     this.iluminacao.atualizar(dt, new Vector3(p.x, p.y + 1, 0), this.tempo);
     this.hud.atualizar(dt);
     this.epi.atualizar(dt);
+    this.turnos.atualizar(dt);
+    this.iluminacao.fatorLampadas = this.turnos.fatorLuz;
+    this.npcs.atualizar(dt);
+    this.baloes.atualizar();
     this.coletaveis.atualizar(dt);
     this.audio.atualizar(dt, p.x, p.y);
     this.estado.d.tempoJogo += dt;
@@ -266,6 +288,8 @@ export class Jogo {
     };
     vc.tecla = (codigo: string, pressionada: boolean) => this.entrada.simular(codigo, pressionada);
     vc.teleportar = (x: number, y = 0) => this.teleportar(x, y);
+    vc.npcs = () => this.npcs.contagem();
+    vc.turno = () => this.turnos.turno;
     vc.epi = () => ({ filtro: this.epi.filtro, roupa: this.epi.roupa, saude: this.epi.saude, ativo: this.epi.ativo, tempestade: this.epi.tempestade, morto: this.epi.morto });
   }
 }

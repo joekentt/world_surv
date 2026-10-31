@@ -93,7 +93,7 @@ export class Iluminacao {
     this.cena.fogDensity = p.densidadeNevoa + poeira * 0.06;
     this.ambiente.diffuse = new Color3(...p.ambiente);
     this.ambiente.groundColor = new Color3(...p.chao);
-    this.ambiente.intensity = p.ambienteInt * (this.alvo.sol > 0 ? 1 - poeira * 0.4 : 0.6 + 0.4 * this.fatorLampadas);
+    this.ambiente.intensity = p.ambienteInt * (this.alvo.sol > 0 ? 1 - poeira * 0.4 : 0.3 + 0.7 * this.fatorLampadas);
     this.sol.intensity = p.sol * (1 - poeira * 0.7);
     this.sol.diffuse = new Color3(...(p.corSol ?? [1, 1, 1]));
     this.sol.setEnabled(p.sol > 0.01);

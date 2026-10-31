@@ -108,3 +108,26 @@ Subida pela eclusa, dreno de filtro e roupa, coleta, mochila cheia, aviso e temp
 - Itens de missão (máscara, gravador, amostra) não se perdem na morte, para não travar o roteiro.
 - Vozes ficam pendentes: a seção 2 pede conferir se o plano da ElevenLabs permite uso comercial antes de gerar.
 - "Tensa e compreensível sem tutorial" depende de teste com pessoas; o HUD foi desenhado para isso (número de segundos, cores, pulsação, sirene), e as falas de Ondina na eclusa (fase 5) explicam o EPI dentro da história.
+
+## Fase 4: vila viva
+
+### Feito
+
+- 20 moradores gerados a partir de `content/npcs/` (6 nomeados: Mirela, Teodoro, Samira, Bento, Nita e Ondina), cada um com corpo, rosto, roupa e cobertura de cabeça próprios, mais LOD a 30% dos triângulos no mesmo GLB.
+- `src/world/turnos.ts`: ciclo de quatro turnos (primeiro turno, segundo turno, vigília e descanso), 150 s cada; no descanso as lâmpadas e a luz ambiente baixam.
+- `src/npc/navegacao.ts`: malha de navegação do plugin Recast do `@babylonjs/addons` 9.33.1, gerada dos dados das áreas (piso e pegadas de barracas, bancos, colunas, casas e barracos). O addon baixa o Recast de um CDN por padrão; aqui a biblioteca (`@recast-navigation/core` e `generators` 0.43.0, versão que o addon espera) é injetada pelo npm.
+- `src/npc/npcs.ts`: cada NPC segue a rotina do turno (trabalho, fila das cotas, culto, descanso), anda pelo caminho calculado, executa a ação do posto (varrer, consertar, cozinhar, rezar, conversar, sentar, brincar) virado para o lado certo, entra em casa no descanso e reage ao jogador com aceno e fala (que muda depois de uma subida difícil ou de uma morte). Conversas de fundo por proximidade entre dois NPCs parados, com balões; falas em `content/dialogos/conversas_fundo.json`, algumas condicionadas a escolhas do jogador.
+- A fila das cotas ganha figurantes conforme as missões são concluídas e as subidas se acumulam.
+- Otimização: a simulação roda para todos, mas o modelo 3D só é criado a até 48 m do jogador; animação pausada a mais de 26 m; LOD por distância; cenário instanciado (`createInstance`).
+
+### Teste (`tests/fase4.spec.ts`)
+
+20 NPCs simulados e carregados, troca de turno com mais de cinco NPCs andando, descanso com luz baixa e conversa de fundo exibida. Passou.
+
+### Medições
+
+| Cena | fps (WebGL2, SwiftShader, sem GPU) |
+| --- | --- |
+| Praça com 13 moradores visíveis e 20 carregados | 2,2 |
+
+O critério de 60 fps com todos os NPCs no hardware mínimo (notebook com GPU integrada) **não pode ser medido aqui**. Pontos de atenção para essa medição: cada morador tem 11 a 13 mil triângulos no LOD0 e é uma malha com esqueleto próprio; se faltar desempenho, reduzir a decimação do LOD0, baixar a distância do LOD e limitar o número de NPCs animados ao mesmo tempo.
