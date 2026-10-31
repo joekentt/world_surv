@@ -1,0 +1,8 @@
+:root { --fundo: #0d0c0b; --texto: #efe6d6; --ambar: #e3a33b; --alerta: #d8452f; --painel: rgba(18, 15, 12, 0.82); }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--fundo); color: var(--texto);
+  font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif; }
+#jogo { width: 100vw; height: 100vh; display: block; outline: none; touch-action: none; }
+#selo-render { position: fixed; right: 10px; bottom: 8px; font: 12px/1.2 monospace; color: #cbbfa8;
+  background: rgba(0,0,0,0.45); padding: 3px 7px; border-radius: 3px; pointer-events: none; z-index: 50; }
+.erro-fatal { position: fixed; inset: 20px; color: #ffb4a6; background: #200; padding: 16px; white-space: pre-wrap; z-index: 99; }
