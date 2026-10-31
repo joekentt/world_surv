@@ -176,3 +176,38 @@ Um screenshot por área nos dois renderizadores (`tests/screenshots/fase-6/`). A
 
 - **Vozes:** não geradas. A seção 2 pede conferir se o plano da ElevenLabs permite uso comercial antes; essa conferência depende da conta do usuário. O conector da ElevenLabs está disponível nesta sessão e as falas já estão em JSON, prontas para virar áudio quando houver autorização.
 - Materiais sem textura (cor de vértice e PBR liso). Texturas KTX2 ficam para depois do MVP, se a avaliação visual pedir.
+
+## Fase 7: polimento e publicação
+
+### Feito
+
+- **Compressão:** `tools/comprimir_assets.sh` aplica meshoptimizer (EXT_meshopt_compression + KHR_mesh_quantization) com `gltf-transform` 4.5.1 em todos os GLB e converte o áudio para OGG Vorbis. Assets: 19 MB → 5,1 MB (personagens 13 MB → 3,6 MB; kits 3 MB → 0,8 MB; áudio 4,6 MB → 0,65 MB). O decodificador meshopt vem do npm (`meshoptimizer` 1.3.0); o Babylon, por padrão, buscaria num CDN.
+- **Sem dependência de CDN em tempo de execução:** Havok, Recast e meshopt saem do bundle. O teste do build confere que nenhuma requisição sai do próprio domínio.
+- **Build:** `npm run build` gera `dist/` (17 MB no total, contando assets e chunks de shader). O bundle principal tem 6,2 MB (1,36 MB com gzip) porque o Babylon é importado pela raiz do pacote; trocar por imports profundos é a primeira otimização pós-MVP.
+- **Publicação:** `.github/workflows/publicar.yml` publica `dist/` no Cloudflare Pages a cada push na `main`, via `cloudflare/wrangler-action`.
+- `tools/build_assets.sh` (atalho `npm run assets`) regenera todos os assets do zero, na ordem certa.
+
+### Balanceamento do EPI
+
+Distâncias tiradas de `content/areas/` (escotilha em x = 7, sucata entre x = 26 e 121, ponto de amostra do Marco em x = 253, achado de Darci em x = 447) e velocidade de corrida de `content/balanceamento.json` (6,2 m/s):
+
+| Destino | Ida e volta correndo, sem obstáculos | Filtro que fecha a conta |
+| --- | --- | --- |
+| Sucata mais distante | 2 × 114 m ÷ 6,2 = 37 s | básico |
+| Marco | 2 × 246 m ÷ 6,2 = 79 s, mais carros, dunas e ruínas | nível 2 |
+| Antena | 2 × 440 m ÷ 6,2 = 142 s, mais obstáculos (cerca de 160 s) | nível 3 |
+
+Com o filtro básico de 90 s da especificação, o Marco ficava ao alcance de quem corresse sem parar (79 s), o que anulava a exigência do nível 2. Ajustes: **filtro básico 75 s** e **cilindro extra 30 s** (eram 90 s e 45 s). Assim o nível 2 (150 s) chega ao Marco com folga de cerca de 60 s mas não à Antena; nível 2 + cilindro (180 s) chega à Antena no limite; o nível 3 (240 s) chega com folga. Uma tempestade (26 s a ×2,6) custa cerca de 42 s extras de filtro, o que mantém a tensão mesmo com folga.
+
+Economia estimada: uma subida na zona de sucata rende até 13 cotas (8 sucatas, 1 vidro, 1 componente, 19 kg de 20) e consome um filtro de 3 cotas. Com as recompensas das missões (2 + 3 + 6 ou 8) e das tarefas (7 + 2 + dois filtros), o filtro nível 2 (14) sai depois de 2 subidas e o nível 3 (26) depois de mais 2 ou 3. Estimativa: 5 a 6 subidas, de 2 a 4 minutos cada, mais a vila, somando os 20 a 30 minutos previstos. **Esses números precisam ser confirmados jogando.**
+
+### Testes (`tests/fase7.spec.ts`, `playwright.build.config.ts`)
+
+Contra o build de produção (`vite preview`): título, novo jogo, introdução e primeira missão ativa, em WebGPU e WebGL2, sem erros de console e sem requisições externas. Passou. Regressão das fases 0 e 1 com os assets comprimidos: passou.
+
+### O que não foi possível fazer neste ambiente
+
+- **Link público:** publicar no Cloudflare Pages exige uma conta e os segredos `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID` no repositório. O workflow está pronto; falta criar o projeto "vila-cisterna" no Pages, cadastrar os segredos e fazer merge na `main`.
+- **Firefox:** só o Chromium está instalado aqui. Os testes rodaram em Chromium (WebGPU e WebGL2).
+- **60 fps em notebook:** sem GPU, os fps medidos (0,5 a 3) refletem renderização por software. A medição real precisa ser feita na máquina-alvo.
+- **"Divertido", "tenso" e "compreensível sem tutorial":** exigem teste com pessoas.

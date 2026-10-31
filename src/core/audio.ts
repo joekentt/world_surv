@@ -40,7 +40,7 @@ export class Audio {
   private async carregar(nome: string, laco: boolean): Promise<void> {
     if (!this.motor) return;
     try {
-      const s = await CreateSoundAsync(nome, BASE + nome + ".wav", { loop: laco, volume: 0, maxInstances: laco ? 1 : 4 } as never, this.motor);
+      const s = await CreateSoundAsync(nome, BASE + nome + ".ogg", { loop: laco, volume: 0, maxInstances: laco ? 1 : 4 } as never, this.motor);
       this.sons.set(nome, s);
       if (laco) {
         this.atualLaco.set(nome, 0);

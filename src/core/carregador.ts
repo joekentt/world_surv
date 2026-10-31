@@ -1,8 +1,10 @@
 import "@babylonjs/loaders/glTF";
+import { MeshoptDecoder } from "meshoptimizer";
 import {
   Animation,
   AnimationGroup,
   LoadAssetContainerAsync,
+  MeshoptCompression,
   Quaternion,
   TransformNode,
   Vector3,
@@ -11,6 +13,11 @@ import {
 } from "@babylonjs/core";
 
 const BASE = import.meta.env.BASE_URL + "assets/";
+
+// Malhas comprimidas com EXT_meshopt_compression: o decodificador vem do npm (sem CDN). O Babylon
+// espera um MeshoptDecoder global e carrega um script pela URL configurada; o script local é vazio.
+(globalThis as unknown as { MeshoptDecoder: typeof MeshoptDecoder }).MeshoptDecoder = MeshoptDecoder;
+MeshoptCompression.Configuration = { decoder: { url: import.meta.env.BASE_URL + "vendor/meshopt_global.js" } };
 
 /** Cache de contêineres GLB: cada arquivo é baixado uma vez por cena. */
 export class Carregador {

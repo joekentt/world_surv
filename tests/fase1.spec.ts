@@ -16,6 +16,7 @@ async function segurar(p: Page, teclas: string[], segundosJogo: number) {
 }
 
 test("fase 1: andar, correr, pular, agachar, escada e corda no teclado", async ({ page }) => {
+  test.setTimeout(600_000);
   await abrir(page, "area=sala_teste&render=webgl2");
   const e0 = await estado(page);
   expect(e0.estado).toBe("chao");

@@ -29,10 +29,10 @@
     "fov": 0.62
   },
   "epi": {
-    "filtroBasico": 90,
+    "filtroBasico": 75,
     "filtroNivel2": 150,
     "filtroNivel3": 240,
-    "cilindroExtra": 45,
+    "cilindroExtra": 30,
     "drenoFiltroPorSegundo": 1,
     "roupaMaxima": 100,
     "roupaReforcada": 160,
@@ -57,15 +57,42 @@
   "inventario": {
     "pesoMaximo": 20,
     "itens": {
-      "sucata": { "peso": 2.0, "preco": 1 },
-      "componente": { "peso": 1.0, "preco": 3 },
-      "vidro": { "peso": 1.5, "preco": 2 },
-      "amostra_terra": { "peso": 0.5, "preco": 0 },
-      "peca_ventilador": { "peso": 3.0, "preco": 0 },
-      "filtro_reposicao": { "peso": 0.5, "preco": 0 },
-      "mascara_darci": { "peso": 1.0, "preco": 0 },
-      "gravador_darci": { "peso": 0.5, "preco": 0 },
-      "foto_ceu": { "peso": 0.1, "preco": 0 }
+      "sucata": {
+        "peso": 2.0,
+        "preco": 1
+      },
+      "componente": {
+        "peso": 1.0,
+        "preco": 3
+      },
+      "vidro": {
+        "peso": 1.5,
+        "preco": 2
+      },
+      "amostra_terra": {
+        "peso": 0.5,
+        "preco": 0
+      },
+      "peca_ventilador": {
+        "peso": 3.0,
+        "preco": 0
+      },
+      "filtro_reposicao": {
+        "peso": 0.5,
+        "preco": 0
+      },
+      "mascara_darci": {
+        "peso": 1.0,
+        "preco": 0
+      },
+      "gravador_darci": {
+        "peso": 0.5,
+        "preco": 0
+      },
+      "foto_ceu": {
+        "peso": 0.1,
+        "preco": 0
+      }
     }
   },
   "economia": {
@@ -83,7 +110,12 @@
   },
   "turnos": {
     "duracaoTurno": 150,
-    "ordem": ["primeiro_turno", "segundo_turno", "vigilia", "descanso"],
+    "ordem": [
+      "primeiro_turno",
+      "segundo_turno",
+      "vigilia",
+      "descanso"
+    ],
     "luzDescanso": 0.32
   },
   "npc": {
