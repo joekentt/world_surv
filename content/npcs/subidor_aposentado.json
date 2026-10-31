@@ -1,0 +1,84 @@
+{
+  "id": "subidor_aposentado",
+  "nome": "Ex-subidor",
+  "nomeado": false,
+  "faccao": "moradores",
+  "aparencia": {
+    "genero": 1.0,
+    "idade_anos": 61,
+    "peso": 0.5,
+    "musculo": 0.55,
+    "altura": 0.6530000000000001,
+    "proporcoes": 0.5,
+    "pele": [
+      0.36,
+      0.24,
+      0.17
+    ],
+    "cabelo": {
+      "tipo": "raspado",
+      "cor": [
+        0.55,
+        0.53,
+        0.5
+      ]
+    },
+    "cabeca": {
+      "tipo": "nenhum"
+    },
+    "roupa": {
+      "camisa": [
+        0.82,
+        0.42,
+        0.1
+      ],
+      "calca": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "botas": [
+        0.08,
+        0.08,
+        0.09
+      ],
+      "mangas": "curtas"
+    },
+    "olhos": [
+      0.18,
+      0.12,
+      0.07
+    ],
+    "semente": 1703,
+    "rosto": {}
+  },
+  "rotina": {
+    "primeiro_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": 31,
+      "acao": "rezar",
+      "z": 1.4
+    },
+    "segundo_turno": {
+      "atividade": "fila",
+      "area": "praca",
+      "x": 0,
+      "acao": "parado"
+    },
+    "vigilia": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": 30,
+      "acao": "parado",
+      "z": 1.4
+    },
+    "descanso": {
+      "atividade": "descanso",
+      "area": "galerias",
+      "x": 80,
+      "acao": "sentar",
+      "z": 2.6
+    }
+  }
+}

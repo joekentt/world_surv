@@ -1,0 +1,94 @@
+{
+  "id": "vendedora_fotos",
+  "nome": "Vendedora de relíquias",
+  "nomeado": false,
+  "faccao": "moradores",
+  "aparencia": {
+    "genero": 0.0,
+    "idade_anos": 62,
+    "peso": 0.5,
+    "musculo": 0.35,
+    "altura": 0.32000000000000006,
+    "proporcoes": 0.5,
+    "pele": [
+      0.86,
+      0.68,
+      0.56
+    ],
+    "cabelo": {
+      "tipo": "preso",
+      "cor": [
+        0.55,
+        0.53,
+        0.5
+      ]
+    },
+    "cabeca": {
+      "tipo": "lenco",
+      "cor": [
+        0.32,
+        0.1,
+        0.16
+      ]
+    },
+    "roupa": {
+      "camisa": [
+        0.8,
+        0.78,
+        0.72
+      ],
+      "calca": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "casaco": [
+        0.6,
+        0.3,
+        0.2
+      ],
+      "botas": [
+        0.3,
+        0.22,
+        0.16
+      ]
+    },
+    "olhos": [
+      0.18,
+      0.12,
+      0.07
+    ],
+    "semente": 1370,
+    "rosto": {}
+  },
+  "rotina": {
+    "primeiro_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": -14,
+      "acao": "conversar",
+      "z": 1.0
+    },
+    "segundo_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": -14,
+      "acao": "conversar",
+      "z": 1.0
+    },
+    "vigilia": {
+      "atividade": "culto",
+      "area": "capela",
+      "x": -112,
+      "acao": "rezar",
+      "z": 1.6
+    },
+    "descanso": {
+      "atividade": "descanso",
+      "area": "praca",
+      "x": -16,
+      "acao": "sentar",
+      "z": 2.4
+    }
+  }
+}

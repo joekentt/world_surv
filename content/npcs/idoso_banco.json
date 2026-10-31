@@ -1,0 +1,88 @@
+{
+  "id": "idoso_banco",
+  "nome": "Idoso do banco",
+  "nomeado": false,
+  "faccao": "moradores",
+  "aparencia": {
+    "genero": 1.0,
+    "idade_anos": 78,
+    "peso": 0.45,
+    "musculo": 0.25,
+    "altura": 0.7310000000000001,
+    "proporcoes": 0.5,
+    "pele": [
+      0.7,
+      0.54,
+      0.4
+    ],
+    "cabelo": {
+      "tipo": "curto",
+      "cor": [
+        0.82,
+        0.8,
+        0.76
+      ]
+    },
+    "cabeca": {
+      "tipo": "nenhum"
+    },
+    "roupa": {
+      "camisa": [
+        0.26,
+        0.34,
+        0.44
+      ],
+      "calca": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "casaco": [
+        0.3,
+        0.22,
+        0.16
+      ],
+      "botas": [
+        0.08,
+        0.08,
+        0.09
+      ]
+    },
+    "olhos": [
+      0.18,
+      0.12,
+      0.07
+    ],
+    "semente": 1481,
+    "rosto": {}
+  },
+  "rotina": {
+    "primeiro_turno": {
+      "atividade": "descanso",
+      "area": "praca",
+      "x": -8,
+      "acao": "sentar",
+      "z": 2.6
+    },
+    "segundo_turno": {
+      "atividade": "fila",
+      "area": "praca",
+      "x": 0,
+      "acao": "parado"
+    },
+    "vigilia": {
+      "atividade": "culto",
+      "area": "capela",
+      "x": -108,
+      "acao": "sentar",
+      "z": 1.6
+    },
+    "descanso": {
+      "atividade": "descanso",
+      "area": "praca",
+      "x": -8,
+      "acao": "sentar",
+      "z": 2.6
+    }
+  }
+}

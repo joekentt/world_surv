@@ -1,0 +1,94 @@
+{
+  "id": "caravaneiro",
+  "nome": "Caravaneiro de Qarar",
+  "nomeado": false,
+  "faccao": "caravana",
+  "aparencia": {
+    "genero": 1.0,
+    "idade_anos": 42,
+    "peso": 0.5,
+    "musculo": 0.6,
+    "altura": 0.5160000000000001,
+    "proporcoes": 0.5,
+    "pele": [
+      0.7,
+      0.54,
+      0.4
+    ],
+    "cabelo": {
+      "tipo": "curto",
+      "cor": [
+        0.05,
+        0.04,
+        0.035
+      ]
+    },
+    "cabeca": {
+      "tipo": "turbante",
+      "cor": [
+        0.66,
+        0.58,
+        0.44
+      ]
+    },
+    "roupa": {
+      "camisa": [
+        0.8,
+        0.78,
+        0.72
+      ],
+      "calca": [
+        0.3,
+        0.22,
+        0.16
+      ],
+      "casaco": [
+        0.16,
+        0.2,
+        0.42
+      ],
+      "botas": [
+        0.36,
+        0.22,
+        0.12
+      ]
+    },
+    "olhos": [
+      0.18,
+      0.12,
+      0.07
+    ],
+    "semente": 1666,
+    "rosto": {}
+  },
+  "rotina": {
+    "primeiro_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": 8,
+      "acao": "consertar",
+      "z": 1.6
+    },
+    "segundo_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": 0,
+      "acao": "conversar",
+      "z": 1.6
+    },
+    "vigilia": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": 2,
+      "acao": "conversar",
+      "z": 1.6
+    },
+    "descanso": {
+      "atividade": "descanso",
+      "area": "praca",
+      "x": 12,
+      "acao": "sentar",
+      "z": 2.6
+    }
+  }
+}

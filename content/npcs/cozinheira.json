@@ -1,0 +1,95 @@
+{
+  "id": "cozinheira",
+  "nome": "Cozinheira da praça",
+  "nomeado": false,
+  "faccao": "moradores",
+  "aparencia": {
+    "genero": 0.0,
+    "idade_anos": 48,
+    "peso": 0.7,
+    "musculo": 0.4,
+    "altura": 0.35900000000000004,
+    "proporcoes": 0.5,
+    "pele": [
+      0.58,
+      0.4,
+      0.28
+    ],
+    "cabelo": {
+      "tipo": "preso",
+      "cor": [
+        0.2,
+        0.12,
+        0.07
+      ]
+    },
+    "cabeca": {
+      "tipo": "lenco",
+      "cor": [
+        0.6,
+        0.3,
+        0.2
+      ]
+    },
+    "roupa": {
+      "camisa": [
+        0.78,
+        0.72,
+        0.6
+      ],
+      "calca": [
+        0.3,
+        0.22,
+        0.16
+      ],
+      "avental": [
+        0.8,
+        0.78,
+        0.72
+      ],
+      "botas": [
+        0.3,
+        0.22,
+        0.16
+      ]
+    },
+    "olhos": [
+      0.18,
+      0.12,
+      0.07
+    ],
+    "semente": 1259,
+    "rosto": {}
+  },
+  "rotina": {
+    "primeiro_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": -4,
+      "acao": "cozinhar",
+      "z": 2.2
+    },
+    "segundo_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": -4,
+      "acao": "cozinhar",
+      "z": 2.2
+    },
+    "vigilia": {
+      "atividade": "culto",
+      "area": "capela",
+      "x": -118,
+      "acao": "rezar",
+      "z": 1.6
+    },
+    "descanso": {
+      "atividade": "descanso",
+      "area": "praca",
+      "x": -40,
+      "acao": "parado",
+      "z": 3.2,
+      "entrarEmCasa": true
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "id": "fiel_vigilia_1",
+  "nome": "Fiel da Vigília",
+  "nomeado": false,
+  "faccao": "vigilia",
+  "aparencia": {
+    "genero": 1.0,
+    "idade_anos": 24,
+    "peso": 0.35,
+    "musculo": 0.45,
+    "altura": 0.4570000000000001,
+    "proporcoes": 0.5,
+    "pele": [
+      0.58,
+      0.4,
+      0.28
+    ],
+    "cabelo": {
+      "tipo": "raspado",
+      "cor": [
+        0.05,
+        0.04,
+        0.035
+      ]
+    },
+    "cabeca": {
+      "tipo": "capuz",
+      "cor": [
+        0.62,
+        0.5,
+        0.16
+      ]
+    },
+    "roupa": {
+      "camisa": [
+        0.66,
+        0.58,
+        0.44
+      ],
+      "calca": [
+        0.3,
+        0.22,
+        0.16
+      ],
+      "botas": [
+        0.3,
+        0.22,
+        0.16
+      ]
+    },
+    "olhos": [
+      0.18,
+      0.12,
+      0.07
+    ],
+    "semente": 1407,
+    "rosto": {}
+  },
+  "rotina": {
+    "primeiro_turno": {
+      "atividade": "trabalho",
+      "area": "galerias",
+      "x": 70,
+      "acao": "conversar",
+      "z": 1.4
+    },
+    "segundo_turno": {
+      "atividade": "culto",
+      "area": "capela",
+      "x": -126,
+      "acao": "rezar",
+      "z": 1.6
+    },
+    "vigilia": {
+      "atividade": "culto",
+      "area": "capela",
+      "x": -122,
+      "acao": "rezar",
+      "z": 1.6
+    },
+    "descanso": {
+      "atividade": "descanso",
+      "area": "galerias",
+      "x": 88,
+      "acao": "parado",
+      "z": 3.0,
+      "entrarEmCasa": true
+    }
+  }
+}

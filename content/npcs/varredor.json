@@ -1,0 +1,84 @@
+{
+  "id": "varredor",
+  "nome": "Varredor",
+  "nomeado": false,
+  "faccao": "moradores",
+  "aparencia": {
+    "genero": 1.0,
+    "idade_anos": 58,
+    "peso": 0.4,
+    "musculo": 0.4,
+    "altura": 0.49600000000000005,
+    "proporcoes": 0.5,
+    "pele": [
+      0.36,
+      0.24,
+      0.17
+    ],
+    "cabelo": {
+      "tipo": "curto",
+      "cor": [
+        0.55,
+        0.53,
+        0.5
+      ]
+    },
+    "cabeca": {
+      "tipo": "nenhum"
+    },
+    "roupa": {
+      "camisa": [
+        0.66,
+        0.58,
+        0.44
+      ],
+      "calca": [
+        0.26,
+        0.34,
+        0.44
+      ],
+      "botas": [
+        0.08,
+        0.08,
+        0.09
+      ]
+    },
+    "olhos": [
+      0.18,
+      0.12,
+      0.07
+    ],
+    "semente": 1296,
+    "rosto": {}
+  },
+  "rotina": {
+    "primeiro_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": -36,
+      "acao": "varrer",
+      "z": 1.4
+    },
+    "segundo_turno": {
+      "atividade": "trabalho",
+      "area": "praca",
+      "x": 12,
+      "acao": "varrer",
+      "z": 1.4
+    },
+    "vigilia": {
+      "atividade": "fila",
+      "area": "praca",
+      "x": 0,
+      "acao": "parado"
+    },
+    "descanso": {
+      "atividade": "descanso",
+      "area": "galerias",
+      "x": 76,
+      "acao": "parado",
+      "z": 3.0,
+      "entrarEmCasa": true
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "vila-cisterna",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "typecheck": "tsc --noEmit",
+    "test": "playwright test",
+    "assets": "bash tools/build_assets.sh"
+  },
+  "dependencies": {
+    "@babylonjs/core": "^9.33.1",
+    "@babylonjs/havok": "^1.3.14",
+    "@babylonjs/loaders": "^9.33.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.5"
+  }
+}

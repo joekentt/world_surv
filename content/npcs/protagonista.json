@@ -1,0 +1,92 @@
+{
+  "id": "protagonista",
+  "nome": "Subidor",
+  "nomeado": true,
+  "faccao": "subidores",
+  "aparencia": {
+    "genero": 0.6,
+    "idade_anos": 22,
+    "peso": 0.45,
+    "musculo": 0.6,
+    "altura": 0.55,
+    "proporcoes": 0.8,
+    "etnia": {
+      "african": 0.4,
+      "caucasian": 0.35,
+      "asian": 0.25
+    },
+    "pele": [
+      0.58,
+      0.4,
+      0.28
+    ],
+    "cabelo": {
+      "tipo": "curto",
+      "cor": [
+        0.05,
+        0.04,
+        0.035
+      ]
+    },
+    "cabeca": {
+      "tipo": "lenco_pescoco",
+      "cor": [
+        0.6,
+        0.3,
+        0.2
+      ]
+    },
+    "roupa": {
+      "camisa": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "calca": [
+        0.26,
+        0.34,
+        0.44
+      ],
+      "casaco": [
+        0.36,
+        0.22,
+        0.12
+      ],
+      "botas": [
+        0.08,
+        0.08,
+        0.09
+      ],
+      "mangas": "longas"
+    },
+    "epi": {
+      "macacao": [
+        0.82,
+        0.42,
+        0.1
+      ],
+      "capacete": [
+        0.62,
+        0.5,
+        0.16
+      ],
+      "mascara": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "olhos": [
+      0.16,
+      0.1,
+      0.06
+    ],
+    "semente": 7,
+    "rosto": {
+      "l-eye-scale": 0.15,
+      "r-eye-scale": 0.15,
+      "chin-prominent": 0.2,
+      "nose-scale-horiz": -0.1
+    }
+  }
+}
