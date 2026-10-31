@@ -1,5 +1,11 @@
 import { Color3, Color4, HemisphericLight, Scene, ShadowGenerator, DirectionalLight, SpotLight, Vector3, type AbstractMesh } from "@babylonjs/core";
 import { Hud } from "../ui/hud";
+import { Medidores } from "../ui/medidores";
+import { SistemaEPI } from "../epi/epi";
+import { Subida } from "../epi/subida";
+import { Coletaveis } from "../world/coletaveis";
+import { Audio } from "./audio";
+import { Estado } from "./estado";
 import { Iluminacao } from "../world/iluminacao";
 import { SistemaInteracao } from "../world/interacao";
 import { CameraLateral } from "../player/camera";
@@ -30,6 +36,14 @@ export class Jogo {
   sol!: DirectionalLight;
   areaAtual: AreaDef | null = null;
   hud = new Hud();
+  estado = new Estado();
+  audio = new Audio();
+  medidores!: Medidores;
+  epi!: SistemaEPI;
+  coletaveis!: Coletaveis;
+  subida!: Subida;
+  /** Executado uma vez ao fim da próxima transição (antes de clarear a tela). */
+  aposTransicao: (() => void) | null = null;
   interacao!: SistemaInteracao;
   iluminacao!: Iluminacao;
   lanterna!: SpotLight;
@@ -65,10 +79,12 @@ export class Jogo {
     this.areas.aoDescarregar = (a) => {
       this.iluminacao.removerLuzes(a.luzes);
       this.interacao.removerPrefixo(`${a.def.id}:`);
+      this.coletaveis.aoDescarregar(a);
       this.aoAreaDescarregada?.(a);
     };
     this.iluminacao = new Iluminacao(cena, this.luzAmbiente, this.sol, this.motor.qualidade);
     this.aoTransicao = (sim) => this.hud.escurecer(sim);
+    const audioPronto = this.audio.iniciar();
     this.biblioteca = await BibliotecaAnimacoes.carregar(this.carregador);
     const per = await Personagem.criar(cena, this.carregador, this.biblioteca, "protagonista");
     per.malhas.forEach((m) => this.sombras.addShadowCaster(m));
@@ -76,6 +92,12 @@ export class Jogo {
     const ent = def.entradas?.[entradaInicial] ?? { x: (def.inicio + def.fim) / 2, y: 0 };
     this.jogador = new Jogador(cena, per, this.entrada, ent.x, ent.y);
     this.interacao = new SistemaInteracao(this.entrada, this.hud, () => this.jogador.pes);
+    this.medidores = new Medidores(this.hud.raiz, this.estado);
+    this.epi = new SistemaEPI(this, this.medidores);
+    this.coletaveis = new Coletaveis(this, cena);
+    this.subida = new Subida(this);
+    this.jogador.aoPisar = () => this.somPasso();
+    this.jogador.aoPular = () => this.audio.tocar("pulo", 0.35, 0.9 + Math.random() * 0.2);
     this.lanterna = new SpotLight("lanterna", new Vector3(0, 1.75, -0.2), new Vector3(1, -0.25, 0), Math.PI / 3.2, 6, cena);
     this.lanterna.diffuse = new Color3(1, 0.92, 0.75);
     this.lanterna.intensity = 0;
@@ -87,6 +109,7 @@ export class Jogo {
     this.atualizarAreaAtual();
     this.camera.seguir(ent.x, ent.y, 1, 0, true);
 
+    await audioPronto;
     cena.onBeforeRenderObservable.add(() => this.quadro());
     this.expor();
     return cena;
@@ -125,6 +148,10 @@ export class Jogo {
     this.lanterna.setEnabled(this.lanterna.intensity > 0.05);
     this.iluminacao.atualizar(dt, new Vector3(p.x, p.y + 1, 0), this.tempo);
     this.hud.atualizar(dt);
+    this.epi.atualizar(dt);
+    this.coletaveis.atualizar(dt);
+    this.audio.atualizar(dt, p.x, p.y);
+    this.estado.d.tempoJogo += dt;
     for (const s of this.sistemas) s.atualizar(dt);
   }
 
@@ -138,14 +165,49 @@ export class Jogo {
       const epi = a.mundo === "superficie" || a.mundo === "boca";
       this.jogador.personagem.mostrar("_epi", epi);
       this.jogador.personagem.mostrar("_roupa", !epi);
+      if (a.superficie && !this.epi.ativo && !this.subida.emSequencia) {
+        this.epi.equipar();
+        this.epi.entrarSuperficie();
+      } else if (!a.superficie && this.epi.ativo) this.epi.sairSuperficie();
+      this.ambienteSonoro(a);
       this.aoMudarArea?.(a);
     }
   }
 
   aoMudarArea: ((a: AreaDef) => void) | null = null;
 
+  private somPasso(): void {
+    const est = this.areaAtual?.estetica;
+    const som = est === "superficie" ? "passo_areia" : est === "boca" ? "passo_metal" : "passo_concreto";
+    this.audio.tocar(som, 0.35, 0.85 + Math.random() * 0.3);
+  }
+
+  /** Camadas de som por área: laços de fundo e emissores posicionados. */
+  private ambienteSonoro(a: AreaDef): void {
+    const vila = a.mundo === "vila";
+    this.audio.laco("ambiente_vila", vila || a.mundo === "boca" ? 0.35 : 0);
+    this.audio.laco("goteira", a.mundo === "duto" ? 0.6 : vila ? 0.2 : 0);
+    this.audio.laco("ambiente_superficie", a.mundo === "superficie" ? 0.5 : 0);
+    this.audio.laco("vento", a.mundo === "superficie" ? 0.35 : a.mundo === "duto" ? 0.12 : 0);
+    const emissores: { som: string; x: number; y: number; raio: number; volume: number }[] = [];
+    for (const area of this.areas.areasDoMundo(a.mundo)) {
+      for (const i of area.interativos ?? []) {
+        if (i.tipo === "ambiente" && typeof i.som === "string") emissores.push({ som: i.som, x: i.x, y: 0, raio: 45, volume: 0.6 });
+      }
+      if (area.id === "praca") {
+        emissores.push({ som: "ventilador", x: 18, y: 0, raio: 22, volume: 0.5 });
+        emissores.push({ som: "multidao", x: -15, y: 0, raio: 35, volume: 0.45 });
+        emissores.push({ som: "radio", x: 5, y: 0, raio: 9, volume: 0.35 });
+      }
+      if (area.id === "galerias") emissores.push({ som: "zumbido_fluor", x: 96, y: 0, raio: 50, volume: 0.25 }, { som: "ventilador", x: 100, y: 0, raio: 12, volume: 0.35 });
+      if (area.id === "boca_do_poco") emissores.push({ som: "ventilador", x: 13, y: 0, raio: 20, volume: 0.4 });
+    }
+    this.audio.definirEmissores(emissores);
+  }
+
   private aoCarregarArea(a: AreaCarregada): void {
     this.iluminacao.registrarLuzes(a.luzes);
+    void this.coletaveis.aoCarregar(a);
     for (const [i, s] of (a.def.saidas ?? []).entries()) {
       this.interacao.adicionar({
         id: `${a.def.id}:saida${i}`, x: s.x, y: s.y, rotulo: s.rotulo, raio: 1.5, prioridade: 1,
@@ -184,6 +246,9 @@ export class Jogo {
     this.areaAtual = null;
     this.atualizarAreaAtual();
     this.camera.seguir(ent.x, ent.y, this.jogador.personagem.lado, 0, true);
+    const apos = this.aposTransicao;
+    this.aposTransicao = null;
+    apos?.();
     await this.aoTransicao?.(false);
     this.jogador.travar(false);
     this.emTransicao = false;
@@ -201,5 +266,6 @@ export class Jogo {
     };
     vc.tecla = (codigo: string, pressionada: boolean) => this.entrada.simular(codigo, pressionada);
     vc.teleportar = (x: number, y = 0) => this.teleportar(x, y);
+    vc.epi = () => ({ filtro: this.epi.filtro, roupa: this.epi.roupa, saude: this.epi.saude, ativo: this.epi.ativo, tempestade: this.epi.tempestade, morto: this.epi.morto });
   }
 }

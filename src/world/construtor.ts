@@ -30,7 +30,7 @@ function materialBloqueio(cena: Scene, nome: string): StandardMaterial {
 }
 
 /** Módulos de kit já carregados: nome do módulo -> malha-fonte (oculta) para instanciar. */
-async function fontesDoKit(carregador: Carregador, kit: string): Promise<Map<string, Mesh[]>> {
+export async function fontesDoKit(carregador: Carregador, kit: string): Promise<Map<string, Mesh[]>> {
   const c: AssetContainer = await carregador.carregar(`kits/${kit}.glb`);
   const mapa = (c as unknown as { _fontes?: Map<string, Mesh[]> })._fontes;
   if (mapa) return mapa;

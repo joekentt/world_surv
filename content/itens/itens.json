@@ -1,0 +1,11 @@
+{
+  "sucata": { "nome": "Sucata", "plural": "Sucata", "descricao": "Metal retorcido da superfície. O mercado compra por peso." },
+  "componente": { "nome": "Componente", "plural": "Componentes", "descricao": "Placas e chips do mundo antigo. Valem mais que o metal." },
+  "vidro": { "nome": "Vidro", "plural": "Vidros", "descricao": "Garrafas e cacos inteiros. A Capela paga bem por vidro colorido." },
+  "amostra_terra": { "nome": "Amostra de terra do Marco", "plural": "Amostras de terra", "descricao": "Terra do Marco num frasco lacrado. A Vigília quer provar que o solo está curando." },
+  "peca_ventilador": { "nome": "Peça de ventilador", "plural": "Peças de ventilador", "descricao": "Rotor do ventilador das Galerias. Nita está esperando." },
+  "filtro_reposicao": { "nome": "Filtro de reposição", "plural": "Filtros de reposição", "descricao": "Cartucho para uma subida. Sem ele, a eclusa não abre." },
+  "mascara_darci": { "nome": "Máscara de Darci", "plural": "Máscaras de Darci", "descricao": "Rachada na viseira. Ainda tem o nome dele riscado por dentro." },
+  "gravador_darci": { "nome": "Gravador de Darci", "plural": "Gravadores", "descricao": "Um gravador de bolso. A luz vermelha ainda acende." },
+  "foto_ceu": { "nome": "Foto do céu", "plural": "Fotos do céu", "descricao": "Um céu azul desbotado, de antes da Queima." }
+}

@@ -14,6 +14,7 @@ export class Hud {
   private nomeArea: HTMLElement;
   private cortina: HTMLElement;
   private mensagem: HTMLElement;
+  private morte: HTMLElement;
   private tempoNome = 0;
   private tempoMsg = 0;
 
@@ -23,6 +24,16 @@ export class Hud {
     this.nomeArea = el("div", "nome-area", this.raiz);
     this.mensagem = el("div", "mensagem", this.raiz);
     this.cortina = el("div", "cortina", this.raiz);
+    this.morte = el("div", "tela-morte", this.raiz);
+  }
+
+  telaMorte(titulo: string | null, texto: string | null): void {
+    if (!titulo) {
+      this.morte.classList.remove("visivel");
+      return;
+    }
+    this.morte.innerHTML = `<h2>${titulo}</h2><p>${texto ?? ""}</p>`;
+    this.morte.classList.add("visivel");
   }
 
   el<K extends keyof HTMLElementTagNameMap>(tag: K, cls: string, pai: HTMLElement = this.raiz): HTMLElementTagNameMap[K] {

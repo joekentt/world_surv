@@ -85,3 +85,26 @@ Percurso Galerias → Praça → Capela → escotilha → Duto Norte (túnel e c
 - O kit é instanciado (`createInstance`) a partir de malhas-fonte em que a conversão de eixos do glTF foi assada nos vértices; assim o layout usa diretamente x lateral, y para cima e z profundidade.
 - Capela, Praça e Galerias são áreas separadas (cada uma com seu kit e layout), mas contíguas: o jogador anda entre elas sem tela de carga, e a mais distante é descarregada.
 - A iluminação ainda é de bloqueio; a direção de arte final é da fase 6.
+
+## Fase 3: EPI e superfície
+
+### Feito
+
+- `src/epi/epi.ts`: filtro (segundos de ar) e integridade da roupa. Na superfície, o filtro drena 1 s/s e a roupa perde integridade com a poeira; quedas fortes rasgam a roupa. Com qualquer um zerado, a saúde cai 9 por segundo; saúde zerada é a morte. Alertas sonoros de filtro baixo cada vez mais frequentes, respiração do filtro que acelera, mochila pesada (acima de 75%) deixa o subidor mais lento.
+- Tempestade de poeira: sirene, aviso de 9 s, 26 s de tempestade com dreno ×2,6 no filtro e ×3,5 na roupa, poeira fechando a visão (névoa e cor), vento empurrando o jogador e tremor de câmera. Intervalo sorteado entre 70 e 120 s, nunca antes de 40 s na superfície.
+- `src/epi/subida.ts`: a eclusa da Boca do Poço consome um filtro de reposição, instala filtro novo e repara a roupa; sem filtro, não abre. Na volta, descontaminação com chuveiro. Ao morrer: animação, tela "Você viu o céu.", o jogador acorda na Praça e perde o que coletou na subida.
+- `src/world/coletaveis.ts`: sucata, componentes e vidro com peso; na superfície os recursos voltam a cada subida, fora dela somem para sempre. Limite de 20 kg na mochila.
+- `src/ui/medidores.ts`: contador circular de ar com número grande, barra da roupa, saúde que só aparece quando há dano, vinheta vermelha, ícone de tempestade, mochila (kg) e cotas.
+- `tools/audio/gerar_sons.py`: 27 sons gerados por síntese (sirene, passos em concreto, areia e metal, vento, tempestade, goteira, ventiladores, zumbido de fluorescente, multidão, sermão, respiração do filtro, eclusa, chuveiro, rádio e outros), tocados pelo AudioEngineV2 do Babylon com volume por distância.
+- Estado central serializável (`src/core/estado.ts`), base do save da fase 5.
+
+### Teste (`tests/fase3.spec.ts`)
+
+Subida pela eclusa, dreno de filtro e roupa, coleta, mochila cheia, aviso e tempestade (dreno medido: 2,63 s de filtro por segundo), filtro zerado até a morte, perda dos itens e despertar na vila, nova subida, volta com descontaminação e eclusa travada sem filtro. Passou.
+
+### Decisões
+
+- Cada subida consome um filtro de reposição (comprado com cotas); isso amarra a economia ao ciclo central.
+- Itens de missão (máscara, gravador, amostra) não se perdem na morte, para não travar o roteiro.
+- Vozes ficam pendentes: a seção 2 pede conferir se o plano da ElevenLabs permite uso comercial antes de gerar.
+- "Tensa e compreensível sem tutorial" depende de teste com pessoas; o HUD foi desenhado para isso (número de segundos, cores, pulsação, sirene), e as falas de Ondina na eclusa (fase 5) explicam o EPI dentro da história.

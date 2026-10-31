@@ -21,3 +21,40 @@ kbd { display: inline-block; min-width: 1.5em; padding: 1px 6px; border: 1px sol
 .mensagem.visivel { opacity: 1; }
 .cortina { position: absolute; inset: 0; background: #000; opacity: 0; transition-property: opacity; }
 .cortina.ativa { opacity: 1; }
+.medidores { position: absolute; top: 18px; left: 18px; display: flex; gap: 12px; align-items: center; padding: 10px 14px 10px 10px;
+  background: var(--painel); border-radius: 10px; opacity: 0; transition: opacity 0.4s; }
+.medidores.visivel { opacity: 1; }
+.medidores .filtro { position: relative; width: 76px; height: 76px; }
+.medidores svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.medidores circle { fill: none; stroke-width: 7; }
+.medidores circle.fundo { stroke: rgba(255,255,255,0.12); }
+.medidores circle.arco { stroke: #7fd0c7; stroke-linecap: round; transition: stroke 0.3s; }
+.medidores .num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding-top: 10px;
+  font: 700 22px/1 monospace; color: #f2ead8; }
+.medidores .icone-mascara { position: absolute; top: 13px; left: 0; right: 0; text-align: center; font-size: 15px; color: #cfc2a6; }
+.medidores[data-filtro="baixo"] circle.arco { stroke: #e3a33b; }
+.medidores[data-filtro="critico"] circle.arco, .medidores[data-filtro="zerado"] circle.arco { stroke: #e0452e; }
+.medidores[data-filtro="critico"] .filtro, .medidores[data-filtro="zerado"] .filtro { animation: pulsar 0.6s infinite alternate; }
+.medidores .barras { display: flex; flex-direction: column; gap: 8px; min-width: 170px; }
+.medidores .linha { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #d8ccb2; }
+.medidores .linha.oculta { visibility: hidden; }
+.medidores .rot { width: 46px; }
+.medidores .barra { flex: 1; height: 10px; background: rgba(255,255,255,0.12); border-radius: 5px; overflow: hidden; }
+.medidores .barra i { display: block; height: 100%; background: #d9b25a; transition: width 0.2s; }
+.medidores .saude .barra i { background: #c9534a; }
+.medidores[data-roupa="critico"] .roupa .barra i, .medidores[data-roupa="zerado"] .roupa .barra i { background: #e0452e; animation: pulsar 0.6s infinite alternate; }
+@keyframes pulsar { from { opacity: 1; } to { opacity: 0.45; } }
+.mochila-cotas { position: absolute; top: 18px; right: 18px; display: flex; gap: 14px; padding: 7px 12px; background: var(--painel);
+  border-radius: 8px; font-size: 15px; }
+.mochila-cotas .cheia { color: #e3a33b; }
+.vinheta-dano { position: absolute; inset: 0; opacity: 0; background: radial-gradient(ellipse at center, transparent 45%, rgba(160, 20, 10, 0.75) 100%); }
+.alerta-tempestade { position: absolute; top: 110px; left: 30px; font-size: 40px; color: #e3a33b; opacity: 0; text-shadow: 0 0 12px #000; }
+.alerta-tempestade.visivel { opacity: 1; animation: pulsar 0.5s infinite alternate; }
+.tela-morte { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 1s; z-index: 5; text-align: center; padding: 0 15vw; }
+.tela-morte.visivel { opacity: 1; }
+.tela-morte h2 { font-size: 40px; color: #e9d2a0; letter-spacing: 0.06em; margin: 0 0 12px; }
+.tela-morte p { font-size: 18px; color: #c8bba0; }
+.vinheta-dano { z-index: 2; }
+.cortina { z-index: 4; }
+.tela-morte { z-index: 6; }
