@@ -1,4 +1,5 @@
 import type { Entrada } from "../core/entrada";
+import { textos } from "./textos";
 
 /** Caixa de diálogo com texto digitado e opções navegáveis por teclado, gamepad ou mouse. */
 export class DialogoUI {
@@ -16,7 +17,7 @@ export class DialogoUI {
   constructor(raiz: HTMLElement, private entrada: Entrada, private clique: () => void) {
     this.caixa = document.createElement("div");
     this.caixa.className = "dialogo interativo";
-    this.caixa.innerHTML = `<div class="nome"></div><div class="texto"></div><ol class="opcoes"></ol><div class="dica">▶</div>`;
+    this.caixa.innerHTML = `<div class="nome"></div><div class="texto"></div><ol class="opcoes"></ol><div class="dica">▶ <small>${textos("dicaAvancar")}</small></div>`;
     raiz.appendChild(this.caixa);
     this.nome = this.caixa.querySelector(".nome")!;
     this.texto = this.caixa.querySelector(".texto")!;
