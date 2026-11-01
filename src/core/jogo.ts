@@ -145,6 +145,7 @@ export class Jogo {
     this.iluminacao = new Iluminacao(cena, this.luzAmbiente, this.sol, this.motor.qualidade);
     this.aoTransicao = (sim) => this.hud.escurecer(sim);
     this.pos = new PosProcessamento(cena, this.camera.camera, this.motor.qualidade);
+    if (new URLSearchParams(location.search).get("qualidade") === "baixa") this.modoEconomico(false);
     this.particulas = new Particulas(cena, this.motor.qualidade);
     const audioPronto = this.audio.iniciar();
     this.biblioteca = await BibliotecaAnimacoes.carregar(this.carregador);
@@ -206,7 +207,32 @@ export class Jogo {
     this.sistemas.push(s);
   }
 
+  economico = false;
+  private amostraFps: number[] = [];
+
+  /** Desliga os efeitos caros e renderiza em resolução menor (máquinas fracas ou sem aceleração). */
+  modoEconomico(avisar = true): void {
+    if (this.economico) return;
+    this.economico = true;
+    this.pos.desligar();
+    this.motor.engine.setHardwareScalingLevel(1.5);
+    if (avisar) this.hud.mensagemCurta(textos("modoEconomico"), 6);
+    window.__vc.economico = true;
+  }
+
+  /** Nos primeiros segundos de jogo, liga o modo econômico se a média de fps ficar abaixo de 20. */
+  private vigiarDesempenho(): void {
+    if (this.economico || this.amostraFps.length > 200) return;
+    if (new URLSearchParams(location.search).get("qualidade") === "alta") return;
+    this.amostraFps.push(this.motor.engine.getFps());
+    if (this.amostraFps.length === 200) {
+      const media = this.amostraFps.slice(60).reduce((a, b) => a + b, 0) / 140;
+      if (media < 20) this.modoEconomico();
+    }
+  }
+
   private quadro(): void {
+    this.vigiarDesempenho();
     // Passo máximo de 1/20 s: com fps muito baixo o jogo fica mais lento, mas a física continua estável.
     const dt = Math.min(this.motor.engine.getDeltaTime() / 1000, 0.05);
     this.entrada.atualizar();

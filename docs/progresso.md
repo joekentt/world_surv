@@ -211,3 +211,9 @@ Contra o build de produção (`vite preview`): título, novo jogo, introdução 
 - **Firefox:** só o Chromium está instalado aqui. Os testes rodaram em Chromium (WebGPU e WebGL2).
 - **60 fps em notebook:** sem GPU, os fps medidos (0,5 a 3) refletem renderização por software. A medição real precisa ser feita na máquina-alvo.
 - **"Divertido", "tenso" e "compreensível sem tutorial":** exigem teste com pessoas.
+
+## Correções depois do primeiro teste na máquina do usuário (Firefox, Windows)
+
+- **Tela preta depois de "Novo jogo":** a caixa de diálogo da introdução ficava atrás da cortina preta da transição (z-index menor), e o jogo esperava o avanço de um texto invisível. Os testes automáticos avançavam o texto por código e não pegaram o erro. Corrigido no CSS; a caixa mostra "Espaço, E ou clique para continuar". Novo teste `tests/interface.spec.ts` confere, por coordenada de tela, que a caixa fica por cima e avança com o teclado real.
+- **Toques de tecla perdidos com fps baixo:** a entrada só lia teclas seguradas no instante do quadro; a 4 fps, um toque curto sumia entre dois quadros. Agora todo toque desde o último quadro conta.
+- **Modo econômico:** se a média de fps ficar abaixo de 20 nos primeiros segundos, o jogo desliga pós-processamento, SSAO e brilho e renderiza com escala 1,5. Forçar pela URL: `?qualidade=baixa` (ou `?qualidade=alta` para nunca ativar).

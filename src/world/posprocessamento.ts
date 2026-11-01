@@ -60,11 +60,23 @@ export class PosProcessamento {
     }
   }
 
+  ativo = true;
+
+  /** Modo econômico: remove pós-processamento, SSAO e brilho. */
+  desligar(): void {
+    if (!this.ativo) return;
+    this.ativo = false;
+    this.ssao?.dispose();
+    this.pipeline.dispose();
+    this.brilho.dispose();
+  }
+
   definir(estetica: string): void {
     this.alvo = GRADES[estetica] ?? GRADES.praca;
   }
 
   atualizar(dt: number, poeira: number): void {
+    if (!this.ativo) return;
     const k = Math.min(1, dt * 1.5);
     const a = this.atual, b = this.alvo;
     const mix = (x: number, y: number) => x + (y - x) * k;

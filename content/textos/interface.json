@@ -37,5 +37,7 @@
   "armario": "Armário de EPI. Filtros de reposição na mochila: {n}. Seu filtro dura {s} s.",
   "amostraSemMissao": "A terra aqui é mais escura que no resto da superfície.",
   "achadoSemMissao": "Areia revirada na base da Antena. Não há mais nada aqui.",
-  "chuveiros": "Chuveiros de descontaminação. Ligam sozinhos na volta da superfície."
+  "chuveiros": "Chuveiros de descontaminação. Ligam sozinhos na volta da superfície.",
+  "modoEconomico": "Desempenho baixo: modo econômico ativado (sem pós-processamento, resolução menor).",
+  "dicaAvancar": "Espaço, E ou clique para continuar"
 }
