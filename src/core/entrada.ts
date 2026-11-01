@@ -20,6 +20,8 @@ const BOTOES: Record<number, Acao[]> = {
 /** Entrada unificada de teclado e gamepad, lida uma vez por quadro. */
 export class Entrada {
   private teclas = new Set<string>();
+  /** Teclas apertadas desde o último quadro: um toque curto conta mesmo se for solto antes do quadro. */
+  private tocadas = new Set<string>();
   private atual = new Set<Acao>();
   private anterior = new Set<Acao>();
   /** Eixo horizontal analógico (-1 a 1). */
@@ -32,6 +34,7 @@ export class Entrada {
     alvo.addEventListener("keydown", (e) => {
       if (TECLAS[e.code]) e.preventDefault();
       this.teclas.add(e.code);
+      if (!e.repeat) this.tocadas.add(e.code);
       this.usandoGamepad = false;
     });
     alvo.addEventListener("keyup", (e) => this.teclas.delete(e.code));
@@ -43,6 +46,8 @@ export class Entrada {
     this.anterior = this.atual;
     this.atual = new Set();
     for (const t of this.teclas) for (const a of TECLAS[t] ?? []) this.atual.add(a);
+    for (const t of this.tocadas) for (const a of TECLAS[t] ?? []) this.atual.add(a);
+    this.tocadas.clear();
     let ex = (this.atual.has("direita") ? 1 : 0) - (this.atual.has("esquerda") ? 1 : 0);
     let ey = (this.atual.has("cima") ? 1 : 0) - (this.atual.has("baixo") ? 1 : 0);
     const pads = typeof navigator.getGamepads === "function" ? navigator.getGamepads() : [];
@@ -87,7 +92,10 @@ export class Entrada {
 
   /** Simulação de teclas para testes automatizados. */
   simular(codigo: string, pressionada: boolean): void {
-    if (pressionada) this.teclas.add(codigo);
+    if (pressionada) {
+      this.teclas.add(codigo);
+      this.tocadas.add(codigo);
+    }
     else this.teclas.delete(codigo);
   }
 }
