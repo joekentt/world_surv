@@ -1,89 +1,255 @@
 import { expect, test, type Page } from "@playwright/test";
 import { abrir, registrar } from "./util";
 
-type Estado = { x: number; y: number; estado: string; agachado: boolean; vx: number };
-const estado = (p: Page) => p.evaluate(() => (window.__vc.estado as () => Estado)());
-const tecla = (p: Page, c: string, v: boolean) => p.evaluate(([c, v]) => (window.__vc.tecla as (c: string, v: boolean) => void)(c as string, v as boolean), [c, v] as const);
+/**
+ * Fase 1 (revisão 2): câmera e movimento em terceira pessoa.
+ * Os seis critérios da seção 3.4 e os parâmetros de movimento da seção 3.3.
+ * Tempos são medidos no relógio do jogo (o SwiftShader roda a poucos fps).
+ */
 
-/** Segura uma tecla por ms de tempo de jogo (o jogo roda devagar no SwiftShader, então usamos o relógio do jogo). */
-async function segurar(p: Page, teclas: string[], segundosJogo: number) {
-  const t0 = await p.evaluate(() => (window.__vc.jogo as { tempo: number }).tempo);
-  for (const t of teclas) await tecla(p, t, true);
-  await p.waitForFunction((alvo) => (window.__vc.jogo as { tempo: number }).tempo >= alvo, t0 + segundosJogo, { timeout: 120_000 });
-  const durante = await estado(p);
-  for (const t of teclas) await tecla(p, t, false);
-  return durante;
+type Reg = { quadro: number; t: number; yawCamera: number; yaw: number; vel: number; x: number; z: number; recentralizando: boolean };
+type Estado = { x: number; y: number; z: number; estado: string; vx: number; vz: number; yaw: number; yawCamera: number; pitch: number };
+const GRAU = Math.PI / 180;
+
+const js = <T = unknown>(p: Page, f: string) => p.evaluate(f) as Promise<T>;
+const estado = (p: Page) => js<Estado>(p, "window.__vc.estado()");
+const tempo = (p: Page) => js<number>(p, "window.__vc.jogo.tempo");
+const tecla = (p: Page, c: string, v: boolean) => p.evaluate(([c, v]) => (window.__vc.tecla as (c: string, v: boolean) => void)(c as string, v as boolean), [c, v] as const);
+const dif = (a: number, b: number) => { let d = a - b; while (d > Math.PI) d -= 2 * Math.PI; while (d <= -Math.PI) d += 2 * Math.PI; return d; };
+
+async function esperarJogo(p: Page, s: number) {
+  const t0 = await tempo(p);
+  await p.waitForFunction((alvo) => (window.__vc.jogo as { tempo: number }).tempo >= alvo, t0 + s, { timeout: 240_000 });
+}
+async function registro(p: Page, desde: number): Promise<Reg[]> {
+  return p.evaluate((t) => (window.__vc.registro as Reg[]).filter((r) => r.t >= t), desde);
+}
+async function preparar(p: Page) {
+  await p.setViewportSize({ width: 640, height: 360 });
+  await abrir(p, "area=sala_teste&render=webgl2&qualidade=alta");
+  await js(p, "window.__vc.gravar = true");
+  await esperarJogo(p, 0.5);
+}
+async function posicionar(p: Page, x: number, y: number, z: number, yawPersonagem: number, yawCamera: number, pitch?: number) {
+  await p.evaluate(([x, y, z, yp, yc, pt]) => {
+    (window.__vc.teleportar as (x: number, y: number, z: number, yaw: number) => void)(x, y, z, yp);
+    (window.__vc.definirCamera as (y: number, p?: number) => void)(yc, pt ?? undefined);
+  }, [x, y, z, yawPersonagem, yawCamera, pitch ?? null] as const);
+  await esperarJogo(p, 0.3);
 }
 
-test("fase 1: andar, correr, pular, agachar, escada e corda no teclado", async ({ page }) => {
-  test.setTimeout(600_000);
-  await abrir(page, "area=sala_teste&render=webgl2");
-  const e0 = await estado(page);
-  expect(e0.estado).toBe("chao");
-  await page.screenshot({ path: "tests/screenshots/fase-1/01_inicio.png" });
+test.describe("fase 1: critérios da seção 3.4", () => {
+  test.setTimeout(900_000);
 
-  const e1 = await segurar(page, ["KeyD"], 1.0);
-  expect(e1.x - e0.x).toBeGreaterThan(2.0); // ~3,2 m/s
+  test("1. personagem a 90° da câmera andando: a câmera vai para as costas", async ({ page }) => {
+    await preparar(page);
+    const resultados: Record<string, number> = {};
+    // 1a: literal (W relativo à câmera)
+    await posicionar(page, 0, 0, -20, 90 * GRAU, 0);
+    let t0 = await tempo(page);
+    await tecla(page, "KeyW", true);
+    await esperarJogo(page, 3);
+    await tecla(page, "KeyW", false);
+    let regs = await registro(page, t0);
+    let ok = regs.find((r) => r.t - t0 <= 2.8 && Math.abs(dif(r.yawCamera, r.yaw)) < 10 * GRAU);
+    resultados.literal_s = ok ? Number((ok.t - t0).toFixed(2)) : -1;
+    expect(ok, "diferença câmera/costas abaixo de 10° em até 2,8 s").toBeTruthy();
+    // 1b: direção fixa no mundo a 90° da câmera, para exercitar a recentralização
+    await posicionar(page, 0, 0, -20, 90 * GRAU, 0);
+    t0 = await tempo(page);
+    await js(page, "window.__vc.direcaoForcada(1, 0)");
+    await esperarJogo(page, 3);
+    await js(page, "window.__vc.direcaoForcada(null)");
+    regs = await registro(page, t0);
+    const antesDoAtraso = regs.filter((r) => r.t - t0 < 0.75);
+    expect(antesDoAtraso.every((r) => Math.abs(r.yawCamera) < 1 * GRAU), "câmera parada antes de 0,8 s").toBeTruthy();
+    ok = regs.find((r) => r.t - t0 <= 2.8 && Math.abs(dif(r.yawCamera, r.yaw)) < 10 * GRAU);
+    resultados.direcaoFixa_s = ok ? Number((ok.t - t0).toFixed(2)) : -1;
+    registrar("fase-1", { criterio1_segundosAte10graus: resultados });
+    expect(ok, "recentralização abaixo de 10° em até 0,8 + 2 s").toBeTruthy();
+  });
 
-  const correndo = await segurar(page, ["KeyD", "ShiftLeft"], 0.6);
-  registrar("fase-1", { velocidadeAndando: Number(e1.vx.toFixed(2)), velocidadeCorrendo: Number(correndo.vx.toFixed(2)) });
-  expect(correndo.vx).toBeGreaterThan(5.5); // corrida mais rápida que a caminhada
+  test("2. mouse girando enquanto anda: sem recentralizar durante o giro e nos 0,8 s seguintes", async ({ page }) => {
+    await preparar(page);
+    await posicionar(page, 0, 0, -20, 90 * GRAU, 90 * GRAU);
+    await js(page, "window.__vc.direcaoForcada(0, 1)");
+    await esperarJogo(page, 1.2);
+    const t0 = await tempo(page);
+    const yaw0 = (await estado(page)).yawCamera;
+    // gira o mouse por 2 s de jogo, guardando o horário de jogo de cada movimento
+    const tempos: number[] = [];
+    while ((await tempo(page)) < t0 + 2) {
+      tempos.push(await js<number>(page, "(window.__vc.mouse(6, 0), window.__vc.jogo.tempo)"));
+      await page.waitForTimeout(25);
+    }
+    await esperarJogo(page, 0.9);
+    const regs = await registro(page, t0);
+    await js(page, "window.__vc.direcaoForcada(null)");
+    // quadros processados depois do primeiro movimento e até 0,8 s depois do último
+    const durante = regs.filter((r) => r.t > tempos[0] && r.t < tempos[tempos.length - 1] + 0.8);
+    const yaw1 = (await estado(page)).yawCamera;
+    registrar("fase-1", { criterio2_giroDoMouseGraus: Number(((yaw1 - yaw0) / GRAU).toFixed(1)) });
+    expect(Math.abs(yaw1 - yaw0)).toBeGreaterThan(20 * GRAU);
+    expect(durante.some((r) => r.recentralizando), "recentralizou durante ou logo após o giro").toBeFalsy();
+  });
 
-  // pulo: mede altura máxima
-  const yChao = (await estado(page)).y;
-  await tecla(page, "Space", true);
-  await page.waitForFunction(() => (window.__vc.estado as () => { estado: string })().estado === "ar", null, { timeout: 30_000 });
-  let ymax = yChao;
-  for (let i = 0; i < 400; i++) {
-    const s = await estado(page);
-    ymax = Math.max(ymax, s.y);
-    if (s.estado === "chao") break;
-    await page.waitForTimeout(20);
-  }
-  await tecla(page, "Space", false);
-  registrar("fase-1", { alturaPulo: Number((ymax - yChao).toFixed(2)) });
-  expect(ymax - yChao).toBeGreaterThan(1.0);
-  await page.screenshot({ path: "tests/screenshots/fase-1/02_pulo.png" });
+  test("3. parado e sem mouse por 5 s: o ângulo da câmera não muda", async ({ page }) => {
+    await preparar(page);
+    await posicionar(page, 0, 0, -20, 40 * GRAU, 10 * GRAU);
+    const t0 = await tempo(page);
+    await esperarJogo(page, 5);
+    const regs = await registro(page, t0);
+    const variacao = Math.max(...regs.map((r) => Math.abs(dif(r.yawCamera, regs[0].yawCamera))));
+    registrar("fase-1", { criterio3_variacaoGraus: Number((variacao / GRAU).toFixed(4)) });
+    expect(variacao).toBeLessThan(0.01 * GRAU);
+  });
 
-  // escada em x = 10
-  await page.evaluate(() => (window.__vc.jogo as { jogador: { teleportar(x: number, y: number): void } }).jogador.teleportar(10, 0));
-  await segurar(page, ["KeyW"], 2.4);
-  const e3 = await estado(page);
-  await page.screenshot({ path: "tests/screenshots/fase-1/03_escada.png" });
-  expect(e3.y).toBeGreaterThan(3.9);
+  test("4. andando em direção à câmera por 1 s: a câmera gira no máximo 15°", async ({ page }) => {
+    await preparar(page);
+    await posicionar(page, 0, 0, 0, 0, 0);
+    const t0 = await tempo(page);
+    await js(page, "window.__vc.direcaoForcada(0, -1)");
+    await esperarJogo(page, 1.0);
+    await js(page, "window.__vc.direcaoForcada(null)");
+    const regs = await registro(page, t0);
+    const giro = Math.max(...regs.filter((r) => r.t <= t0 + 1.0).map((r) => Math.abs(dif(r.yawCamera, 0))));
+    registrar("fase-1", { criterio4_giroGraus: Number((giro / GRAU).toFixed(2)) });
+    expect(giro).toBeLessThan(15 * GRAU);
+  });
 
-  // túnel baixo: em pé não passa, agachado passa
-  await page.evaluate(() => (window.__vc.jogo as { jogador: { teleportar(x: number, y: number): void } }).jogador.teleportar(17, 0));
-  await segurar(page, ["KeyD"], 1.5);
-  const bloqueado = await estado(page);
-  expect(bloqueado.x).toBeLessThan(19.6);
-  await segurar(page, ["KeyD", "KeyC"], 4.0);
-  const passou = await estado(page);
-  await page.screenshot({ path: "tests/screenshots/fase-1/04_agachado.png" });
-  expect(passou.x).toBeGreaterThan(24.5);
+  test("5. túnel de 2,5 m: câmera girada 360° em várias alturas nunca entra na geometria", async ({ page }) => {
+    await preparar(page);
+    await posicionar(page, -15, 0, 10, 0, 0);
+    await esperarJogo(page, 1.0);
+    const falhas: string[] = [];
+    let amostras = 0;
+    for (const pitch of [-25, 0, 25, 55]) {
+      for (let yaw = 0; yaw < 360; yaw += 30) {
+        await js(page, `window.__vc.definirCamera(${yaw * GRAU}, ${pitch * GRAU})`);
+        await esperarJogo(page, 0.12);
+        const r = await js<{ acertou: boolean; camera: number[] }>(page, "window.__vc.raycastCamera()");
+        const [cx, cy] = r.camera;
+        const dentroDoCorredor = Math.abs(cx - -15) < 1.25 + 1e-3 && cy > 0 && cy < 3;
+        amostras++;
+        if (r.acertou || !dentroDoCorredor) falhas.push(`yaw ${yaw} pitch ${pitch}: ${r.acertou ? "atrás de parede" : "fora do corredor"} ${r.camera.map((v) => v.toFixed(2))}`);
+      }
+    }
+    await page.screenshot({ path: "tests/screenshots/fase-1/05_corredor.png" });
+    registrar("fase-1", { criterio5_amostras: amostras, criterio5_falhas: falhas.length });
+    expect(falhas, falhas.join("\n")).toEqual([]);
+  });
 
-  // corda em x = 40
-  await page.evaluate(() => (window.__vc.jogo as { jogador: { teleportar(x: number, y: number): void } }).jogador.teleportar(40, 0));
-  await segurar(page, ["KeyW"], 3.0);
-  expect((await estado(page)).y).toBeGreaterThan(5.4);
-  await page.screenshot({ path: "tests/screenshots/fase-1/05_corda.png" });
+  test("6. o movimento começa no quadro seguinte ao da tecla", async ({ page }) => {
+    await preparar(page);
+    await posicionar(page, 0, 0, -20, 0, 0);
+    await esperarJogo(page, 0.5);
+    const quadro = await js<number>(page, "window.__vc.quadroAtual()");
+    await tecla(page, "KeyW", true);
+    await page.waitForFunction((q) => (window.__vc.quadroAtual as () => number)() >= q + 2, quadro, { timeout: 60_000 });
+    await tecla(page, "KeyW", false);
+    const regs = await page.evaluate((q) => (window.__vc.registro as Reg[]).filter((r) => r.quadro > q).slice(0, 2), quadro);
+    registrar("fase-1", { criterio6_velocidadeNoQuadroSeguinte: Number(regs[0].vel.toFixed(3)) });
+    expect(regs[0].vel).toBeGreaterThan(0);
+  });
 });
 
-test("fase 1: gamepad (mapeamento standard simulado)", async ({ page }) => {
-  await page.addInitScript(() => {
-    const botoes = Array.from({ length: 17 }, () => ({ pressed: false, touched: false, value: 0 }));
-    const pad = { id: "simulado", index: 0, connected: true, mapping: "standard", axes: [0, 0, 0, 0], buttons: botoes, timestamp: 0 };
-    (window as unknown as { __pad: typeof pad }).__pad = pad;
-    navigator.getGamepads = () => [pad as unknown as Gamepad];
+test.describe("fase 1: movimento (seção 3.3)", () => {
+  test.setTimeout(900_000);
+
+  test("velocidades, pulo, degraus, rampas, escada de mão, corda e túnel baixo", async ({ page }) => {
+    await preparar(page);
+    const m: Record<string, unknown> = {};
+    // andar e correr
+    await posicionar(page, 0, 0, -30, 0, 0);
+    await tecla(page, "KeyW", true);
+    await esperarJogo(page, 1.0);
+    m.andar = Number(Math.hypot((await estado(page)).vx, (await estado(page)).vz).toFixed(2));
+    await tecla(page, "ShiftLeft", true);
+    await esperarJogo(page, 0.6);
+    const e = await estado(page);
+    m.correr = Number(Math.hypot(e.vx, e.vz).toFixed(2));
+    await tecla(page, "ShiftLeft", false);
+    await tecla(page, "KeyW", false);
+    // tempo até parar
+    const t0 = await tempo(page);
+    await esperarJogo(page, 0.4);
+    const regs = await registro(page, t0);
+    const parou = regs.find((r) => r.vel < 0.05);
+    m.tempoAteParar = parou ? Number((parou.t - t0).toFixed(3)) : -1;
+    expect(m.andar).toBeGreaterThan(2.0);
+    expect(m.correr).toBeGreaterThan(5.2);
+    expect(Number(m.tempoAteParar)).toBeLessThan(0.25);
+    await page.screenshot({ path: "tests/screenshots/fase-1/01_area_aberta.png" });
+
+    // pulo: altura máxima
+    await posicionar(page, 0, 0, -25, 0, 0);
+    const y0 = (await estado(page)).y;
+    await tecla(page, "Space", true);
+    let ymax = y0;
+    const tp = await tempo(page);
+    while ((await tempo(page)) < tp + 1.2) { ymax = Math.max(ymax, (await estado(page)).y); await page.waitForTimeout(10); }
+    await tecla(page, "Space", false);
+    m.alturaPulo = Number((ymax - y0).toFixed(2));
+    expect(ymax - y0).toBeGreaterThan(0.95);
+    expect(ymax - y0).toBeLessThan(1.3);
+
+    // degraus: 0,30 m passa, 0,40 m não (andando para +Z a partir de z = 2)
+    async function andarAte(x: number, z0: number, segundos: number) {
+      await posicionar(page, x, 0, z0, 0, 0);
+      await tecla(page, "KeyW", true);
+      await esperarJogo(page, segundos);
+      await tecla(page, "KeyW", false);
+      return estado(page);
+    }
+    m.degrau030 = Number((await andarAte(-5, 2, 1.6)).y.toFixed(2));
+    m.degrau040 = Number((await andarAte(-8, 2, 1.6)).y.toFixed(2));
+    expect(Number(m.degrau030)).toBeGreaterThan(0.25);
+    expect(Number(m.degrau040)).toBeLessThan(0.1);
+
+    // rampas: 30° e 40° sobem até 2 m; 50° não
+    m.rampa30 = Number((await andarAte(20, 0, 3.5)).y.toFixed(2));
+    m.rampa40 = Number((await andarAte(24, 0, 3.5)).y.toFixed(2));
+    m.rampa50 = Number((await andarAte(28, 0, 3.5)).y.toFixed(2));
+    await page.screenshot({ path: "tests/screenshots/fase-1/02_rampas.png" });
+    expect(Number(m.rampa30)).toBeGreaterThan(1.8);
+    expect(Number(m.rampa40)).toBeGreaterThan(1.8);
+    expect(Number(m.rampa50)).toBeLessThan(1.0);
+
+    // escadaria até a plataforma de 2 m
+    m.escadaria = Number((await andarAte(10, 0, 3.0)).y.toFixed(2));
+    expect(Number(m.escadaria)).toBeGreaterThan(1.9);
+
+    // escada de mão: encaixe com E e subida com W
+    await posicionar(page, -5, 0, 15.2, 0, 0);
+    await tecla(page, "KeyE", true); await esperarJogo(page, 0.1); await tecla(page, "KeyE", false);
+    await page.waitForFunction(() => (window.__vc.estado as () => { estado: string })().estado === "escada", null, { timeout: 30_000 });
+    await page.screenshot({ path: "tests/screenshots/fase-1/03_escada_de_mao.png" });
+    await tecla(page, "KeyW", true);
+    await page.waitForFunction(() => { const e = (window.__vc.estado as () => { estado: string; y: number })(); return e.estado === "chao" && e.y > 4.5; }, null, { timeout: 120_000 });
+    await tecla(page, "KeyW", false);
+    m.escadaDeMao = Number((await estado(page)).y.toFixed(2));
+    expect(Number(m.escadaDeMao)).toBeGreaterThan(4.9);
+
+    // corda
+    await posicionar(page, 5, 0, 16.9, 0, 0);
+    await tecla(page, "KeyE", true); await esperarJogo(page, 0.1); await tecla(page, "KeyE", false);
+    await page.waitForFunction(() => (window.__vc.estado as () => { estado: string })().estado === "escada", null, { timeout: 30_000 });
+    await tecla(page, "KeyW", true); await esperarJogo(page, 2.0);
+    await page.screenshot({ path: "tests/screenshots/fase-1/04_corda.png" });
+    await page.waitForFunction(() => { const e = (window.__vc.estado as () => { estado: string; y: number })(); return e.estado === "chao" && e.y > 5.5; }, null, { timeout: 120_000 });
+    await tecla(page, "KeyW", false);
+    m.corda = Number((await estado(page)).y.toFixed(2));
+    expect(Number(m.corda)).toBeGreaterThan(5.9);
+
+    // túnel baixo: em pé barra, agachado passa
+    m.tunelEmPe = Number((await andarAte(-25, -2, 2.0)).z.toFixed(2));
+    await posicionar(page, -25, 0, -2, 0, 0);
+    await tecla(page, "KeyC", true); await tecla(page, "KeyW", true);
+    await esperarJogo(page, 7.0);
+    await tecla(page, "KeyW", false); await tecla(page, "KeyC", false);
+    m.tunelAgachado = Number((await estado(page)).z.toFixed(2));
+    expect(Number(m.tunelEmPe)).toBeLessThan(0.0);
+    expect(Number(m.tunelAgachado)).toBeGreaterThan(6.0);
+    registrar("fase-1", { movimento: m });
   });
-  await abrir(page, "area=sala_teste&render=webgl2");
-  const t0 = await estado(page);
-  await page.evaluate(() => { (window as unknown as { __pad: { axes: number[] } }).__pad.axes[0] = 1; });
-  await page.waitForFunction(() => (window.__vc.estado as () => { vx: number })().vx > 2.5, null, { timeout: 60_000 });
-  await page.evaluate(() => { const p = (window as unknown as { __pad: { buttons: { pressed: boolean; value: number }[] } }).__pad; p.buttons[0].pressed = true; p.buttons[0].value = 1; });
-  await page.waitForFunction(() => (window.__vc.estado as () => { estado: string })().estado === "ar", null, { timeout: 60_000 });
-  await page.evaluate(() => { const p = (window as unknown as { __pad: { axes: number[]; buttons: { pressed: boolean; value: number }[] } }).__pad; p.buttons[0].pressed = false; p.buttons[0].value = 0; p.axes[0] = 0; });
-  const t1 = await estado(page);
-  expect(t1.x).toBeGreaterThan(t0.x);
-  await page.screenshot({ path: "tests/screenshots/fase-1/06_gamepad.png" });
 });

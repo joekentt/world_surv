@@ -86,6 +86,7 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
   for (const [i, s] of def.solidos.entries()) {
     const caixa = MeshBuilder.CreateBox(`${def.id}_solido_${i}`, { width: s.w, height: s.h, depth: s.d ?? 6 }, cena);
     caixa.position.set(s.x, s.y, s.z ?? 0);
+    if (s.rx || s.ry || s.rz) caixa.rotation.set(((s.rx ?? 0) * Math.PI) / 180, ((s.ry ?? 0) * Math.PI) / 180, ((s.rz ?? 0) * Math.PI) / 180);
     caixa.parent = raiz;
     caixa.isPickable = false;
     if (temKit || s.invisivel) caixa.isVisible = false;
@@ -124,25 +125,28 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
 
   for (const [i, esc] of (def.escadas ?? []).entries()) {
     const alt = esc.y1 - esc.y0;
+    const yaw = ((esc.yaw ?? 0) * Math.PI) / 180;
+    const grupo = new TransformNode(`${def.id}_escada_${i}`, cena);
+    grupo.parent = raiz;
+    grupo.position.set(esc.x, esc.y0, esc.z ?? 0);
+    grupo.rotation.y = yaw;
     if (esc.tipo === "corda") {
-      const corda = MeshBuilder.CreateCylinder(`${def.id}_corda_${i}`, { height: alt + 0.6, diameter: 0.06, tessellation: 6 }, cena);
-      corda.position.set(esc.x, esc.y0 + alt / 2 + 0.3, 0.15);
+      const corda = MeshBuilder.CreateCylinder(`${def.id}_corda_${i}`, { height: alt + 1.2, diameter: 0.06, tessellation: 6 }, cena);
+      corda.position.set(0, (alt + 1.2) / 2, 0);
       corda.material = materialBloqueio(cena, "plataforma");
-      corda.parent = raiz;
+      corda.parent = grupo;
       malhas.push(corda);
     } else if (!temKit) {
-      const grupo = new TransformNode(`${def.id}_escada_${i}`, cena);
-      grupo.parent = raiz;
       for (const lado of [-0.28, 0.28]) {
-        const trilho = MeshBuilder.CreateBox("trilho", { width: 0.06, height: alt + 0.8, depth: 0.06 }, cena);
-        trilho.position.set(esc.x + lado, esc.y0 + (alt + 0.8) / 2, 0.35);
+        const trilho = MeshBuilder.CreateBox("trilho", { width: 0.06, height: alt + 0.9, depth: 0.06 }, cena);
+        trilho.position.set(lado, (alt + 0.9) / 2, -0.05);
         trilho.material = materialBloqueio(cena, "caixa");
         trilho.parent = grupo;
         malhas.push(trilho);
       }
-      for (let y = esc.y0 + 0.3; y < esc.y1 + 0.6; y += 0.35) {
+      for (let y = 0.3; y < alt + 0.6; y += 0.35) {
         const degrau = MeshBuilder.CreateBox("degrau", { width: 0.56, height: 0.04, depth: 0.05 }, cena);
-        degrau.position.set(esc.x, y, 0.35);
+        degrau.position.set(0, y, -0.05);
         degrau.material = materialBloqueio(cena, "caixa");
         degrau.parent = grupo;
         malhas.push(degrau);

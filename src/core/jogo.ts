@@ -18,11 +18,16 @@ import { Roteiro } from "../quests/roteiro";
 import { aplicarEfeitos } from "../quests/efeitos";
 import { carregarJogo, salvarJogo } from "../save/save";
 import { textos } from "../ui/textos";
+import { CFG } from "../config";
+
+const CFG_CAMERA = CFG.camera;
+const CFG_MOV = CFG.movimento;
 import { Audio } from "./audio";
 import { Estado } from "./estado";
 import { Iluminacao } from "../world/iluminacao";
 import { SistemaInteracao } from "../world/interacao";
-import { CameraLateral } from "../player/camera";
+import { CameraTerceiraPessoa, type ZonaCamera } from "../camera/cameraTerceiraPessoa";
+import { Jogador as JogadorClasse } from "../player/jogador";
 import { Jogador } from "../player/jogador";
 import { GerenciadorAreas, AREAS } from "../world/areas";
 import type { AreaCarregada } from "../world/construtor";
@@ -42,7 +47,7 @@ export class Jogo {
   carregador!: Carregador;
   biblioteca!: BibliotecaAnimacoes;
   entrada = new Entrada();
-  camera!: CameraLateral;
+  camera!: CameraTerceiraPessoa;
   jogador!: Jogador;
   areas!: GerenciadorAreas;
   sombras!: ShadowGenerator;
@@ -79,7 +84,8 @@ export class Jogo {
     this.entrada.bloqueada = sim;
     this.jogador.travar(sim);
     this.interacao.bloqueado = sim;
-    this.camera.distanciaExtra = sim && this.dialogo?.ativo ? -2.5 : this.roteiro?.emEpilogo ? this.camera.distanciaExtra : 0;
+    this.camera.distanciaExtra = sim && this.dialogo?.ativo ? -1.5 : this.roteiro?.emEpilogo ? this.camera.distanciaExtra : 0;
+    if (sim && document.pointerLockElement) this.liberandoMouse = true, document.exitPointerLock();
   }
 
   async salvar(): Promise<void> {
@@ -119,7 +125,8 @@ export class Jogo {
     cena.ambientColor = new Color3(0.2, 0.2, 0.2);
     await ligarFisica(cena);
     this.carregador = new Carregador(cena);
-    this.camera = new CameraLateral(cena);
+    this.camera = new CameraTerceiraPessoa(cena);
+    this.ligarMouse();
     this.luzAmbiente = new HemisphericLight("ambiente", new Vector3(0.1, 1, -0.4), cena);
     this.luzAmbiente.intensity = 0.35;
     this.luzAmbiente.groundColor = new Color3(0.12, 0.1, 0.08);
@@ -184,12 +191,17 @@ export class Jogo {
     this.lanterna.diffuse = new Color3(1, 0.92, 0.75);
     this.lanterna.intensity = 0;
     this.lanterna.range = 16;
-    this.jogador.tetoAcima = (x, y) => this.areas.solidos().some((s) =>
-      Math.abs(s.x - x) < s.w / 2 + 0.25 && s.y - s.h / 2 < y && s.y + s.h / 2 > y - 0.6 && Math.abs(s.z ?? 0) < 1);
+    this.jogador.tetoAcima = (x, y, z) => this.areas.solidos().some((s) =>
+      Math.abs(s.x - x) < s.w / 2 + 0.25 && Math.abs((s.z ?? 0) - z) < (s.d ?? 6) / 2 + 0.25 && s.y - s.h / 2 < y && s.y + s.h / 2 > y - 0.6);
+    this.jogador.eixos = () => this.camera.eixosNoChao();
+    this.camera.aoTransparenciaPersonagem = (a) => this.jogador.personagem.definirTransparencia(a);
+    this.camera.corpoIgnorado = (this.jogador.controlador as unknown as { _body?: never })._body ?? null;
+    this.camera.obstrutores = () => this.npcs ? this.npcs.npcs.filter((n) => n.personagem?.raiz.isEnabled()).map((n) => ({
+      posicao: () => new Vector3(n.x, 1, n.z), raio: 0.6, definirTransparencia: (a: number) => n.personagem!.definirTransparencia(a),
+    })) : [];
     await this.areas.entrarMundo(def.mundo, ent.x);
-    this.jogador.teleportar(ent.x, ent.y);
+    this.teleportar(ent.x, ent.y, ent.z ?? 0, ent.yaw);
     this.atualizarAreaAtual();
-    this.camera.seguir(ent.x, ent.y, 1, 0, true);
 
     await audioPronto;
     cena.onBeforeRenderObservable.add(() => this.quadro());
@@ -197,10 +209,39 @@ export class Jogo {
     return cena;
   }
 
-  /** Teleporta o jogador e posiciona a câmera sem suavização. */
-  teleportar(x: number, y = 0): void {
-    this.jogador.teleportar(x, y);
-    this.camera.seguir(x, y, this.jogador.personagem.lado, 0, true);
+  /** Teleporta o jogador e posiciona a câmera atrás dele, sem suavização. */
+  teleportar(x: number, y = 0, z = 0, yaw?: number): void {
+    this.jogador.teleportar(x, y, z, yaw);
+    this.camera.posicionar(this.alvoCamera(), this.jogador.yaw);
+  }
+
+  private alvoCamera() {
+    return { posicao: this.jogador.pes, yaw: this.jogador.yaw, velocidade: this.jogador.velocidade, correndo: this.jogador.correndo };
+  }
+
+  private liberandoMouse = false;
+
+  /** Pointer Lock: clicar no jogo captura o mouse; Esc libera e abre o menu (seção 3.2). */
+  private ligarMouse(): void {
+    const canvas = this.motor.engine.getRenderingCanvas()!;
+    canvas.addEventListener("click", () => {
+      if (!this.pausado && !this.dialogo?.ativo && !this.paineis?.aberto && !document.pointerLockElement) {
+        void (canvas.requestPointerLock() as unknown as Promise<void> | undefined)?.catch?.(() => undefined);
+      }
+    });
+    document.addEventListener("mousemove", (e) => {
+      if (document.pointerLockElement === canvas) this.camera.girar(e.movementX, e.movementY);
+    });
+    canvas.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      this.camera.zoom(Math.sign(e.deltaY));
+    }, { passive: false });
+    document.addEventListener("pointerlockchange", () => {
+      const travado = document.pointerLockElement === canvas;
+      this.hud.dicaMouse(!travado && !this.pausado);
+      if (!travado && !this.liberandoMouse && !this.paineis?.aberto && !this.dialogo?.ativo) this.paineis?.abrir("menu");
+      this.liberandoMouse = false;
+    });
   }
 
   registrar(s: { atualizar(dt: number): void }): void {
@@ -231,6 +272,20 @@ export class Jogo {
     }
   }
 
+  /** Registro por quadro para os testes da seção 3.4 (ângulos da câmera e do personagem). */
+  registro: { quadro: number; t: number; yawCamera: number; yaw: number; vel: number; x: number; z: number; recentralizando: boolean }[] = [];
+  private contadorQuadros = 0;
+
+  private registrarQuadro(): void {
+    this.contadorQuadros++;
+    if (!window.__vc?.gravar) return;
+    const v = this.jogador.velocidade;
+    const p = this.jogador.pes;
+    this.registro.push({ quadro: this.contadorQuadros, t: this.tempo, yawCamera: this.camera.yaw, yaw: this.jogador.yaw,
+      vel: Math.hypot(v.x, v.z), x: p.x, z: p.z, recentralizando: this.camera.recentralizando });
+    if (this.registro.length > 20000) this.registro.splice(0, 5000);
+  }
+
   private quadro(): void {
     this.vigiarDesempenho();
     // Passo máximo de 1/20 s: com fps muito baixo o jogo fica mais lento, mas a física continua estável.
@@ -245,19 +300,22 @@ export class Jogo {
     }
     this.cena.physicsEnabled = true;
     this.tempo += dt;
+    // analógico direito do gamepad gira a câmera (convertido para "pixels" de mouse)
+    if (Math.abs(this.entrada.eixoCamX) + Math.abs(this.entrada.eixoCamY) > 0) {
+      const k = CFG_CAMERA.sensibilidadeGamepad / CFG_CAMERA.sensibilidade * dt;
+      this.camera.girar(this.entrada.eixoCamX * k, this.entrada.eixoCamY * k);
+    }
     this.jogador.atualizar(dt);
     const p = this.jogador.pes;
-    const [min, max] = this.areas.limites();
-    this.camera.limiteMin = min;
-    this.camera.limiteMax = max;
-    this.camera.seguir(p.x, p.y, this.jogador.personagem.lado, dt);
+    this.camera.atualizar(dt, this.alvoCamera());
+    this.registrarQuadro();
     if (!this.emTransicao) void this.areas.atualizar(p.x);
     this.atualizarAreaAtual();
     this.interacao.atualizar();
     // lanterna do capacete: aponta para onde o personagem olha
-    const lado = this.jogador.personagem.lado;
-    this.lanterna.position.set(p.x + lado * 0.15, p.y + 1.7, -0.25);
-    this.lanterna.direction.set(lado, -0.22, 0.12);
+    const fy = this.jogador.yaw;
+    this.lanterna.position.set(p.x + Math.sin(fy) * 0.15, p.y + 1.75, p.z + Math.cos(fy) * 0.15);
+    this.lanterna.direction.set(Math.sin(fy), -0.22, Math.cos(fy));
     const querLanterna = this.iluminacao.perfil.lanterna ? 9 : 0;
     this.lanterna.intensity += (querLanterna - this.lanterna.intensity) * Math.min(1, dt * 3);
     this.lanterna.setEnabled(this.lanterna.intensity > 0.05);
@@ -394,6 +452,15 @@ export class Jogo {
       });
     }
     if (a.def.id === "praca") this.roteiro?.atualizarMuro();
+    for (const [i, esc] of (a.def.escadas ?? []).entries()) {
+      const { base, topo } = JogadorClasse.pontosEscada(esc);
+      const rotulo = textos(esc.tipo === "corda" ? "subirCorda" : "subirEscada");
+      this.interacao.adicionar({ id: `${a.def.id}:escada${i}:base`, x: base.x, y: base.y, z: base.z, raio: CFG_MOV.raioEncaixeEscada,
+        rotulo, prioridade: 2, ativo: () => this.jogador.estado === "chao", acao: () => this.jogador.entrarEscada(esc) });
+      this.interacao.adicionar({ id: `${a.def.id}:escada${i}:topo`, x: topo.x, y: topo.y, z: topo.z, raio: CFG_MOV.raioEncaixeEscada,
+        rotulo: textos("descerEscada"), prioridade: 2, ativo: () => this.jogador.estado === "chao", acao: () => this.jogador.entrarEscada(esc, true) });
+    }
+    if (a.def.zonasCamera) this.camera.zonas.push(...(a.def.zonasCamera as ZonaCamera[]));
     if (a.def.escadas) {
       const todas = [...this.areas.carregadas.values()].flatMap((c) => c.def.escadas ?? []);
       this.jogador.escadas = todas;
@@ -422,10 +489,9 @@ export class Jogo {
     const ent = def.entradas?.[entrada] ?? { x: def.inicio + 2, y: 0 };
     await this.areas.entrarMundo(def.mundo, ent.x);
     this.jogador.escadas = [...this.areas.carregadas.values()].flatMap((c) => c.def.escadas ?? []);
-    this.jogador.teleportar(ent.x, ent.y);
+    this.teleportar(ent.x, ent.y, ent.z ?? 0, ent.yaw);
     this.areaAtual = null;
     this.atualizarAreaAtual();
-    this.camera.seguir(ent.x, ent.y, this.jogador.personagem.lado, 0, true);
     const apos = this.aposTransicao;
     this.aposTransicao = null;
     apos?.();
@@ -442,10 +508,26 @@ export class Jogo {
     vc.jogo = this;
     vc.estado = () => {
       const p = this.jogador.pes;
-      return { x: p.x, y: p.y, estado: this.jogador.estado, agachado: this.jogador.agachado, area: this.areaAtual?.id, mundo: this.areas.mundo, vx: this.jogador.velocidade.x };
+      return { x: p.x, y: p.y, z: p.z, estado: this.jogador.estado, agachado: this.jogador.agachado, area: this.areaAtual?.id, mundo: this.areas.mundo,
+        vx: this.jogador.velocidade.x, vz: this.jogador.velocidade.z, yaw: this.jogador.yaw, yawCamera: this.camera.yaw, pitch: this.camera.pitch };
     };
     vc.tecla = (codigo: string, pressionada: boolean) => this.entrada.simular(codigo, pressionada);
-    vc.teleportar = (x: number, y = 0) => this.teleportar(x, y);
+    vc.teleportar = (x: number, y = 0, z = 0, yaw?: number) => this.teleportar(x, y, z, yaw);
+    vc.registro = this.registro;
+    vc.mouse = (dx: number, dy: number) => this.camera.girar(dx, dy);
+    vc.definirCamera = (yaw: number, pitch?: number) => { this.camera.yaw = yaw; if (pitch !== undefined) this.camera.pitch = pitch; };
+    vc.quadroAtual = () => this.contadorQuadros;
+    /** Raycast do foco até a câmera: se acertar algo, a câmera está atrás de uma parede. */
+    vc.raycastCamera = () => {
+      const motor = this.cena.getPhysicsEngine();
+      const foco = this.camera.focoAtual;
+      const cam = this.camera.camera.position.clone();
+      const r = motor ? motor.raycast(foco, cam) : null;
+      return { acertou: !!r?.hasHit, foco: [foco.x, foco.y, foco.z], camera: [cam.x, cam.y, cam.z] };
+    };
+    vc.direcaoForcada = (x: number | null, z = 0) => { this.jogador.direcaoForcada = x === null ? null : new Vector3(x, 0, z); };
+    vc.camera = () => ({ x: this.camera.camera.position.x, y: this.camera.camera.position.y, z: this.camera.camera.position.z,
+      distancia: this.camera.distanciaAtual, yaw: this.camera.yaw, pitch: this.camera.pitch, recentralizando: this.camera.recentralizando });
     vc.npcs = () => this.npcs.contagem();
     vc.missoes = () => JSON.parse(JSON.stringify(this.estado.d.missoes));
     vc.dados = () => JSON.parse(JSON.stringify(this.estado.d));

@@ -425,11 +425,65 @@ def superficie_antena():
     return a
 
 
+# ====================================================================== sala de teste (fase 1, revisão 2)
+
+def sala_teste():
+    """Sala de teste em 3D da fase 1: cada elemento testa um parâmetro da seção 3.3."""
+    import math
+    a = Area("sala_teste", "Sala de teste", "teste", "teste", None, -40, 40)
+    a.d["zonaPadrao"] = "vila"
+    S = lambda x, y, z, w, h, d, mat="parede", **k: a.d["solidos"].append(dict(x=x, y=y, z=z, w=w, h=h, d=d, mat=mat, **k))
+    S(0, -0.5, 0, 80, 1, 80, "chao")
+    for x, z, w, d in ((0, 40.5, 82, 1), (0, -40.5, 82, 1), (40.5, 0, 1, 82), (-40.5, 0, 1, 82)):
+        S(x, 3, z, w, 6, d)
+    # corredor estreito de 2,5 m com teto a 3 m (zona de câmera de túnel)
+    S(-16.5, 1.5, 10, 0.5, 3, 20)
+    S(-13.5, 1.5, 10, 0.5, 3, 20)
+    S(-15, 3.25, 10, 3.5, 0.5, 20)
+    a.d["zonasCamera"] = [{"tipo": "tunel", "min": [-16.25, -1, 0], "max": [-13.75, 3, 20]}]
+    # escada de degraus (0,25 m) até uma plataforma a 2 m
+    for i in range(8):
+        h = (i + 1) * 0.25
+        S(10, h / 2, 2 + i * 0.4 + 0.2, 3, h, 0.4, "caixa")
+    S(10, 1.0, 8.2, 6, 2.0, 6, "plataforma")
+    # rampas de 30°, 40° e 50° (máximo de 45°: a última deve barrar)
+    for x, ang in ((20, 30), (24, 40), (28, 50)):
+        t = math.radians(ang)
+        comp = 2.0 / math.sin(t)
+        S(x, comp * math.sin(t) / 2 - 0.15 * math.cos(t), 2 + comp * math.cos(t) / 2, 3, 0.3, comp, "plataforma", rx=-ang)
+        S(x, 1.0, 2 + comp * math.cos(t) + 3.0, 3, 2.0, 6, "caixa")
+    # degraus isolados: 0,30 m passa sem pulo; 0,40 m não
+    S(-5, 0.15, 5, 2, 0.3, 2, "caixa")
+    S(-8, 0.2, 5, 2, 0.4, 2, "caixa")
+    # plataformas de pulo (1,0 m alcança; 1,3 m não)
+    S(0, 0.5, 8, 2, 1.0, 2, "plataforma")
+    S(3, 0.65, 8, 2, 1.3, 2, "plataforma")
+    S(0, 1.5, 13, 2, 0.3, 2, "plataforma")
+    # túnel baixo (1,2 m): só agachado
+    S(-25, 1.45, 3, 3, 0.5, 6)
+    S(-26.75, 0.6, 3, 0.5, 1.2, 6)
+    S(-23.25, 0.6, 3, 0.5, 1.2, 6)
+    # escada de mão em um bloco de 5 m; corda em uma plataforma de 6 m
+    S(-5, 2.5, 18, 4, 5, 4)
+    a.d["escadas"].append(dict(x=-5, z=15.95, y0=0, y1=5, tipo="escada", yaw=0))
+    S(5, 3, 20, 4, 6, 4, "plataforma")
+    a.d["escadas"].append(dict(x=5, z=17.6, y0=0, y1=6, tipo="corda", yaw=0))
+    # pilares para orbitar a câmera
+    for i in range(6):
+        ang = i * math.pi / 3
+        S(12 + math.cos(ang) * 6, 2, -18 + math.sin(ang) * 6, 1, 4, 1, "parede")
+    a.entrada("inicio", 0, 0)
+    a.d["entradas"]["inicio"].update(z=-10, yaw=0)
+    for x, z in ((-15, 10), (10, 8), (24, 4), (0, -10), (-5, 15), (12, -18), (-25, 3)):
+        a.luz(x, 5, z, [1.0, 0.85, 0.65], 1.1, 22)
+    return a
+
+
 def sala_teste_preservada():
     caminho = os.path.join(DESTINO, "sala_teste.json")
     return os.path.exists(caminho)
 
 
 if __name__ == "__main__":
-    for fabrica in (capela, praca, galerias, duto_norte, boca_do_poco, superficie_sucata, superficie_marco, superficie_antena):
+    for fabrica in (sala_teste, capela, praca, galerias, duto_norte, boca_do_poco, superficie_sucata, superficie_marco, superficie_antena):
         fabrica().salvar()

@@ -5,6 +5,7 @@ export interface Interacao {
   id: string;
   x: number;
   y: number;
+  z?: number;
   raio?: number;
   rotulo: string | (() => string);
   acao: () => void;
@@ -19,7 +20,7 @@ export class SistemaInteracao {
   atual: Interacao | null = null;
   bloqueado = false;
 
-  constructor(private entrada: Entrada, private hud: Hud, private posicao: () => { x: number; y: number }) {}
+  constructor(private entrada: Entrada, private hud: Hud, private posicao: () => { x: number; y: number; z: number }) {}
 
   adicionar(i: Interacao): void {
     this.lista.set(i.id, i);
@@ -44,7 +45,7 @@ export class SistemaInteracao {
     let melhorNota = Infinity;
     for (const i of this.lista.values()) {
       if (i.ativo && !i.ativo()) continue;
-      const dx = Math.abs(i.x - p.x);
+      const dx = Math.hypot(i.x - p.x, (i.z ?? 0) - p.z);
       const dy = Math.abs(i.y - p.y);
       if (dx > (i.raio ?? 1.3) || dy > 1.6) continue;
       const nota = dx - (i.prioridade ?? 0) * 10;
