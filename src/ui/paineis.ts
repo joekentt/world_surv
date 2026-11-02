@@ -107,6 +107,12 @@ export class Paineis {
       html = `<h2>${UI.pausado}</h2>
         <button data-acao="voltar">${UI.voltar}</button>
         <label class="volume">${UI.volume} <input type="range" min="0" max="1" step="0.05" value="${this.jogo.audio.volumeGeral}" data-acao="volume"></label>
+        <h3>${UI.opcoesCamera}</h3>
+        <label class="volume">${UI.sensibilidade} <input type="range" min="0.3" max="3" step="0.1" value="${this.jogo.camera.opcoes.sensibilidade}" data-acao="sensibilidade"></label>
+        <label class="volume"><input type="checkbox" data-acao="inverterY" ${this.jogo.camera.opcoes.inverterY ? "checked" : ""}> ${UI.inverterY}</label>
+        <label class="volume"><input type="checkbox" data-acao="recentralizar" ${this.jogo.camera.opcoes.recentralizar ? "checked" : ""}> ${UI.recentralizar}</label>
+        <label class="volume">${UI.atrasoRecentralizar} <span class="valor-atraso">${this.jogo.camera.opcoes.atrasoRecentralizar.toFixed(1)} s</span>
+          <input type="range" min="0.3" max="3" step="0.1" value="${this.jogo.camera.opcoes.atrasoRecentralizar}" data-acao="atraso"></label>
         <button data-acao="carregar">${UI.reiniciarDia}</button>
         <p class="controles">${UI.controles}<br>${UI.controlesGamepad}</p>`;
     } else if (this.aberto === "loja") {
@@ -141,7 +147,7 @@ export class Paineis {
 
   private clicar(ev: Event): void {
     const b = (ev.target as HTMLElement).closest("[data-acao]") as HTMLElement | null;
-    if (!b) return;
+    if (!b || b.tagName === "INPUT") return; // controles de opção são tratados no evento "input"
     this.executar(b.dataset.acao!, b.dataset.item);
   }
 
@@ -149,7 +155,12 @@ export class Paineis {
     const j = this.jogo;
     const e = j.estado;
     j.audio.tocar("clique", 0.5);
-    if (acao === "voltar") return this.fechar();
+    if (acao === "voltar") {
+      this.fechar();
+      const canvas = j.motor.engine.getRenderingCanvas();
+      void (canvas?.requestPointerLock() as unknown as Promise<void> | undefined)?.catch?.(() => undefined);
+      return;
+    }
     if (acao === "carregar") { this.fechar(); void j.carregarSave(); return; }
     if (acao === "vender" && item) { e.dar(item, -1); e.mudarCotas(precoItem(item)); j.audio.tocar("moedas", 0.5); e.avisar(`vendeu:${item}`); }
     if (acao === "venderTudo" && item) { const n = e.qtd(item); e.dar(item, -n); e.mudarCotas(precoItem(item) * n); j.audio.tocar("moedas", 0.6); e.avisar(`vendeu:${item}`); }
@@ -188,6 +199,15 @@ export class Paineis {
     this.el.addEventListener("input", (ev) => {
       const t = ev.target as HTMLInputElement;
       if (t.dataset.acao === "volume") this.jogo.audio.definirVolumeGeral(Number(t.value));
+      const cam = this.jogo.camera;
+      if (t.dataset.acao === "sensibilidade") cam.definirOpcoes({ sensibilidade: Number(t.value) });
+      if (t.dataset.acao === "inverterY") cam.definirOpcoes({ inverterY: t.checked });
+      if (t.dataset.acao === "recentralizar") cam.definirOpcoes({ recentralizar: t.checked });
+      if (t.dataset.acao === "atraso") {
+        cam.definirOpcoes({ atrasoRecentralizar: Number(t.value) });
+        const rotulo = this.el.querySelector(".valor-atraso");
+        if (rotulo) rotulo.textContent = `${Number(t.value).toFixed(1)} s`;
+      }
     });
   }
 }

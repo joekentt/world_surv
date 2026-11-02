@@ -30,6 +30,17 @@ export class Hud {
     this.avisoMissao = el("div", "aviso-missao", this.raiz);
   }
 
+  private dica: HTMLElement | null = null;
+
+  /** Aviso para clicar e capturar o mouse (Pointer Lock). */
+  dicaMouse(mostrar: boolean): void {
+    if (!this.dica) {
+      this.dica = el("div", "dica-mouse", this.raiz);
+      this.dica.textContent = UI.cliqueParaCamera;
+    }
+    this.dica.classList.toggle("visivel", mostrar);
+  }
+
   telaFim(titulo: string, texto: string, rodape: string): void {
     const fim = el("div", "tela-fim interativo", this.raiz);
     fim.innerHTML = `<h1>${titulo}</h1><p>${texto}</p><small>${rodape}</small><button>Continuar explorando</button>`;

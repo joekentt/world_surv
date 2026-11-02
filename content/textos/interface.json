@@ -7,8 +7,8 @@
   "subtitulo": "Uma fatia jogável",
   "novoJogo": "Novo jogo",
   "continuar": "Continuar",
-  "controles": "A/D andar · Shift correr · Espaço pular · C agachar · W/S escadas · E interagir · I inventário · J diário · Esc menu",
-  "controlesGamepad": "Analógico andar · RT correr · A pular · B agachar · X interagir · Y inventário · Back diário · Start menu",
+  "controles": "WASD andar · mouse câmera · Shift correr · Espaço pular · C agachar · E interagir · roda zoom · I inventário · J diário · Esc menu",
+  "controlesGamepad": "Analógico esquerdo andar · analógico direito câmera · RT correr · A pular · B agachar · X interagir · Y inventário · Back diário · Start menu",
   "eclusaPressurizando": "Eclusa: equalizando pressão…",
   "eclusaDescontaminando": "Descontaminação: chuveiros ligados…",
   "pausado": "Pausado",
@@ -39,5 +39,14 @@
   "achadoSemMissao": "Areia revirada na base da Antena. Não há mais nada aqui.",
   "chuveiros": "Chuveiros de descontaminação. Ligam sozinhos na volta da superfície.",
   "modoEconomico": "Desempenho baixo: modo econômico ativado (sem pós-processamento, resolução menor).",
-  "dicaAvancar": "Espaço, E ou clique para continuar"
+  "dicaAvancar": "Espaço, E ou clique para continuar",
+  "cliqueParaCamera": "Clique para controlar a câmera com o mouse",
+  "subirEscada": "Subir a escada",
+  "subirCorda": "Subir a corda",
+  "descerEscada": "Descer",
+  "opcoesCamera": "Câmera",
+  "sensibilidade": "Sensibilidade",
+  "inverterY": "Inverter eixo Y",
+  "recentralizar": "Recentralizar a câmera atrás do personagem",
+  "atrasoRecentralizar": "Atraso da recentralização"
 }

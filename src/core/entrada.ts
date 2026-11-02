@@ -27,6 +27,9 @@ export class Entrada {
   /** Eixo horizontal analógico (-1 a 1). */
   eixoX = 0;
   eixoY = 0;
+  /** Analógico direito (câmera), -1 a 1, com zona morta. */
+  eixoCamX = 0;
+  eixoCamY = 0;
   usandoGamepad = false;
   bloqueada = false;
 
@@ -65,6 +68,15 @@ export class Entrada {
       if (Math.abs(ay) > 0.35) { ey = ay; this.usandoGamepad = true; }
       if ((gp.buttons[7]?.value ?? 0) > 0.4) this.atual.add("correr");
     }
+    let cx = 0, cy = 0;
+    for (const gp of pads) {
+      if (!gp) continue;
+      const ax = gp.axes[2] ?? 0, ay = gp.axes[3] ?? 0;
+      if (Math.abs(ax) > 0.15) cx = ax;
+      if (Math.abs(ay) > 0.15) cy = ay;
+    }
+    this.eixoCamX = this.bloqueada ? 0 : cx;
+    this.eixoCamY = this.bloqueada ? 0 : cy;
     if (ex < -0.2) this.atual.add("esquerda");
     if (ex > 0.2) this.atual.add("direita");
     if (ey > 0.35) this.atual.add("cima");

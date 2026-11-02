@@ -26,6 +26,9 @@ export class Personagem {
   private anguloAlvo = Math.PI / 2 + GIRO_CAMERA;
   /** Quando definido, substitui a orientação lateral (ex.: de costas na escada). */
   anguloForcado: number | null = null;
+  /** O controlador do jogador define o giro diretamente (yaw e inclinação nas curvas). */
+  controleExterno = false;
+  private pesosLocomocao = { parado: 1, andar: 0, correr: 0 };
   pausado = false;
 
   private constructor(readonly id: string, raiz: TransformNode) {
@@ -60,15 +63,75 @@ export class Personagem {
     return this.grupos.has(acao);
   }
 
+  /**
+   * Mistura de locomoção (seção 3.3): parado, andar e correr tocam juntos com pesos pela velocidade,
+   * e a velocidade de reprodução acompanha a velocidade real para o pé não deslizar.
+   */
+  locomover(velocidade: number, refAndar: number, refCorrer: number, vAndar: number, transicao = 0.18): void {
+    const v = Math.max(0, velocidade);
+    let pp = 0, pa = 0, pc = 0;
+    if (v <= vAndar) {
+      pa = v / vAndar;
+      pp = 1 - pa;
+    } else {
+      pc = Math.min(1, (v - vAndar) / Math.max(0.01, refCorrer * 1.1 - vAndar));
+      pa = 1 - pc;
+    }
+    this.pesosLocomocao = { parado: pp, andar: pa, correr: pc };
+    const ga = this.grupos.get("andar"), gc = this.grupos.get("correr"), gp = this.grupos.get("parado");
+    if (ga) ga.speedRatio = Math.min(1.8, Math.max(0.55, v / refAndar));
+    if (gc) gc.speedRatio = Math.min(1.6, Math.max(0.6, v / refCorrer));
+    if (this.atual === "locomocao") return;
+    this.empurrarParaSaida();
+    this.atual = "locomocao";
+    this.duracaoTransicao = transicao;
+    this.entrada = 0;
+    for (const g of [gp, ga, gc]) {
+      if (!g) continue;
+      this.saindo = this.saindo.filter((s) => s.g !== g);
+      g.weight = 0;
+      if (!g.isPlaying) g.start(true, g.speedRatio);
+    }
+  }
+
+  private empurrarParaSaida(): void {
+    if (!this.atual) return;
+    const lista = this.atual === "locomocao" ? ["parado", "andar", "correr"] : [this.atual];
+    for (const nome of lista) {
+      const g = this.grupos.get(nome);
+      if (!g) continue;
+      this.saindo = this.saindo.filter((s) => s.g !== g);
+      const w = g.weight < 0 ? 1 : g.weight;
+      if (w > 0.001) this.saindo.push({ g, w });
+      else g.stop();
+    }
+  }
+
+  /** Alfa das malhas (câmera muito perto ou personagem entre a câmera e o jogador). */
+  definirTransparencia(alfa: number): void {
+    for (const m of this.malhas) if (Math.abs(m.visibility - alfa) > 0.01) m.visibility = alfa;
+  }
+
+  /** Giro e inclinação lateral definidos pelo controlador (radianos). */
+  definirGiro(yaw: number, inclinacao = 0): void {
+    this.raiz.rotation.y = yaw;
+    this.raiz.rotation.z = inclinacao;
+  }
+
   tocar(acao: string, op: OpcoesTocar = {}): void {
     const g = this.grupos.get(acao);
     if (!g) return;
+    const vinhaDaLocomocao = this.atual === "locomocao";
+    if (vinhaDaLocomocao) {
+      this.empurrarParaSaida();
+      this.atual = null;
+    }
     const velocidade = op.velocidade ?? 1;
     if (this.atual === acao) {
       g.speedRatio = velocidade;
       return;
     }
-    const anterior = this.atual ? this.grupos.get(this.atual) : null;
+    const anterior = this.atual ? this.grupos.get(this.atual) ?? null : null;
     if (anterior) {
       this.saindo = this.saindo.filter((s) => s.g !== anterior && s.g !== g);
       this.saindo.push({ g: anterior, w: anterior.weight < 0 ? 1 : anterior.weight });
@@ -76,7 +139,7 @@ export class Personagem {
     this.saindo = this.saindo.filter((s) => s.g !== g);
     this.atual = acao;
     this.duracaoTransicao = op.transicao ?? 0.2;
-    this.entrada = this.duracaoTransicao > 0 && anterior ? 0 : 1;
+    this.entrada = this.duracaoTransicao > 0 && (anterior || vinhaDaLocomocao) ? 0 : 1;
     g.weight = this.entrada;
     g.start(op.loop ?? true, velocidade);
   }
@@ -94,7 +157,13 @@ export class Personagem {
 
   atualizar(dt: number): void {
     const passo = this.duracaoTransicao > 0 ? dt / this.duracaoTransicao : 1;
-    if (this.atual && this.entrada < 1) {
+    if (this.atual === "locomocao") {
+      this.entrada = Math.min(1, this.entrada + passo);
+      for (const nome of ["parado", "andar", "correr"] as const) {
+        const g = this.grupos.get(nome);
+        if (g) g.weight = this.pesosLocomocao[nome] * this.entrada;
+      }
+    } else if (this.atual && this.entrada < 1) {
       this.entrada = Math.min(1, this.entrada + passo);
       const g = this.grupos.get(this.atual);
       if (g) g.weight = this.entrada;
@@ -105,6 +174,7 @@ export class Personagem {
       else s.g.weight = s.w;
     }
     this.saindo = this.saindo.filter((s) => s.w > 0);
+    if (this.controleExterno) return;
     // giro suave
     const alvo = this.anguloForcado ?? this.anguloAlvo;
     let d = alvo - this.raiz.rotation.y;
