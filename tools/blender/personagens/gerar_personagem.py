@@ -574,6 +574,7 @@ def duplicar_faces(obj, faces: list, nome: str, espessura: float, cor, tipo: str
         sol.use_rim_only = True
         sol.use_even_offset = True
         comum.aplicar_modificadores(novo)
+    remover_lascas(novo)
     pintar_peca(novo, cor, tipo)
     mat = comum.material(f"{nome}_mat", (1, 1, 1), rugosidade=0.85 if not tipo.startswith("epi_visor") else 0.15,
                          metal=0.0)
@@ -581,6 +582,19 @@ def duplicar_faces(obj, faces: list, nome: str, espessura: float, cor, tipo: str
         mat = comum.material(f"{nome}_mat", (1, 1, 1), rugosidade=0.12, metal=0.6)
     comum.atribuir(novo, mat)
     return novo
+
+
+def remover_lascas(obj, limite: float = 0.1) -> None:
+    """Remove faces com aresta longa demais. No corpo base a maior aresta tem cerca de 5 cm; faces de
+    peças com arestas acima de 10 cm são lascas (aparecem como fios ligando mão e queixo, visíveis de costas)."""
+    bm = bmesh.new()
+    bm.from_mesh(obj.data)
+    ruins = [f for f in bm.faces if any(e.calc_length() > limite for e in f.edges)]
+    if ruins:
+        bmesh.ops.delete(bm, geom=ruins, context="FACES_ONLY")
+        bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
+        bm.to_mesh(obj.data)
+    bm.free()
 
 
 def pintar_peca(obj, cor, tipo: str) -> None:

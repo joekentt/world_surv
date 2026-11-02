@@ -127,12 +127,16 @@ def nova_acao(arm, nome: str):
     return acao
 
 
+UNICAS = {"interagir", "morrer", "aterrissar_leve", "aterrissar_pesado", "giro_rapido"}
+
+
 def ciclo(arm, nome: str, quadros: int, gerar_pose, passos: int | None = None) -> None:
-    """Gera uma ação em loop amostrando gerar_pose(t), t em [0, 1)."""
+    """Gera uma ação amostrando gerar_pose(t). Laços usam t em [0, 1) e repetem o primeiro quadro
+    no fim; ações de uma vez (UNICAS) vão até t = 1, para não voltar à pose inicial no último quadro."""
     nova_acao(arm, nome)
     passos = passos or quadros
     for i in range(passos + 1):
-        t = (i % passos) / passos
+        t = i / passos if nome in UNICAS else (i % passos) / passos
         aplicar(arm, gerar_pose(t), round(i * quadros / passos) + 1)
     # empilha no NLA para que o exportador encontre a ação mesmo sem estar ativa
     trilha = arm.animation_data.nla_tracks.new()
@@ -445,12 +449,76 @@ def tossir(t):
     return p
 
 
+def aterrissar(t, pesado=False):
+    """Impacto no primeiro quadro, recuperação até ficar de pé."""
+    k = (1 - t) ** (1.6 if pesado else 2.2)
+    p = base_parado(Pose(), abertura=8 * k)
+    prof = 1.0 if pesado else 0.45
+    for lado in ("l", "r"):
+        p.frente(f"thigh_{lado}", 70 * prof * k)
+        p.frente(f"calf_{lado}", -105 * prof * k)
+        p.frente(f"foot_{lado}", 30 * prof * k)
+        p.frente(f"upperarm_{lado}", (35 if pesado else 15) * k)
+        p.lado(f"upperarm_{lado}", 18 * k)
+        p.frente(f"lowerarm_{lado}", 12 + 30 * k)
+        dedos_curvos(p, 25 + 30 * k, lado)
+    p.inclina("spine_01", 25 * prof * k)
+    p.inclina("spine_02", 10 * prof * k)
+    p.inclina("head", -12 * prof * k)
+    p.desloc = Vector((0, 0.05 * k, -0.36 * prof * k))
+    return p
+
+
+def giro_rapido(t):
+    """Inversão brusca: pés plantados, tronco inclinado para o lado do giro, braços abertos."""
+    k = math.sin(math.pi * t)
+    p = base_parado(Pose(), abertura=25 * k)
+    p.torce("spine_01", -25 * k)
+    p.torce("spine_03", -20 * k)
+    p.torce("head", -25 * k)
+    p.girar("pelvis", Y, 8 * k)
+    p.frente("thigh_l", 25 * k)
+    p.frente("calf_l", -40 * k)
+    p.frente("thigh_r", -15 * k)
+    p.frente("calf_r", -20 * k)
+    p.frente("upperarm_l", -20 * k)
+    p.frente("upperarm_r", 30 * k)
+    p.lado("upperarm_l", 30 * k)
+    p.lado("upperarm_r", 20 * k)
+    p.inclina("spine_02", 8 * k)
+    for lado in ("l", "r"):
+        dedos_curvos(p, 35, lado)
+    p.desloc = Vector((0, 0, -0.06 * k))
+    return p
+
+
+def corda(t):
+    """Subida em corda, mão sobre mão, pernas prendendo a corda."""
+    p = base_parado(Pose())
+    a = s(t)
+    for lado, sinal in (("l", 1), ("r", -1)):
+        sobe = a * sinal
+        p.frente(f"upperarm_{lado}", 155 + 18 * sobe)
+        p.lado(f"upperarm_{lado}", -28)
+        p.frente(f"lowerarm_{lado}", 25 - 20 * sobe)
+        p.frente(f"thigh_{lado}", 40 + 12 * sobe)
+        p.lado(f"thigh_{lado}", -6)
+        p.frente(f"calf_{lado}", -(60 + 15 * sobe))
+        dedos_curvos(p, 85, lado)
+    p.inclina("spine_02", -4)
+    p.inclina("head", -18)
+    p.desloc = Vector((0, 0, 0.015 * a))
+    return p
+
+
 ACOES = [
     ("parado", 60, parado), ("andar", 32, andar), ("correr", 20, correr), ("pular", 20, pular),
     ("agachar", 40, agachar), ("agachar_andar", 36, lambda t: agachar(t, True)), ("escada", 30, escada),
     ("interagir", 24, interagir), ("varrer", 40, varrer), ("consertar", 30, consertar),
     ("cozinhar", 40, cozinhar), ("rezar", 80, rezar), ("conversar", 90, conversar), ("sentar", 80, sentar),
     ("acenar", 30, acenar), ("brincar", 26, brincar), ("morrer", 40, morrer), ("tossir", 45, tossir),
+    ("aterrissar_leve", 12, aterrissar), ("aterrissar_pesado", 26, lambda t: aterrissar(t, True)),
+    ("giro_rapido", 12, giro_rapido), ("corda", 36, corda),
 ]
 
 

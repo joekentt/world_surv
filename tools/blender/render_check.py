@@ -1,4 +1,4 @@
-"""Renderiza um GLB em três vistas (frente, lado e 3/4) e salva uma imagem única para validação.
+"""Renderiza um GLB em quatro vistas (frente, costas, lado e 3/4) e salva uma imagem única para validação.
 
 Uso:
     python tools/blender/render_check.py <arquivo.glb> <saida.png> [--pose <acao>] [--quadro N]
@@ -20,6 +20,19 @@ from mathutils import Vector  # noqa: E402
 import comum  # noqa: E402
 
 
+def legivel(caminho: str) -> str:
+    """O bpy do PyPI não decodifica EXT_meshopt_compression: descomprime para um temporário com gltf-transform."""
+    with open(caminho, "rb") as f:
+        if b"EXT_meshopt_compression" not in f.read():
+            return caminho
+    import subprocess
+    import tempfile
+    destino = os.path.join(tempfile.mkdtemp(prefix="render_check_"), os.path.basename(caminho))
+    subprocess.run(["npx", "gltf-transform", "copy", caminho, destino], cwd=comum.RAIZ, check=True,
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return destino
+
+
 def opcao(args, nome, padrao=None):
     if nome in args:
         i = args.index(nome)
@@ -33,7 +46,7 @@ def principal() -> None:
     perto = "--perto" in args
     ocultar = [p for p in (opcao(args, "--ocultar", "") or "").split(",") if p]
     comum.limpar_cena()
-    bpy.ops.import_scene.gltf(filepath=entrada)
+    bpy.ops.import_scene.gltf(filepath=legivel(entrada))
     objs = [o for o in bpy.context.scene.objects if o.type == "MESH" and not o.name.endswith("_lod1")
             and not o.name.lower().startswith("icosphere")]
     for o in bpy.context.scene.objects:
@@ -90,7 +103,9 @@ def principal() -> None:
     cena.collection.objects.link(cam)
     cena.camera = cam
     # Exportado em glTF e reimportado: o personagem continua olhando para -Y.
-    vistas = {"frente": Vector((0, -1, 0)), "lado": Vector((1, 0, 0)), "tres_quartos": Vector((0.7, -0.7, 0)).normalized()}
+    # Seção 8 (revisão 2): a câmera fica atrás do personagem quase sempre, então as costas também são conferidas.
+    vistas = {"frente": Vector((0, -1, 0)), "costas": Vector((0, 1, 0)), "lado": Vector((1, 0, 0)),
+              "tres_quartos": Vector((0.7, -0.7, 0)).normalized()}
     imagens = []
     tmp = saida + ".tmp"
     os.makedirs(os.path.dirname(saida), exist_ok=True)
@@ -115,7 +130,7 @@ def principal() -> None:
 
 def aplicar_pose(acao: str, quadro: int) -> None:
     arm = next(o for o in bpy.context.scene.objects if o.type == "ARMATURE")
-    lib = os.path.join(comum.ASSETS, "personagens", "animacoes.glb")
+    lib = legivel(os.path.join(comum.ASSETS, "personagens", "animacoes.glb"))
     antes = set(bpy.data.actions.keys())
     bpy.ops.import_scene.gltf(filepath=lib)
     novos = [o for o in bpy.context.scene.objects if o.type == "ARMATURE" and o != arm]
