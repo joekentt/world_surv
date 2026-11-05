@@ -14,7 +14,7 @@ export const CAMADA_SEM_CAMERA = 1 << 4;
  * Com o movimento livre, recebem paredes invisíveis nas laterais até serem refeitas na fase 2.
  */
 function bordasFaixaAntiga(def: AreaDef): Solido[] {
-  if (def.solidos.length === 0 || def.solidos.some((s) => s.z !== undefined)) return [];
+  if (def.limites || def.solidos.length === 0 || def.solidos.some((s) => s.z !== undefined)) return [];
   const meia = CFG.movimento.profundidadeFaixaAntiga / 2;
   const base = Math.min(...def.solidos.map((s) => s.y - s.h / 2)) - 2;
   const topo = Math.max(...def.solidos.map((s) => s.y + s.h / 2)) + 30;

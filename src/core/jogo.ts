@@ -199,7 +199,7 @@ export class Jogo {
     this.camera.obstrutores = () => this.npcs ? this.npcs.npcs.filter((n) => n.personagem?.raiz.isEnabled()).map((n) => ({
       posicao: () => new Vector3(n.x, 1, n.z), raio: 0.6, definirTransparencia: (a: number) => n.personagem!.definirTransparencia(a),
     })) : [];
-    await this.areas.entrarMundo(def.mundo, ent.x);
+    await this.areas.entrarMundo(def.mundo, { x: ent.x, y: ent.y, z: ent.z ?? 0 });
     this.teleportar(ent.x, ent.y, ent.z ?? 0, ent.yaw);
     this.atualizarAreaAtual();
 
@@ -310,7 +310,7 @@ export class Jogo {
     const p = this.jogador.pes;
     this.camera.atualizar(dt, this.alvoCamera());
     this.registrarQuadro();
-    if (!this.emTransicao) void this.areas.atualizar(p.x);
+    if (!this.emTransicao) void this.areas.atualizar(p);
     this.atualizarAreaAtual();
     this.interacao.atualizar();
     // lanterna do capacete: aponta para onde o personagem olha
@@ -336,7 +336,7 @@ export class Jogo {
   }
 
   private atualizarAreaAtual(): void {
-    const a = this.areas.areaEm(this.jogador.pes.x);
+    const a = this.areas.areaEm(this.jogador.pes);
     if (a && a !== this.areaAtual) {
       const anterior = this.areaAtual;
       this.areaAtual = a;
@@ -488,7 +488,7 @@ export class Jogo {
     await antes?.();
     const def = AREAS[destino];
     const ent = def.entradas?.[entrada] ?? { x: def.inicio + 2, y: 0 };
-    await this.areas.entrarMundo(def.mundo, ent.x);
+    await this.areas.entrarMundo(def.mundo, { x: ent.x, y: ent.y, z: ent.z ?? 0 });
     this.jogador.escadas = [...this.areas.carregadas.values()].flatMap((c) => c.def.escadas ?? []);
     this.teleportar(ent.x, ent.y, ent.z ?? 0, ent.yaw);
     this.areaAtual = null;

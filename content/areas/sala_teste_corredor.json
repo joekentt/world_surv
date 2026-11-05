@@ -1,0 +1,32 @@
+{
+ "id": "sala_teste_corredor",
+ "nome": "Corredor estreito",
+ "mundo": "teste",
+ "estetica": "teste",
+ "kit": null,
+ "inicio": -16.25,
+ "fim": -13.75,
+ "solidos": [],
+ "escadas": [],
+ "pecas": [],
+ "fundo": [],
+ "saidas": [],
+ "entradas": {},
+ "luzes": [],
+ "coletaveis": [],
+ "interativos": [],
+ "zonas": [],
+ "marcos": [],
+ "limites": {
+  "min": [
+   -16.25,
+   -1,
+   0
+  ],
+  "max": [
+   -13.75,
+   3,
+   20
+  ]
+ }
+}

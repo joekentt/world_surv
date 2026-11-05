@@ -303,4 +303,15 @@ test.describe("fase 1: movimento (seção 3.3)", () => {
     expect(Math.abs(e.z)).toBeLessThan(1);
     registrar("fase-1", { areasAntigas: m });
   });
+
+  test("áreas em 3D: caixas sobrepostas, vale a menor que contém o jogador", async ({ page }) => {
+    await preparar(page);
+    await posicionar(page, -15, 0, 10, 0, 0);
+    const dentro = (await estado(page) as unknown as { area: string }).area;
+    await posicionar(page, 0, 0, -10, 0, 0);
+    const fora = (await estado(page) as unknown as { area: string }).area;
+    registrar("fase-1", { areas3d: { dentro, fora } });
+    expect(dentro).toBe("sala_teste_corredor");
+    expect(fora).toBe("sala_teste");
+  });
 });

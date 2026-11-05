@@ -4,8 +4,8 @@
  "mundo": "teste",
  "estetica": "teste",
  "kit": null,
- "inicio": -40,
- "fim": 40,
+ "inicio": -41,
+ "fim": 41,
  "solidos": [
   {
    "x": 0,
@@ -482,6 +482,18 @@
  "zonas": [],
  "marcos": [],
  "zonaPadrao": "vila",
+ "limites": {
+  "min": [
+   -41,
+   -2,
+   -41
+  ],
+  "max": [
+   41,
+   40,
+   41
+  ]
+ },
  "zonasCamera": [
   {
    "tipo": "tunel",

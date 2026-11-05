@@ -10,14 +10,23 @@ export interface Coletavel { id: string; item: string; x: number; y: number; qtd
 export interface Interativo { id: string; tipo: string; x: number; y: number; z?: number; rotulo?: string; npc?: string; [k: string]: unknown; }
 export interface ZonaPerigo { x0: number; x1: number; tipo: "poeira" | "radiacao"; intensidade: number; }
 
+export type Vec3 = [number, number, number];
+export interface Ponto3 { x: number; y: number; z: number }
+
 export interface AreaDef {
   id: string;
   nome: string;
   mundo: string;
   estetica: string;
   kit?: string;
+  /** Extensão em X. Nas áreas 3D é derivada de `limites` pelo gerador. */
   inicio: number;
   fim: number;
+  /**
+   * Caixa da área em 3D (revisão 2). Define a área atual do jogador e a distância de carregamento.
+   * Áreas sem limites são as faixas lineares da revisão 1.
+   */
+  limites?: { min: Vec3; max: Vec3 };
   superficie?: boolean;
   solidos: Solido[];
   escadas?: EscadaDef[];

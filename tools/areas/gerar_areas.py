@@ -30,6 +30,11 @@ class Area:
                       solidos=[], escadas=[], pecas=[], fundo=[], saidas=[], entradas={}, luzes=[],
                       coletaveis=[], interativos=[], zonas=[], marcos=[], **extra)
 
+    def caixa(self, minimo, maximo):
+        """Limites 3D da área (revisão 2): área atual do jogador e distância de carregamento."""
+        self.d["limites"] = dict(min=list(minimo), max=list(maximo))
+        self.d["inicio"], self.d["fim"] = minimo[0], maximo[0]
+
     def solido(self, x, y, w, h, **k):
         self.d["solidos"].append(dict(x=round(x, 3), y=round(y, 3), w=round(w, 3), h=round(h, 3), **k))
 
@@ -432,6 +437,7 @@ def sala_teste():
     import math
     a = Area("sala_teste", "Sala de teste", "teste", "teste", None, -40, 40)
     a.d["zonaPadrao"] = "vila"
+    a.caixa((-41, -2, -41), (41, 40, 41))
     S = lambda x, y, z, w, h, d, mat="parede", **k: a.d["solidos"].append(dict(x=x, y=y, z=z, w=w, h=h, d=d, mat=mat, **k))
     S(0, -0.5, 0, 80, 1, 80, "chao")
     for x, z, w, d in ((0, 40.5, 82, 1), (0, -40.5, 82, 1), (40.5, 0, 1, 82), (-40.5, 0, 1, 82)):
@@ -480,11 +486,18 @@ def sala_teste():
     return a
 
 
+def sala_teste_corredor():
+    """Área aninhada na sala de teste (só a caixa): testa caixas sobrepostas, em que vale a menor."""
+    a = Area("sala_teste_corredor", "Corredor estreito", "teste", "teste", None, -16.25, -13.75)
+    a.caixa((-16.25, -1, 0), (-13.75, 3, 20))
+    return a
+
+
 def sala_teste_preservada():
     caminho = os.path.join(DESTINO, "sala_teste.json")
     return os.path.exists(caminho)
 
 
 if __name__ == "__main__":
-    for fabrica in (sala_teste, capela, praca, galerias, duto_norte, boca_do_poco, superficie_sucata, superficie_marco, superficie_antena):
+    for fabrica in (sala_teste, sala_teste_corredor, capela, praca, galerias, duto_norte, boca_do_poco, superficie_sucata, superficie_marco, superficie_antena):
         fabrica().salvar()
