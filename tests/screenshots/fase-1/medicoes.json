@@ -1,9 +1,9 @@
 {
   "criterio1_segundosAte10graus": {
-    "literal_s": 0.19,
-    "direcaoFixa_s": 1.64
+    "literal_s": 0.24,
+    "direcaoFixa_s": 1.63
   },
-  "criterio2_giroDoMouseGraus": 75.5,
+  "criterio2_giroDoMouseGraus": 83.5,
   "criterio3_variacaoGraus": 0,
   "criterio4_giroGraus": 0,
   "criterio5_amostras": 48,
@@ -13,23 +13,24 @@
     "andar": 2.2,
     "correr": 5.5,
     "tempoAteParar": 0.15,
-    "alturaPulo": 1.16,
+    "alturaPulo": 1.15,
     "degrau030": 0.3,
     "degrau040": 0,
     "rampa30": 2,
     "rampa40": 2,
     "rampa50": 0,
     "escadaria": 2,
-    "escadaDeMao": 5.01,
+    "escadaDeMao": 5,
+    "saidaEscadaZ": 17.59,
     "corda": 6,
     "tunelEmPe": -0.33,
-    "tunelAgachado": 7.08
+    "tunelAgachado": 7.12
   },
   "areasAntigas": {
     "bordaZ": 2.66,
     "bordaY": 0,
     "distanciaCameraNaBorda": 4.43,
-    "yDuranteQueda": -3,
+    "yDuranteQueda": -2.75,
     "voltaDoVazio": {
       "x": -40,
       "y": 0,

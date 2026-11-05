@@ -55,6 +55,11 @@ export class Jogador {
   private escadaAtual: Escada | null = null;
   private altura: number = M.alturaCapsula;
   private menorVy = 0;
+  /**
+   * Saída pelo topo da escada: enquanto o jogador mantém o movimento pressionado (até tempoSaidaEscada),
+   * o personagem segue para a frente da escada, em vez da direção da câmera, para não voltar à beirada.
+   */
+  private saidaEscada: { frente: Vector3; resta: number } | null = null;
   /** Pés no último chão firme pisado: destino quando o personagem cai para fora do mapa. */
   private readonly ultimoChaoSeguro = new Vector3();
   private apice = 0;
@@ -115,6 +120,7 @@ export class Jogador {
     this.posAnterior.copyFrom(this.posAtual);
     this.acumulado = 0;
     this.menorVy = 0;
+    this.saidaEscada = null;
     this.ultimoChaoSeguro.set(x, y, z);
     this.posicionarModelo(1);
   }
@@ -159,6 +165,10 @@ export class Jogador {
       const { frente, direita } = this.eixos();
       direcao = frente.scale(e.eixoY).add(direita.scale(e.eixoX));
       if (direcao.length() > 1) direcao.normalize();
+      if (this.saidaEscada) {
+        if (direcao.length() < 0.1) this.saidaEscada = null; // soltou: volta ao controle pela câmera
+        else direcao = this.saidaEscada.frente.scale(direcao.length());
+      }
     }
     const mag = direcao.length();
     return {
@@ -199,6 +209,7 @@ export class Jogador {
   }
 
   private passoFixo(h: number, ent: EntradaQuadro, primeiro: boolean): void {
+    if (this.saidaEscada && (this.saidaEscada.resta -= h) <= 0) this.saidaEscada = null;
     if (this.estado === "morto" || this.estado === "travado") {
       this.vel.x = this.vel.z = 0;
       this.integrar(h, this.controlador.checkSupport(h, BAIXO), true);
@@ -392,7 +403,7 @@ export class Jogador {
     const recuo = esc.tipo === "corda" ? 0.32 : 0.38;
     const base = centro.subtract(frente.scale(recuo));
     base.y = esc.y0;
-    const topo = centro.add(frente.scale(esc.tipo === "corda" ? 0.9 : 0.55));
+    const topo = centro.add(frente.scale(esc.tipo === "corda" ? M.saidaTopoCorda : M.saidaTopoEscada));
     topo.y = esc.y1;
     return { base, topo, frente };
   }
@@ -432,6 +443,8 @@ export class Jogador {
       this.sairEscada();
       this.moverPara(new Vector3(topo.x, esc.y1 + 0.05 + this.altura / 2, topo.z));
       this.controlador.setVelocity(Vector3.Zero());
+      this.ultimoChaoSeguro.set(topo.x, esc.y1, topo.z);
+      this.saidaEscada = { frente, resta: M.tempoSaidaEscada };
       return;
     }
     if (pesY <= esc.y0 && ent.subir < 0) {

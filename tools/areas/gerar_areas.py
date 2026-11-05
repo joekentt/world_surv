@@ -464,9 +464,10 @@ def sala_teste():
     S(-26.75, 0.6, 3, 0.5, 1.2, 6)
     S(-23.25, 0.6, 3, 0.5, 1.2, 6)
     # escada de mão em um bloco de 5 m; corda em uma plataforma de 6 m
-    S(-5, 2.5, 18, 4, 5, 4)
+    # plataformas com 8 m de profundidade: quem segura W ao chegar ao topo não cai logo do outro lado
+    S(-5, 2.5, 20, 4, 5, 8)
     a.d["escadas"].append(dict(x=-5, z=15.95, y0=0, y1=5, tipo="escada", yaw=0))
-    S(5, 3, 20, 4, 6, 4, "plataforma")
+    S(5, 3, 22, 4, 6, 8, "plataforma")
     a.d["escadas"].append(dict(x=5, z=17.6, y0=0, y1=6, tipo="corda", yaw=0))
     # pilares para orbitar a câmera
     for i in range(6):

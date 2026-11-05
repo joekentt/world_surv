@@ -30,6 +30,9 @@ async function preparar(p: Page) {
   await js(p, "window.__vc.gravar = true");
   await esperarJogo(p, 0.5);
 }
+async function girarCamera(p: Page, yaw: number) {
+  await p.evaluate((y) => (window.__vc.definirCamera as (y: number) => void)(y), yaw);
+}
 async function posicionar(p: Page, x: number, y: number, z: number, yawPersonagem: number, yawCamera: number, pitch?: number) {
   await p.evaluate(([x, y, z, yp, yc, pt]) => {
     (window.__vc.teleportar as (x: number, y: number, z: number, yaw: number) => void)(x, y, z, yp);
@@ -224,11 +227,19 @@ test.describe("fase 1: movimento (seção 3.3)", () => {
     await tecla(page, "KeyE", true); await esperarJogo(page, 0.1); await tecla(page, "KeyE", false);
     await page.waitForFunction(() => (window.__vc.estado as () => { estado: string })().estado === "escada", null, { timeout: 30_000 });
     await page.screenshot({ path: "tests/screenshots/fase-1/03_escada_de_mao.png" });
+    // câmera virada para a escada (de frente para o personagem): ao sair no topo com W ainda pressionado,
+    // o personagem segue para cima do bloco e não volta para a beirada
+    await girarCamera(page, Math.PI);
     await tecla(page, "KeyW", true);
     await page.waitForFunction(() => { const e = (window.__vc.estado as () => { estado: string; y: number })(); return e.estado === "chao" && e.y > 4.5; }, null, { timeout: 120_000 });
+    await esperarJogo(page, 0.4);
     await tecla(page, "KeyW", false);
-    m.escadaDeMao = Number((await estado(page)).y.toFixed(2));
+    await esperarJogo(page, 1.0);
+    const topo = await estado(page);
+    m.escadaDeMao = Number(topo.y.toFixed(2));
+    m.saidaEscadaZ = Number(topo.z.toFixed(2));
     expect(Number(m.escadaDeMao)).toBeGreaterThan(4.9);
+    expect(topo.z).toBeGreaterThan(16.4);
 
     // corda
     await posicionar(page, 5, 0, 16.9, 0, 0);

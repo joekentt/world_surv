@@ -72,3 +72,9 @@ Os seis testes da seção 3.4 passam. **Falta a aprovação do usuário da sensa
 - O usuário caiu num vazio sem fim ao jogar pelo menu. Causa: as áreas da revisão 1 são faixas de 6 m de profundidade sem paredes laterais e não havia proteção contra queda para fora do mapa.
 - Correção: paredes invisíveis nas laterais das áreas sem `z` (camada de colisão que a câmera ignora) e volta ao último chão firme quando o personagem passa 12 m abaixo do sólido mais baixo do mundo (`CFG.movimento.margemForaDoMapa`).
 - Teste novo em `tests/fase1.spec.ts`: borda em z = 2,66, câmera a 4,43 m fora da faixa, volta do vazio para (−40, 0, 0). Fase 0, fase 1 e interface: 11 testes passam.
+
+### 2026-11-05: queda ao sair pelo topo da escada
+
+- Retorno do usuário: ao chegar ao topo da escada de mão, o personagem caía. Reproduzido com a câmera de frente para a escada: ao sair com W pressionado, o movimento passava a seguir a câmera e levava o personagem de volta à beirada (y final 0).
+- Correção: saída 0,75 m para dentro do bloco (`saidaTopoEscada`) e, enquanto o movimento continuar pressionado por até 0,6 s depois da saída (`tempoSaidaEscada`), o personagem segue para a frente da escada. Plataformas da escada e da corda na sala de teste passaram de 4 para 8 m de profundidade.
+- Teste da escada em `tests/fase1.spec.ts` agora sobe com a câmera virada para a escada e mantém W depois da saída: y = 5, z = 17,63. Sem a correção, o mesmo teste falha. Fase 1: 8 testes passam.

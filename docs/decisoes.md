@@ -17,3 +17,4 @@ Uma linha por decisão: data, decisão e motivo. Acrescente no fim; não apague 
 | 2026-11-02 | Atraso da recentralização conta do mais recente entre o último movimento do mouse e o início da caminhada | Sem isso a câmera girava no primeiro passo |
 | 2026-11-05 | Especificação dividida em `docs/spec/`, estado em `docs/estado.md`, regras por pasta em `.claude/rules/` | Evitar estouro e perda de contexto no Claude Code |
 | 2026-11-05 | Volta ao último chão firme ao cair 12 m abaixo do sólido mais baixo do mundo; paredes invisíveis provisórias nas faixas da revisão 1 | O usuário caiu num vazio sem fim; as faixas serão substituídas na fase 2 |
+| 2026-11-05 | Ao sair pelo topo de escada ou corda, o movimento segue a frente da escada por até 0,6 s enquanto a tecla continuar pressionada | Com a câmera virada, o W pressionado levava o personagem de volta à beirada; é a única exceção ao movimento relativo à câmera |
