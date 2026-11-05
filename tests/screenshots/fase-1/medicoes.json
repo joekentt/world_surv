@@ -1,9 +1,9 @@
 {
   "criterio1_segundosAte10graus": {
-    "literal_s": 0.2,
-    "direcaoFixa_s": 1.62
+    "literal_s": 0.19,
+    "direcaoFixa_s": 1.64
   },
-  "criterio2_giroDoMouseGraus": 74.5,
+  "criterio2_giroDoMouseGraus": 75.5,
   "criterio3_variacaoGraus": 0,
   "criterio4_giroGraus": 0,
   "criterio5_amostras": 48,
@@ -23,6 +23,17 @@
     "escadaDeMao": 5.01,
     "corda": 6,
     "tunelEmPe": -0.33,
-    "tunelAgachado": 7.11
+    "tunelAgachado": 7.08
+  },
+  "areasAntigas": {
+    "bordaZ": 2.66,
+    "bordaY": 0,
+    "distanciaCameraNaBorda": 4.43,
+    "yDuranteQueda": -3,
+    "voltaDoVazio": {
+      "x": -40,
+      "y": 0,
+      "z": 0
+    }
   }
 }

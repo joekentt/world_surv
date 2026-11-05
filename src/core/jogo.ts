@@ -306,6 +306,7 @@ export class Jogo {
       this.camera.girar(this.entrada.eixoCamX * k, this.entrada.eixoCamY * k);
     }
     this.jogador.atualizar(dt);
+    if (this.jogador.pes.y < this.areas.pisoMinimo() - CFG_MOV.margemForaDoMapa) this.jogador.voltarAoChaoSeguro();
     const p = this.jogador.pes;
     this.camera.atualizar(dt, this.alvoCamera());
     this.registrarQuadro();

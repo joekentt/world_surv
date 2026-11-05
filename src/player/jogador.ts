@@ -55,6 +55,8 @@ export class Jogador {
   private escadaAtual: Escada | null = null;
   private altura: number = M.alturaCapsula;
   private menorVy = 0;
+  /** Pés no último chão firme pisado: destino quando o personagem cai para fora do mapa. */
+  private readonly ultimoChaoSeguro = new Vector3();
   private apice = 0;
   private acumulado = 0;
   private posAnterior = new Vector3();
@@ -112,7 +114,15 @@ export class Jogador {
     this.posAtual.copyFrom(this.controlador.getPosition());
     this.posAnterior.copyFrom(this.posAtual);
     this.acumulado = 0;
+    this.menorVy = 0;
+    this.ultimoChaoSeguro.set(x, y, z);
     this.posicionarModelo(1);
+  }
+
+  /** Volta ao último ponto de chão firme (queda para fora do mapa). */
+  voltarAoChaoSeguro(): void {
+    const c = this.ultimoChaoSeguro;
+    this.teleportar(c.x, c.y + 0.05, c.z);
   }
 
   travar(travar: boolean): void {
@@ -254,6 +264,9 @@ export class Jogador {
     } else if (noChao && this.vel.y <= 0.01) {
       if (this.estado === "ar") this.aterrissar();
       this.estado = "chao";
+      if (suporte.averageSurfaceNormal.y > 0.9) {
+        this.ultimoChaoSeguro.set(this.posAtual.x, this.posAtual.y - this.altura / 2, this.posAtual.z);
+      }
       this.menorVy = 0;
       // O apoio é detectado até ~0,1 m acima da superfície; uma velocidade para baixo leva a cápsula
       // até a folga de contato (sem pairar) e a mantém colada em rampas e na descida de degraus.

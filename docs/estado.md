@@ -1,12 +1,13 @@
 # Estado atual
 
-**Atualizado em:** 2026-11-05 (montado a partir do `git log` e de `docs/progresso.md`)
+**Atualizado em:** 2026-11-05
 
 **Fase atual:** revisão 2, fase 1 (câmera e movimento em terceira pessoa).
 
 **Situação:** os seis testes da seção 3.4 passam (commit b304e41). Falta a aprovação do usuário da sensação de controle na sala de teste. A fase 2 só começa depois dela.
 
 **Feito recentemente:**
+- Correção da queda sem fim nas áreas antigas: paredes laterais invisíveis (a câmera ignora) e volta ao último chão firme.
 - b304e41: controle em 3D livre, sala de teste e testes da seção 3.4.
 - fca8998: câmera com órbita livre, recentralização, colisão por esfera, zonas e opções.
 - 41df0a7: animações de aterrissar, giro rápido e corda; `render_check` com vista de costas.
@@ -16,7 +17,7 @@
 **Próximo passo:** receber o retorno do usuário sobre a sala de teste (`npm run dev`, depois `http://localhost:5173/?area=sala_teste`) e ajustar os valores em `src/config.ts`. Com a aprovação, iniciar a fase 2 da revisão 2 (`docs/spec/08-fases.md` e `docs/spec/05-mapa.md`).
 
 **Bloqueios e dúvidas para o usuário:**
-- Aprovação da sensação de controle.
+- Aprovação da sensação de controle na sala de teste (não no jogo pelo menu, que ainda usa as faixas estreitas da revisão 1 até a fase 2).
 
 **Arquivos principais tocados recentemente:**
 - `src/camera/cameraTerceiraPessoa.ts`, `src/camera/opcoes.ts`

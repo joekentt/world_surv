@@ -29,6 +29,17 @@ export class GerenciadorAreas {
   }
 
   /** Área que contém x no mundo atual. */
+  /** Altura da base do sólido mais baixo entre as áreas do mundo atual. */
+  pisoMinimo(): number {
+    const lista = this.areasDoMundo(this.mundo);
+    if (this.pisoCache?.mundo !== this.mundo) {
+      const bases = lista.flatMap((a) => a.solidos.map((s) => s.y - s.h / 2));
+      this.pisoCache = { mundo: this.mundo, y: bases.length ? Math.min(...bases) : 0 };
+    }
+    return this.pisoCache.y;
+  }
+  private pisoCache: { mundo: string; y: number } | null = null;
+
   areaEm(x: number): AreaDef | null {
     for (const a of this.areasDoMundo(this.mundo)) if (x >= a.inicio && x < a.fim) return a;
     return null;

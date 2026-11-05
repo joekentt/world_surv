@@ -66,3 +66,9 @@ Entrada (teclado e gamepad), física Havok, personagens, biblioteca de animaçõ
 ### Critério de avanço
 
 Os seis testes da seção 3.4 passam. **Falta a aprovação do usuário da sensação de controle na sala de teste**: a fase 2 só começa depois dela.
+
+### 2026-11-05: queda sem fim nas áreas antigas
+
+- O usuário caiu num vazio sem fim ao jogar pelo menu. Causa: as áreas da revisão 1 são faixas de 6 m de profundidade sem paredes laterais e não havia proteção contra queda para fora do mapa.
+- Correção: paredes invisíveis nas laterais das áreas sem `z` (camada de colisão que a câmera ignora) e volta ao último chão firme quando o personagem passa 12 m abaixo do sólido mais baixo do mundo (`CFG.movimento.margemForaDoMapa`).
+- Teste novo em `tests/fase1.spec.ts`: borda em z = 2,66, câmera a 4,43 m fora da faixa, volta do vazio para (−40, 0, 0). Fase 0, fase 1 e interface: 11 testes passam.

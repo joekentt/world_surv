@@ -3,7 +3,25 @@ import {
   TransformNode, Vector3, type AbstractMesh, type AssetContainer, type Light, type Scene,
 } from "@babylonjs/core";
 import type { Carregador } from "../core/carregador";
-import type { AreaDef, Peca } from "./tipos";
+import { CFG } from "../config";
+import type { AreaDef, Peca, Solido } from "./tipos";
+
+/** Camada de colisão de sólidos que barram o personagem mas não a câmera (paredes invisíveis). */
+export const CAMADA_SEM_CAMERA = 1 << 4;
+
+/**
+ * Áreas da revisão 1 são faixas lineares sem profundidade definida (nenhum sólido tem z).
+ * Com o movimento livre, recebem paredes invisíveis nas laterais até serem refeitas na fase 2.
+ */
+function bordasFaixaAntiga(def: AreaDef): Solido[] {
+  if (def.solidos.length === 0 || def.solidos.some((s) => s.z !== undefined)) return [];
+  const meia = CFG.movimento.profundidadeFaixaAntiga / 2;
+  const base = Math.min(...def.solidos.map((s) => s.y - s.h / 2)) - 2;
+  const topo = Math.max(...def.solidos.map((s) => s.y + s.h / 2)) + 30;
+  const largura = def.fim - def.inicio;
+  const comum = { x: (def.inicio + def.fim) / 2, y: (base + topo) / 2, w: largura, h: topo - base, d: 1, invisivel: true, semCamera: true };
+  return [{ ...comum, z: meia + 0.5 }, { ...comum, z: -meia - 0.5 }];
+}
 
 export interface AreaCarregada {
   def: AreaDef;
@@ -83,8 +101,8 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
   const luzes: Light[] = [];
   const temKit = !!def.kit;
 
-  for (const [i, s] of def.solidos.entries()) {
-    const caixa = MeshBuilder.CreateBox(`${def.id}_solido_${i}`, { width: s.w, height: s.h, depth: s.d ?? 6 }, cena);
+  for (const [i, s] of [...def.solidos, ...bordasFaixaAntiga(def)].entries()) {
+    const caixa = MeshBuilder.CreateBox(`${def.id}_solido_${i}`, { width: s.w, height: s.h, depth: s.d ?? CFG.movimento.profundidadeFaixaAntiga }, cena);
     caixa.position.set(s.x, s.y, s.z ?? 0);
     if (s.rx || s.ry || s.rz) caixa.rotation.set(((s.rx ?? 0) * Math.PI) / 180, ((s.ry ?? 0) * Math.PI) / 180, ((s.rz ?? 0) * Math.PI) / 180);
     caixa.parent = raiz;
@@ -95,7 +113,9 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
       caixa.receiveShadows = true;
       malhas.push(caixa);
     }
-    corpos.push(new PhysicsAggregate(caixa, PhysicsShapeType.BOX, { mass: 0, friction: 0.6 }, cena));
+    const corpo = new PhysicsAggregate(caixa, PhysicsShapeType.BOX, { mass: 0, friction: 0.6 }, cena);
+    if (s.semCamera) corpo.shape.filterMembershipMask = CAMADA_SEM_CAMERA;
+    corpos.push(corpo);
   }
 
   if (def.kit) {

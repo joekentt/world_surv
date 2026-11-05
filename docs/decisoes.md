@@ -16,3 +16,4 @@ Uma linha por decisão: data, decisão e motivo. Acrescente no fim; não apague 
 | 2026-11-02 | Campo de visão de 70° interpretado como horizontal | Na vertical, 70° deixaria a imagem muito aberta em telas 16:9 |
 | 2026-11-02 | Atraso da recentralização conta do mais recente entre o último movimento do mouse e o início da caminhada | Sem isso a câmera girava no primeiro passo |
 | 2026-11-05 | Especificação dividida em `docs/spec/`, estado em `docs/estado.md`, regras por pasta em `.claude/rules/` | Evitar estouro e perda de contexto no Claude Code |
+| 2026-11-05 | Volta ao último chão firme ao cair 12 m abaixo do sólido mais baixo do mundo; paredes invisíveis provisórias nas faixas da revisão 1 | O usuário caiu num vazio sem fim; as faixas serão substituídas na fase 2 |

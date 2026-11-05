@@ -2,6 +2,7 @@ import {
   Camera, FreeCamera, PhysicsShapeSphere, Quaternion, ShapeCastResult, Vector3,
   type HavokPlugin, type PhysicsBody, type Scene,
 } from "@babylonjs/core";
+import { CAMADA_SEM_CAMERA } from "../world/construtor";
 import { CFG } from "../config";
 import { carregarOpcoes, salvarOpcoes, type OpcoesCamera } from "./opcoes";
 
@@ -247,7 +248,10 @@ export class CameraTerceiraPessoa {
   private distanciaLivre(desejada: number): number {
     const plugin = this.cena.getPhysicsEngine()?.getPhysicsPlugin() as HavokPlugin | undefined;
     if (!plugin || typeof plugin.shapeCast !== "function") return desejada;
-    if (!this.esfera) this.esfera = new PhysicsShapeSphere(Vector3.Zero(), C.raioColisao, this.cena);
+    if (!this.esfera) {
+      this.esfera = new PhysicsShapeSphere(Vector3.Zero(), C.raioColisao, this.cena);
+      this.esfera.filterCollideMask = ~CAMADA_SEM_CAMERA;
+    }
     const inicio = this.foco.clone();
     const fim = inicio.subtract(this.direcao().scale(desejada));
     this.resultadoEntrada.reset();

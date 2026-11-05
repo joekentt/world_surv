@@ -30,6 +30,8 @@ export const CFG = {
     "velocidadeQuedaDano": 13,
     "danoRoupaPorQueda": 12,
     "velocidadeMaxQueda": 30,
+    "margemForaDoMapa": 12,
+    "profundidadeFaixaAntiga": 6,
     "inclinacaoCurvaGraus": 9,
     "giroRapidoGraus": 150,
     "passoFisica": 0.016666666666666666,

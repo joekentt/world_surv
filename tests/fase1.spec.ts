@@ -252,4 +252,44 @@ test.describe("fase 1: movimento (seção 3.3)", () => {
     expect(Number(m.tunelAgachado)).toBeGreaterThan(6.0);
     registrar("fase-1", { movimento: m });
   });
+
+  test("áreas antigas: bordas laterais sem bloquear a câmera e volta ao chão depois de cair do mapa", async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 360 });
+    await abrir(page, "area=praca&render=webgl2&qualidade=alta");
+    await esperarJogo(page, 0.5);
+    const m: Record<string, unknown> = {};
+    // andando para a lateral (+Z) por 3 s: a parede invisível segura o personagem na faixa
+    await posicionar(page, -40, 0, 0, 0, 0);
+    await tecla(page, "KeyW", true);
+    await esperarJogo(page, 3);
+    await tecla(page, "KeyW", false);
+    let e = await estado(page);
+    m.bordaZ = Number(e.z.toFixed(2));
+    m.bordaY = Number(e.y.toFixed(2));
+    expect(e.z).toBeLessThan(3.2);
+    expect(e.y).toBeGreaterThan(-0.5);
+    // câmera do lado de fora da faixa (atrás da parede invisível): não é empurrada
+    await esperarJogo(page, 1);
+    const cam = await js<{ x: number; y: number; z: number }>(page, "window.__vc.camera()");
+    m.distanciaCameraNaBorda = Number(Math.hypot(cam.x - e.x, cam.z - e.z).toFixed(2));
+    expect(cam.z).toBeLessThan(-0.5);
+    expect(Number(m.distanciaCameraNaBorda)).toBeGreaterThan(3.5);
+    // queda para fora do mapa: volta ao último chão firme
+    await posicionar(page, -40, 0, 0, 0, 0);
+    await page.evaluate(() => {
+      const j = (window.__vc.jogo as { jogador: { controlador: { getPosition(): { clone(): { z: number } } }; moverPara(v: unknown): void } }).jogador;
+      const v = j.controlador.getPosition().clone();
+      v.z = 12;
+      j.moverPara(v);
+    });
+    await esperarJogo(page, 0.4);
+    m.yDuranteQueda = Number((await estado(page)).y.toFixed(2));
+    await esperarJogo(page, 2.6);
+    e = await estado(page);
+    m.voltaDoVazio = { x: Number(e.x.toFixed(2)), y: Number(e.y.toFixed(2)), z: Number(e.z.toFixed(2)) };
+    expect(Number(m.yDuranteQueda)).toBeLessThan(-0.5);
+    expect(e.y).toBeGreaterThan(-0.5);
+    expect(Math.abs(e.z)).toBeLessThan(1);
+    registrar("fase-1", { areasAntigas: m });
+  });
 });
