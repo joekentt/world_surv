@@ -84,3 +84,9 @@ Os seis testes da seção 3.4 passam. **Falta a aprovação do usuário da sensa
 - Retorno do usuário: a corrida estava lenta. Como 5,5 m/s também calcula a regra de bloqueio da seção 5.3, o usuário escolheu 7 m/s com a superfície ampliada em 27% (`docs/spec/05-mapa.md` atualizado: Marco a 260 m, Antena a 485 m, limite x ±318, z −102 a 573).
 - Novo `tools/blender/animacoes/medir_passada.py`: mede a velocidade em que o pé de apoio não desliza. Os valores antigos (1,3 e 4,0) estavam errados; medidos: andar 1,79 m/s, correr 6,28 m/s depois de alongar a passada da corrida. A 7 m/s a reprodução fica em 1,11×.
 - `animacoes.glb` regenerado (duas passadas de meshopt, como o arquivo anterior: 501 KB). Fase 0 e fase 1: 10 testes passam; corrida medida a 7,0 m/s.
+
+### 2026-11-05: fase 1 fechada; fase 2, tarefa 1 (áreas em 3D)
+
+- Fase 1 fechada: o usuário aprovou o controle com os ajustes de corrida e escada. Suíte completa: 20 testes passam (os 10 que falharam na primeira rodada foram `ERR_CONNECTION_REFUSED`, servidor de desenvolvimento derrubado ao interromper a rodada anterior; repetidos, passaram).
+- Tarefa 1 da fase 2: `AreaDef.limites` (caixa 3D), `caixaDaArea`, `distanciaArea`; `GerenciadorAreas.areaEm`, `atualizar` e `entrarMundo` recebem ponto 3D; com caixas sobrepostas vale a de menor volume (níveis empilhados, como vila e Galerias). Faixas da revisão 1 continuam funcionando pela caixa derivada de inicio e fim.
+- Gerador: `Area.caixa(min, max)`; área aninhada `sala_teste_corredor` para o teste "áreas em 3D".

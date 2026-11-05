@@ -1,5 +1,6 @@
 {
-  "fpsPracaComNpcs_webgl2_swiftshader": 2.2,
+  "fpsPracaComNpcs_webgl2_swiftshader": 5.8,
   "modelosCarregados": 20,
-  "visiveisNaPraca": 13
+  "visiveisNaPraca": 13,
+  "exemploConversa": "E com mais guardas."
 }
