@@ -11,7 +11,7 @@
 - fca8998: câmera com órbita livre, recentralização, colisão por esfera, zonas e opções.
 - 41df0a7: animações de aterrissar, giro rápido e corda; `render_check` com vista de costas.
 - 2052e39: valores ajustáveis migrados para `src/config.ts`.
-- Memória do projeto reorganizada: `docs/spec/`, `docs/estado.md`, `docs/decisoes.md`, `.claude/rules/`, `/retomar`, `/fechar-tarefa` e hook pós-compactação (ainda sem commit).
+- Memória do projeto reorganizada: `docs/spec/`, `docs/estado.md`, `docs/decisoes.md`, `.claude/rules/`, `/retomar`, `/fechar-tarefa` e hook pós-compactação (commit 247537b, caminhos conferidos depois).
 
 **Próximo passo:** receber o retorno do usuário sobre a sala de teste (`npm run dev`, depois `http://localhost:5173/?area=sala_teste`) e ajustar os valores em `src/config.ts`. Com a aprovação, iniciar a fase 2 da revisão 2 (`docs/spec/08-fases.md` e `docs/spec/05-mapa.md`).
 

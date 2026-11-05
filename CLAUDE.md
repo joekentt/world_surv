@@ -26,10 +26,10 @@ A conversa é apagada a cada `/clear` e resumida a cada compactação. O que pre
 
 Saídas longas e imagens são o que mais enche a janela de contexto.
 
-- Comando com saída longa grava em `logs/` e você lê só o fim ou os erros. Exemplos: `npm run assets > logs/assets.log 2>&1; tail -n 30 logs/assets.log` e `npm test -- tests/fase1.spec.ts --reporter=line > logs/testes.log 2>&1; tail -n 40 logs/testes.log`.
+- Comando com saída longa grava em `logs/` (pasta ignorada pelo git; crie com `mkdir -p logs` num clone novo) e você lê só o fim ou os erros. Exemplos: `npm run assets > logs/assets.log 2>&1; tail -n 30 logs/assets.log` e `npm test -- tests/fase1.spec.ts --reporter=line > logs/testes.log 2>&1; tail -n 40 logs/testes.log`.
 - Rode só os testes da fase ou do arquivo alterado. A suíte inteira, só ao fechar uma fase.
 - Screenshots: abra só os necessários para o critério da tarefa, no máximo 4 por rodada. Para revisar mais, use um subagente que devolva só o veredito e os problemas.
-- Não leia arquivos grandes inteiros: use Grep e leitura por trecho. Nunca leia GLB, KTX2 ou outros binários. Os scripts em `tools/blender/` e `tools/areas/` têm mais de 900 linhas: leia só a função que vai alterar.
+- Não leia arquivos grandes inteiros: use Grep e leitura por trecho. Nunca leia GLB, KTX2 ou outros binários. Os scripts maiores são `tools/blender/kits/gerar_kits.py` (cerca de 900 linhas), `tools/blender/personagens/gerar_personagem.py` (850), `tools/blender/animacoes/gerar_animacoes.py` e `tools/areas/gerar_areas.py` (500 cada): leia só a função que vai alterar.
 - Use `git diff --ignore-cr-at-eol` e `git status` com moderação: o checkout no Windows marca arquivos como alterados só pelo fim de linha (CRLF).
 - Buscas amplas pelo código: use um subagente de exploração e traga só a conclusão.
 
