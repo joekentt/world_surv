@@ -35,7 +35,7 @@ A câmera orbita livremente ao redor do personagem. O mouse (ou o analógico dir
 | Parâmetro | Valor inicial |
 | --- | --- |
 | Andar | 2,2 m/s |
-| Correr (Shift ou analógico no máximo) | 5,5 m/s |
+| Correr (Shift ou analógico no máximo) | 7 m/s (era 5,5; alterado a pedido do usuário em 5/11/2026) |
 | Agachado | 1,3 m/s |
 | Tempo até a velocidade máxima | 0,15 s |
 | Tempo até parar | 0,12 s |

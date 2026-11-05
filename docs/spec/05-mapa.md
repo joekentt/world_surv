@@ -27,20 +27,20 @@ Com a câmera livre, a sensação de mundo aberto vem de seis recursos de desenh
 
 ### 5.2 Superfície
 
-Área jogável de cerca de 500 × 530 m. Coordenadas em metros, com a Boca do Poço na origem e o norte no eixo Z positivo.
+Área jogável de cerca de 640 × 675 m (ampliada em 27% em 5/11/2026, junto com a corrida de 7 m/s, para manter a regra da seção 5.3). Coordenadas em metros, com a Boca do Poço na origem e o norte no eixo Z positivo.
 
 | Ponto | Posição (x, z) | Função |
 | --- | --- | --- |
 | Boca do Poço | (0, 0) | Saída principal e retorno seguro |
-| Ruínas próximas | Raio de 40 a 100 m ao norte da Boca | Sucata, carros soterrados, prédios com interior que servem de abrigo |
-| Escotilha Oeste | (-140, 90) | Retorno alternativo, aberta pelo lado de dentro na missão 3 |
-| Escotilha Leste | (150, 60) | Retorno alternativo, aberta na tarefa opcional |
-| Leito seco do rio | Faixa leste-oeste entre z = 150 e z = 170 | Obstáculo natural com duas travessias |
-| O Marco | (-40, 200) | Monumento em uma praça antiga, objetivo da missão 3 |
-| Torre d'Água | (-180, 300) | Marco visual e tarefa opcional |
-| Viaduto caído | De (120, 260) a (40, 300) | Rota elevada até a colina da Antena |
-| A Antena | (30, 380), colina 25 m acima | Objetivo da missão 4 e mirante final |
-| Limite jogável | x de -250 a 250, z de -80 a 450 | Parede de tempestade permanente: o dreno do EPI cresce rapidamente além dela |
+| Ruínas próximas | Raio de 50 a 127 m ao norte da Boca | Sucata, carros soterrados, prédios com interior que servem de abrigo |
+| Escotilha Oeste | (-178, 115) | Retorno alternativo, aberta pelo lado de dentro na missão 3 |
+| Escotilha Leste | (191, 76) | Retorno alternativo, aberta na tarefa opcional |
+| Leito seco do rio | Faixa leste-oeste entre z = 191 e z = 216 | Obstáculo natural com duas travessias |
+| O Marco | (-51, 255) | Monumento em uma praça antiga, objetivo da missão 3 |
+| Torre d'Água | (-229, 382) | Marco visual e tarefa opcional |
+| Viaduto caído | De (153, 331) a (51, 382) | Rota elevada até a colina da Antena |
+| A Antena | (38, 484), colina 25 m acima | Objetivo da missão 4 e mirante final |
+| Limite jogável | x de -318 a 318, z de -102 a 573 | Parede de tempestade permanente: o dreno do EPI cresce rapidamente além dela |
 
 Elementos de mundo aberto na superfície:
 
@@ -53,10 +53,10 @@ Elementos de mundo aberto na superfície:
 
 Cada ponto deve ser alcançável apenas com o filtro exigido. Regra: a ida e volta correndo pela rota mais curta precisa ultrapassar o tempo de filtro do nível anterior e caber no tempo do nível exigido com pelo menos 30 s de folga.
 
-| Destino | Distância em linha reta | Ida e volta correndo (5,5 m/s) | Filtro exigido | Filtro efetivo correndo (tempo ÷ 1,3) |
+| Destino | Distância em linha reta | Ida e volta correndo (7 m/s) | Filtro exigido | Filtro efetivo correndo (tempo ÷ 1,3) |
 | --- | --- | --- | --- | --- |
-| Ruínas próximas | 80 a 100 m | 29 a 36 s | Básico (90 s) | 69 s |
-| O Marco | 204 m | 74 s | Nível 2 (150 s) | 115 s |
-| A Antena | 381 m | 139 s | Nível 3 (240 s) | 185 s |
+| Ruínas próximas | 102 a 127 m | 29 a 36 s | Básico (90 s) | 69 s |
+| O Marco | 260 m | 74 s | Nível 2 (150 s) | 115 s |
+| A Antena | 485 m | 139 s | Nível 3 (240 s) | 185 s |
 
-As distâncias reais seguem o navmesh e ficam maiores que a linha reta. Um teste automatizado calcula a rota mais curta até cada ponto, considerando as escotilhas abertas em cada momento da história. O teste falha se a regra for quebrada. Exemplo do que o teste deve capturar: com a Escotilha Oeste aberta, a ida ao Marco pela Boca e a volta pela escotilha somam cerca de 353 m (64 s), o que caberia no filtro básico. Por isso essa escotilha só abre depois da missão 3.
+As distâncias reais seguem o navmesh e ficam maiores que a linha reta. Um teste automatizado calcula a rota mais curta até cada ponto, considerando as escotilhas abertas em cada momento da história. O teste falha se a regra for quebrada. Exemplo do que o teste deve capturar: com a Escotilha Oeste aberta, a ida ao Marco pela Boca e a volta pela escotilha somam cerca de 449 m (64 s), o que caberia no filtro básico. Por isso essa escotilha só abre depois da missão 3.

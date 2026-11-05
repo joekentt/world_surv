@@ -180,7 +180,7 @@ test.describe("fase 1: movimento (seção 3.3)", () => {
     const parou = regs.find((r) => r.vel < 0.05);
     m.tempoAteParar = parou ? Number((parou.t - t0).toFixed(3)) : -1;
     expect(m.andar).toBeGreaterThan(2.0);
-    expect(m.correr).toBeGreaterThan(5.2);
+    expect(m.correr).toBeGreaterThan(6.7);
     expect(Number(m.tempoAteParar)).toBeLessThan(0.25);
     await page.screenshot({ path: "tests/screenshots/fase-1/01_area_aberta.png" });
 

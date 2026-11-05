@@ -1,18 +1,18 @@
 {
   "criterio1_segundosAte10graus": {
-    "literal_s": 0.24,
-    "direcaoFixa_s": 1.63
+    "literal_s": 0.18,
+    "direcaoFixa_s": 1.6
   },
-  "criterio2_giroDoMouseGraus": 83.5,
+  "criterio2_giroDoMouseGraus": 82.9,
   "criterio3_variacaoGraus": 0,
   "criterio4_giroGraus": 0,
   "criterio5_amostras": 48,
   "criterio5_falhas": 0,
-  "criterio6_velocidadeNoQuadroSeguinte": 1.833,
+  "criterio6_velocidadeNoQuadroSeguinte": 2.2,
   "movimento": {
     "andar": 2.2,
-    "correr": 5.5,
-    "tempoAteParar": 0.15,
+    "correr": 7,
+    "tempoAteParar": 0.131,
     "alturaPulo": 1.15,
     "degrau030": 0.3,
     "degrau040": 0,
@@ -21,16 +21,16 @@
     "rampa50": 0,
     "escadaria": 2,
     "escadaDeMao": 5,
-    "saidaEscadaZ": 17.59,
+    "saidaEscadaZ": 17.64,
     "corda": 6,
-    "tunelEmPe": -0.33,
-    "tunelAgachado": 7.12
+    "tunelEmPe": -0.31,
+    "tunelAgachado": 7.13
   },
   "areasAntigas": {
-    "bordaZ": 2.66,
+    "bordaZ": 2.68,
     "bordaY": 0,
     "distanciaCameraNaBorda": 4.43,
-    "yDuranteQueda": -2.75,
+    "yDuranteQueda": -3.22,
     "voltaDoVazio": {
       "x": -40,
       "y": 0,

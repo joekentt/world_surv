@@ -6,7 +6,7 @@
 export const CFG = {
   "movimento": {
     "andar": 2.2,
-    "correr": 5.5,
+    "correr": 7.0,
     "agachado": 1.3,
     "tempoAteMaxima": 0.15,
     "tempoAteParar": 0.12,
@@ -40,8 +40,8 @@ export const CFG = {
     "passoFisica": 0.016666666666666666,
     "colarNoChao": 2.5,
     "maxPassosPorQuadro": 5,
-    "velocidadeReferenciaAndar": 1.3,
-    "velocidadeReferenciaCorrer": 4.0
+    "velocidadeReferenciaAndar": 1.79,
+    "velocidadeReferenciaCorrer": 6.28
   },
   "camera": {
     "alturaFoco": 1.55,

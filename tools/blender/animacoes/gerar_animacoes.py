@@ -90,8 +90,8 @@ def ordem_hierarquica(arm) -> list:
     return saida
 
 
-def aplicar(arm, pose: Pose, quadro: int) -> None:
-    """Rotações do usuário são em eixos fixos do personagem, aplicadas depois das do pai.
+def aplicar(arm, pose: Pose, quadro: int | None) -> None:
+    """Aplica a pose e grava chave no quadro (sem chave se quadro for None). Rotações do usuário são em eixos fixos do personagem, aplicadas depois das do pai.
 
     Delta global do osso: W = Q · W_pai. Rotação local no Blender: L = R⁻¹ · W_pai⁻¹ · W · R,
     em que R é a orientação de repouso do osso no espaço da armature.
@@ -112,10 +112,12 @@ def aplicar(arm, pose: Pose, quadro: int) -> None:
         if pb.name[:-2] in DEDOS and lado in curvas:
             local = local @ Quaternion(Vector((1, 0, 0)), math.radians(curvas[lado]))
         pb.rotation_quaternion = local
-        pb.keyframe_insert("rotation_quaternion", frame=quadro)
+        if quadro is not None:
+            pb.keyframe_insert("rotation_quaternion", frame=quadro)
         if pb.name == "pelvis":
             pb.location = rest.inverted() @ pose.desloc
-            pb.keyframe_insert("location", frame=quadro)
+            if quadro is not None:
+                pb.keyframe_insert("location", frame=quadro)
 
 
 def nova_acao(arm, nome: str):
@@ -197,16 +199,17 @@ def andar(t, intensidade=1.0):
 
 
 def correr(t):
+    # passada longa para a corrida de 7 m/s (velocidade de referência medida com medir_passada.py)
     p = base_parado(Pose())
     passo = s(t)
-    p.frente("thigh_l", 42 * passo + 8)
-    p.frente("thigh_r", -42 * passo + 8)
+    p.frente("thigh_l", 50 * passo + 10)
+    p.frente("thigh_r", -50 * passo + 10)
     p.frente("calf_l", -(max(0.0, s(t, 0.12)) * 85 + 18))
     p.frente("calf_r", -(max(0.0, s(t, 0.62)) * 85 + 18))
     p.frente("foot_l", max(0.0, -s(t, 0.05)) * 25 - 8)
     p.frente("foot_r", max(0.0, -s(t, 0.55)) * 25 - 8)
-    p.frente("upperarm_l", -40 * passo)
-    p.frente("upperarm_r", 40 * passo)
+    p.frente("upperarm_l", -46 * passo)
+    p.frente("upperarm_r", 46 * passo)
     p.lado("upperarm_l", -8)
     p.lado("upperarm_r", -8)
     p.frente("lowerarm_l", 75)

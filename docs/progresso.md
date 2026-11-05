@@ -78,3 +78,9 @@ Os seis testes da seção 3.4 passam. **Falta a aprovação do usuário da sensa
 - Retorno do usuário: ao chegar ao topo da escada de mão, o personagem caía. Reproduzido com a câmera de frente para a escada: ao sair com W pressionado, o movimento passava a seguir a câmera e levava o personagem de volta à beirada (y final 0).
 - Correção: saída 0,75 m para dentro do bloco (`saidaTopoEscada`) e, enquanto o movimento continuar pressionado por até 0,6 s depois da saída (`tempoSaidaEscada`), o personagem segue para a frente da escada. Plataformas da escada e da corda na sala de teste passaram de 4 para 8 m de profundidade.
 - Teste da escada em `tests/fase1.spec.ts` agora sobe com a câmera virada para a escada e mantém W depois da saída: y = 5, z = 17,63. Sem a correção, o mesmo teste falha. Fase 1: 8 testes passam.
+
+### 2026-11-05: corrida de 7 m/s
+
+- Retorno do usuário: a corrida estava lenta. Como 5,5 m/s também calcula a regra de bloqueio da seção 5.3, o usuário escolheu 7 m/s com a superfície ampliada em 27% (`docs/spec/05-mapa.md` atualizado: Marco a 260 m, Antena a 485 m, limite x ±318, z −102 a 573).
+- Novo `tools/blender/animacoes/medir_passada.py`: mede a velocidade em que o pé de apoio não desliza. Os valores antigos (1,3 e 4,0) estavam errados; medidos: andar 1,79 m/s, correr 6,28 m/s depois de alongar a passada da corrida. A 7 m/s a reprodução fica em 1,11×.
+- `animacoes.glb` regenerado (duas passadas de meshopt, como o arquivo anterior: 501 KB). Fase 0 e fase 1: 10 testes passam; corrida medida a 7,0 m/s.
