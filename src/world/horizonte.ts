@@ -3,14 +3,15 @@ import type { AreaDef } from "./tipos";
 
 /**
  * Horizonte da superfície (seção 5.2): cidade em ruínas até cerca de 2 km em volta da área jogável, chão de
- * areia até lá, montanhas ao fundo e um céu em degradê; à noite, a luz piscando a nordeste.
+ * areia até lá e montanhas ao fundo; à noite, a luz piscando a nordeste. O céu é a cor de fundo da cena (uma
+ * meia esfera em degradê custava uma passada de tela cheia a mais).
  *
  * Tudo é gerado aqui por código com semente fixa (nada modelado à mão) e desenhado sem luz: cada pedaço tem
  * um material emissivo cuja cor é misturada, a cada quadro, com a cor do céu conforme a distância da câmera.
  * É a névoa do horizonte, mais rala que a da cena (que esconderia tudo além de ~1 km) e mais densa na
  * tempestade. A mesma técnica serve ao WebGPU e ao WebGL2.
  *
- * Custo: ~40 malhas estáticas (a maioria fora do campo de visão a cada quadro), ~25 mil triângulos.
+ * Custo: ~40 malhas estáticas (a maioria fora do campo de visão a cada quadro), ~25 mil triângulos, sem textura.
  */
 
 type Cor = [number, number, number];
@@ -105,7 +106,6 @@ interface Pedaco {
 export class Horizonte {
   private pedacos: Pedaco[] = [];
   private luzNE: { malha: Mesh; mat: StandardMaterial } | null = null;
-  private ceu: { malha: Mesh; mat: StandardMaterial } | null = null;
   private readonly centro: { x: number; z: number };
   private readonly lim: { x0: number; x1: number; z0: number; z1: number };
 
@@ -121,12 +121,10 @@ export class Horizonte {
     this.construirChao(borda, altura);
     this.construirCidade(borda, qualidade);
     this.construirMontanhas();
-    this.construirCeu();
     this.construirLuzNordeste();
     for (const camada of cena.effectLayers) {
       if (!(camada instanceof GlowLayer)) continue;
       for (const p of this.pedacos) for (const m of p.malhas) camada.addExcludedMesh(m);
-      if (this.ceu) camada.addExcludedMesh(this.ceu.malha);
     }
   }
 
@@ -299,25 +297,6 @@ export class Horizonte {
     }
   }
 
-  /** Céu em degradê (meia esfera que acompanha a câmera): a cor de fundo no horizonte, mais fria no alto. */
-  private construirCeu(): void {
-    const ceu = MeshBuilder.CreateSphere("horizonte_ceu", { diameter: 4900, segments: 12, slice: 0.6, sideOrientation: Mesh.DOUBLESIDE }, this.cena);
-    const pos = ceu.getVerticesData("position")!;
-    const cores: number[] = [];
-    for (let i = 0; i < pos.length; i += 3) {
-      const h = Math.max(0, pos[i + 1] / 2450);
-      const k = Math.pow(h, 0.6);
-      cores.push(1 - 0.1 * k, 1 - 0.06 * k, 1 + 0.06 * k, 1);
-    }
-    ceu.setVerticesData("color", cores);
-    const mat = this.material("ceu");
-    ceu.material = mat;
-    ceu.infiniteDistance = true;
-    ceu.alwaysSelectAsActiveMesh = true;
-    ceu.isPickable = false;
-    this.ceu = { malha: ceu, mat };
-  }
-
   /** Luz piscando a nordeste, no alto de uma torre distante: só aparece quando a cena está escura. */
   private construirLuzNordeste(): void {
     const a = Math.PI / 4;
@@ -389,9 +368,6 @@ export class Horizonte {
         p.cor[2] * brilho * (1 - k) + ceu[2] * k,
       );
     }
-    if (this.ceu) {
-      this.ceu.mat.emissiveColor.set(fundo.r, fundo.g, fundo.b);
-    }
     if (this.luzNE) {
       const noite = brilho < 0.3 && poeira < 0.3;
       // dois lampejos curtos a cada 2,6 s, como um farol de obstáculo
@@ -407,10 +383,6 @@ export class Horizonte {
       p.mat.dispose();
     }
     this.pedacos = [];
-    if (this.ceu) {
-      this.ceu.malha.dispose();
-      this.ceu.mat.dispose();
-    }
     if (this.luzNE) {
       this.luzNE.malha.dispose(false, true);
       this.luzNE.mat.dispose();

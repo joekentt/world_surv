@@ -1,5 +1,5 @@
 import {
-  Color3, GlowLayer, Matrix, Mesh, MeshBuilder, PBRMaterial, PhysicsAggregate, PhysicsShapeType, PointLight, SpotLight, StandardMaterial,
+  Color3, GlowLayer, Matrix, Mesh, MeshBuilder, PBRMaterial, Quaternion, PhysicsAggregate, PhysicsShapeType, PointLight, SpotLight, StandardMaterial,
   TransformNode, Vector3, VertexData, type AbstractMesh, type AssetContainer, type Light, type Scene,
 } from "@babylonjs/core";
 import type { Carregador } from "../core/carregador";
@@ -144,6 +144,35 @@ function construirTerreno(cena: Scene, id: string, t: Terreno, raiz: TransformNo
   }
 }
 
+/**
+ * Kits da revisão 2: troca o material PBR do glTF por um StandardMaterial equivalente (cor, textura e emissão) e
+ * passa a cor dos vértices para o espaço gama. O PBR sem mapa de ambiente saía escuro, com queda de luz diferente
+ * da dos blocos em volta, e o sombreador dele pesa bem mais no WebGL2 por software.
+ */
+function paraMaterialPadrao(m: Mesh): void {
+  const pbr = m.material;
+  if (!(pbr instanceof PBRMaterial)) return;
+  const cena = m.getScene();
+  const id = `kit_${pbr.name}`;
+  let mat = cena.getMaterialByName(id) as StandardMaterial | null;
+  if (!mat) {
+    mat = new StandardMaterial(id, cena);
+    mat.diffuseColor = pbr.albedoColor.toGammaSpace();
+    if (pbr.albedoTexture) mat.diffuseTexture = pbr.albedoTexture;
+    const em = pbr.emissiveColor.toGammaSpace().scale(Math.min(2, pbr.emissiveIntensity));
+    if (em.r + em.g + em.b > 0.01) mat.emissiveColor = em;
+    mat.specularColor = new Color3(0.06, 0.06, 0.06);
+    mat.backFaceCulling = pbr.backFaceCulling;
+  }
+  m.material = mat;
+  const cores = m.getVerticesData("color");
+  if (cores) {
+    const g = new Float32Array(cores.length);
+    for (let i = 0; i < cores.length; i++) g[i] = (i & 3) === 3 ? cores[i] : Math.pow(cores[i], 1 / 2.2);
+    m.setVerticesData("color", g);
+  }
+}
+
 /** Módulos de kit já carregados: nome do módulo -> malha-fonte (oculta) para instanciar. */
 export async function fontesDoKit(carregador: Carregador, kit: string): Promise<Map<string, Mesh[]>> {
   const c: AssetContainer = await carregador.carregar(`kits/${kit}.glb`);
@@ -168,9 +197,7 @@ export async function fontesDoKit(carregador: Carregador, kit: string): Promise<
       m.rotation.setAll(0);
       m.scaling.setAll(1);
       m.bakeTransformIntoVertices(mundo);
-      // kits da revisão 2: queda de luz como a dos blocos (StandardMaterial), para a lanterna e as lâmpadas
-      // iluminarem as peças do mesmo jeito que a geometria em volta
-      if (kit.startsWith("r2_") && m.material instanceof PBRMaterial) m.material.usePhysicalLightFalloff = false;
+      if (kit.startsWith("r2_")) paraMaterialPadrao(m);
       m.setEnabled(true);
       m.isVisible = false;
       m.isPickable = false;
@@ -260,29 +287,59 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
   const nomesKits = def.kit ? [def.kit, "comum"] : def.kits ?? [];
   if (nomesKits.length) {
     const todas = await Promise.all(nomesKits.map((k) => fontesDoKit(carregador, k)));
+    // kits da revisão 2: as peças de cada malha-fonte, por célula de 48 m, viram uma malha estática só (geometria
+    // copiada e transformada no carregamento): uma chamada de desenho e nenhum custo por peça a cada quadro, e
+    // as células fora da câmera são descartadas inteiras. Os kits da revisão 1 continuam como instâncias comuns.
+    const unir = !def.kit;
+    /** Lado (m) das células que agrupam as peças: cada célula é selecionada pela câmera à parte. */
+    const CELULA = 48;
+    const grupos = new Map<string, { fonte: Mesh; partes: VertexData[] }>();
     const colocar = (p: Peca, camada: string) => {
       const lista = todas.map((f) => f.get(p.m)).find((l) => l);
       if (!lista) {
         console.warn(`[area ${def.id}] módulo desconhecido: ${p.m}`);
         return;
       }
+      const rot = new Vector3(((p.rx ?? 0) * Math.PI) / 180, ((p.r ?? 0) * Math.PI) / 180, ((p.rz ?? 0) * Math.PI) / 180);
       for (const fonte of lista) {
-        // na superfície as peças não emitem luz: fora da camada de brilho, como os blocos
-        if (def.superficie) for (const cg of cena.effectLayers) if (cg instanceof GlowLayer) cg.addExcludedMesh(fonte);
+        if (unir) {
+          const m = Matrix.Compose(escala(p.e), Quaternion.FromEulerVector(rot), new Vector3(p.x, p.y, p.z ?? 0));
+          const chave = `${fonte.uniqueId}_${Math.floor(p.x / CELULA)}_${Math.floor((p.z ?? 0) / CELULA)}`;
+          if (!grupos.has(chave)) grupos.set(chave, { fonte, partes: [] });
+          const vd = VertexData.ExtractFromMesh(fonte, true, true);
+          vd.transform(m);
+          grupos.get(chave)!.partes.push(vd);
+          continue;
+        }
         const inst = fonte.createInstance(`${def.id}_${camada}_${p.m}`);
         inst.parent = raiz;
         inst.position.set(p.x, p.y, p.z ?? 0);
-        inst.rotation.set(((p.rx ?? 0) * Math.PI) / 180, ((p.r ?? 0) * Math.PI) / 180, ((p.rz ?? 0) * Math.PI) / 180);
+        inst.rotation.copyFrom(rot);
         inst.scaling = escala(p.e);
         inst.isPickable = false;
         inst.alwaysSelectAsActiveMesh = false;
-        if (!def.kit) inst.freezeWorldMatrix();
         malhas.push(inst);
         if (camada === "frente" && op.sombras) op.sombras(inst);
       }
     };
     for (const p of def.pecas ?? []) colocar(p, "frente");
     for (const p of def.fundo ?? []) colocar(p, "fundo");
+    for (const { fonte, partes } of grupos.values()) {
+      const vd = partes[0];
+      if (partes.length > 1) vd.merge(partes.slice(1), true);
+      const c = new Mesh(`${def.id}_pecas_${fonte.name}`, cena);
+      vd.applyToMesh(c);
+      c.material = fonte.material;
+      c.parent = raiz;
+      c.isPickable = false;
+      c.freezeWorldMatrix();
+      // superfície: células de peças somem além de 230 m (lá a névoa já as apagou quase toda)
+      if (def.superficie) c.addLODLevel(230, null);
+      if (op.sombras) op.sombras(c);
+      // na superfície as peças não emitem luz: fora da camada de brilho, como os blocos
+      if (def.superficie) for (const cg of cena.effectLayers) if (cg instanceof GlowLayer) cg.addExcludedMesh(c);
+      malhas.push(c);
+    }
   }
 
   for (const [i, esc] of (def.escadas ?? []).entries()) {

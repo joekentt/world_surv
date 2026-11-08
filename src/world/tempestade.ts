@@ -3,13 +3,13 @@ import {
 } from "@babylonjs/core";
 
 /**
- * Parede de tempestade no limite jogável da superfície (seção 5.2): uma cortina de poeira em três camadas
- * (duas no WebGL2), afastadas 4, 20 e 48 m do limite, com textura de ruído gerada aqui e rolada a cada quadro
+ * Parede de tempestade no limite jogável da superfície (seção 5.2): uma cortina de poeira em duas camadas,
+ * afastadas 4 e 36 m do limite, com textura de ruído gerada aqui e rolada a cada quadro
  * (o vento corre ao longo da parede e a poeira sobe). A densidade vem da cor dos vértices: quase opaca junto
  * ao chão e rala no alto, até sumir no céu. Perto da parede, um sistema leve de partículas solta rajadas de
  * poeira. A colisão do limite continua nas caixas invisíveis da área (`tools/areas/superficie.py`).
  *
- * Custo: 12 malhas (8 no WebGL2) de poucos triângulos, um material por camada sem luz nem névoa da cena e
+ * Custo: 8 malhas de poucos triângulos, um material por camada sem luz nem névoa da cena e
  * duas texturas 256 x 128 compartilhadas; nada de shader próprio, então roda igual em WebGPU e WebGL2.
  */
 
@@ -17,9 +17,8 @@ type Lim = { x0: number; x1: number; z0: number; z1: number };
 
 /** Camadas: afastamento do limite (m), altura do topo, metros de parede por repetição da textura e cor. */
 const CAMADAS = [
-  { o: 4, h: 190, u: 70, v: 38, cor: [0.74, 0.62, 0.45] },
-  { o: 20, h: 260, u: 110, v: 60, cor: [0.79, 0.68, 0.51] },
-  { o: 48, h: 340, u: 160, v: 90, cor: [0.85, 0.76, 0.6] },
+  { o: 4, h: 170, u: 70, v: 38, cor: [0.75, 0.63, 0.46] },
+  { o: 36, h: 280, u: 140, v: 75, cor: [0.83, 0.73, 0.57] },
 ];
 /** Alturas das linhas de vértices acima do chão e a densidade em cada uma (0 a 1). */
 const PERFIL: [number, number][] = [[-25, 1], [4, 0.97], [16, 0.92], [40, 0.86], [80, 0.62], [130, 0.32], [1, 0]];
@@ -79,7 +78,8 @@ export class ParedeTempestade {
     this.tons = texturaPoeira(cena, "tempestade_tons", 3, 1.6, 0.7);
     this.densidade = texturaPoeira(cena, "tempestade_densidade", 11, 2.2, 0.3);
     this.densidade.getAlphaFromRGB = true;
-    const camadas = qualidade === "alta" ? CAMADAS : [CAMADAS[0], CAMADAS[2]];
+    // o mesmo nas duas qualidades: cada camada é uma passada translúcida grande na tela
+    const camadas = CAMADAS;
     for (const [i, c] of camadas.entries()) {
       const mat = new StandardMaterial(`tempestade_${i}`, cena);
       mat.disableLighting = true;
