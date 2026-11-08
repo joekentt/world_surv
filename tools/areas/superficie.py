@@ -32,6 +32,10 @@ from gerar_areas import Area  # noqa: E402
 from subsolo_vila import B, V, corrimao, r3  # noqa: E402
 
 R = random.Random(505)
+# sorteio só da decoração por peças de kit (entulho): separado de R para não mudar a geometria de colisão
+RD = random.Random(5051)
+CARRO_MODULO = {"carro_vermelho": "carro_vermelho", "carro_azul": "carro_azul", "carro_bege": "carro_bege",
+                "ferrugem": "carro_ferrugem", "metal": "carro_ferrugem"}
 MUNDO = "superficie_aberta"
 
 # ---------------------------------------------------------------- limites e grade do terreno
@@ -302,6 +306,12 @@ def predio(a: Area, q, quebrado=True, telhado=True):
                 if R.random() < 0.25:
                     continue
                 parede(a, eixo, fixo, s0, s1, corpo_topo, h, e, [], q["mat"])
+                if s1 - s0 > 2.2 and RD.random() < 0.7:
+                    m = (s0 + s1) / 2
+                    if eixo == "x":
+                        a.peca("vergalhoes", m, h, fixo)
+                    else:
+                        a.peca("vergalhoes", fixo, h, m, r=90)
         # marca da porta: batente escuro e soleira
         if nome == q["porta"]:
             if eixo == "x":
@@ -323,6 +333,16 @@ def predio(a: Area, q, quebrado=True, telhado=True):
         # escombros do telhado caídos no chão, sob o rombo
         cx, cz = (rombo[0] + rombo[1]) / 2, (rombo[2] + rombo[3]) / 2
         C(a, cx, gt + 0.4, cz, 2.2, 0.6, 1.6, "concreto", ry=R.uniform(0, 90), rz=R.uniform(-12, 12))
+    for _ in range(3):
+        lado = RD.choice(["-z", "+z", "-x", "+x"])
+        if lado == q["porta"]:
+            continue
+        if lado in ("-z", "+z"):
+            ex, ez = RD.uniform(x0 + 1.5, x1 - 1.5), (z0 - 1.6 if lado == "-z" else z1 + 1.6)
+        else:
+            ex, ez = (x0 - 1.6 if lado == "-x" else x1 + 1.6), RD.uniform(z0 + 1.5, z1 - 1.5)
+        if not perto_de_rota(ex, ez, 3.0):
+            a.peca("entulho_r2", ex, alt(ex, ez) - 0.05, ez, r=RD.randint(0, 359))
     ab = dict(id=q["id"], min=[r3(x0 + e), r3(g), r3(z0 + e)], max=[r3(x1 - e), r3(g + ANDAR), r3(z1 - e)])
     a.d.setdefault("abrigos", []).append(ab)
     # câmera do interior: sala (vila) ou, com 6 m ou menos de lado, cômodo apertado (tunel)
@@ -338,11 +358,16 @@ def carro(a: Area, x, z, yaw, mat=None, afundar=None, inclinar=True):
     rz = R.uniform(-12, 12) if inclinar else 0.0
     g = alt(x, z)
     cy = g + 0.65 - afundar
-    C(a, x, cy, z, 1.8, 1.3, 4.3, mat, rx=rx, ry=yaw, rz=rz)
+    # carroceria e cabine só com a colisão; o visual é o sedã do kit r2_superficie, na mesma orientação
+    C(a, x, cy, z, 1.8, 1.3, 4.3, mat, rx=rx, ry=yaw, rz=rz, invisivel=True)
     ox, oy, oz = rot((0.0, 1.0, -0.3), rx, yaw, rz)
-    C(a, x + ox, cy + oy, z + oz, 1.6, 0.75, 2.2, mat, rx=rx, ry=yaw, rz=rz)
-    ox, oy, oz = rot((0.0, 1.02, -0.3), rx, yaw, rz)
-    C(a, x + ox, cy + oy, z + oz, 1.66, 0.42, 2.27, "escuro", rx=rx, ry=yaw, rz=rz, semColisao=True)
+    C(a, x + ox, cy + oy, z + oz, 1.6, 0.75, 2.2, mat, rx=rx, ry=yaw, rz=rz, invisivel=True)
+    p = dict(m=CARRO_MODULO[mat], x=r3(x), y=r3(cy), z=r3(z), r=r3(yaw))
+    if abs(rx) > 1e-3:
+        p["rx"] = r3(rx)
+    if abs(rz) > 1e-3:
+        p["rz"] = r3(rz)
+    a.d["pecas"].append(p)
     lado = R.choice([-1, 1])
     ox, oy, oz = rot((lado * 1.3, 0.0, 0.4), 0, yaw, 0)
     C(a, x + ox, g - 0.2, z + oz, 1.6, 1.0, 3.6, "areia", ry=yaw + R.uniform(-15, 15), rz=lado * 22)
@@ -382,6 +407,7 @@ def em_ret(x, z, r, folga=0.0):
 def nova(id_, nome, x0, x1, z0, z1) -> Area:
     a = Area(id_, nome, MUNDO, "superficie", None, x0, x1, superficie=True)
     a.d["zonaPadrao"] = "superficie"
+    a.d["kits"] = ["r2_superficie"]
     a.caixa((x0, Y_CAIXA[0], z0), (x1, Y_CAIXA[1], z1))
     return a
 
@@ -597,7 +623,10 @@ def destroços_espalhados(a: Area):
             continue
         x = 14.0 + R.uniform(-1, 1)
         g = alt(x, z)
-        C(a, x, g + 3.0, z, 0.25, 6.5, 0.25, "metal", rz=R.uniform(-25, 25))
+        inc = R.uniform(-25, 25)
+        C(a, x, g + 3.0, z, 0.25, 6.5, 0.25, "metal", rz=inc, invisivel=True)
+        ox, oy, _ = rot((0.0, 3.25, 0.0), 0, 0, inc)
+        a.d["pecas"].append(dict(m="poste_rua", x=r3(x - ox), y=r3(g + 3.0 - oy), z=r3(z), rz=r3(inc)))
 
 
 def area_base() -> Area:

@@ -683,7 +683,8 @@
    "mat": "ferrugem",
    "rx": -5.273,
    "ry": 200,
-   "rz": 11.248
+   "rz": 11.248,
+   "invisivel": true
   },
   {
    "x": -243.684,
@@ -695,20 +696,8 @@
    "mat": "ferrugem",
    "rx": -5.273,
    "ry": 200,
-   "rz": 11.248
-  },
-  {
-   "x": -243.679,
-   "y": 3.892,
-   "z": 373.299,
-   "w": 1.66,
-   "h": 0.42,
-   "d": 2.27,
-   "mat": "escuro",
-   "rx": -5.273,
-   "ry": 200,
    "rz": 11.248,
-   "semColisao": true
+   "invisivel": true
   },
   {
    "x": -245.358,
@@ -732,7 +721,17 @@
    "yaw": 0
   }
  ],
- "pecas": [],
+ "pecas": [
+  {
+   "m": "carro_ferrugem",
+   "x": -244.0,
+   "y": 2.923,
+   "z": 373.0,
+   "r": 200,
+   "rx": -5.273,
+   "rz": 11.248
+  }
+ ],
  "fundo": [],
  "saidas": [],
  "entradas": {
@@ -750,6 +749,9 @@
  "marcos": [],
  "superficie": true,
  "zonaPadrao": "superficie",
+ "kits": [
+  "r2_superficie"
+ ],
  "limites": {
   "min": [
    -261.0,

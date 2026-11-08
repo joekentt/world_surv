@@ -1,5 +1,5 @@
 import {
-  Color3, GlowLayer, Matrix, Mesh, MeshBuilder, PhysicsAggregate, PhysicsShapeType, PointLight, SpotLight, StandardMaterial,
+  Color3, GlowLayer, Matrix, Mesh, MeshBuilder, PBRMaterial, PhysicsAggregate, PhysicsShapeType, PointLight, SpotLight, StandardMaterial,
   TransformNode, Vector3, VertexData, type AbstractMesh, type AssetContainer, type Light, type Scene,
 } from "@babylonjs/core";
 import type { Carregador } from "../core/carregador";
@@ -168,6 +168,9 @@ export async function fontesDoKit(carregador: Carregador, kit: string): Promise<
       m.rotation.setAll(0);
       m.scaling.setAll(1);
       m.bakeTransformIntoVertices(mundo);
+      // kits da revisão 2: queda de luz como a dos blocos (StandardMaterial), para a lanterna e as lâmpadas
+      // iluminarem as peças do mesmo jeito que a geometria em volta
+      if (kit.startsWith("r2_") && m.material instanceof PBRMaterial) m.material.usePhysicalLightFalloff = false;
       m.setEnabled(true);
       m.isVisible = false;
       m.isPickable = false;
@@ -254,23 +257,26 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
     for (const camada of cena.effectLayers) if (camada instanceof GlowLayer) camada.addExcludedMesh(m as Mesh);
   }
 
-  if (def.kit) {
-    const fontes = await fontesDoKit(carregador, def.kit);
-    const comuns = await fontesDoKit(carregador, "comum");
+  const nomesKits = def.kit ? [def.kit, "comum"] : def.kits ?? [];
+  if (nomesKits.length) {
+    const todas = await Promise.all(nomesKits.map((k) => fontesDoKit(carregador, k)));
     const colocar = (p: Peca, camada: string) => {
-      const lista = fontes.get(p.m) ?? comuns.get(p.m);
+      const lista = todas.map((f) => f.get(p.m)).find((l) => l);
       if (!lista) {
         console.warn(`[area ${def.id}] módulo desconhecido: ${p.m}`);
         return;
       }
       for (const fonte of lista) {
+        // na superfície as peças não emitem luz: fora da camada de brilho, como os blocos
+        if (def.superficie) for (const cg of cena.effectLayers) if (cg instanceof GlowLayer) cg.addExcludedMesh(fonte);
         const inst = fonte.createInstance(`${def.id}_${camada}_${p.m}`);
         inst.parent = raiz;
         inst.position.set(p.x, p.y, p.z ?? 0);
-        inst.rotation.y = ((p.r ?? 0) * Math.PI) / 180;
+        inst.rotation.set(((p.rx ?? 0) * Math.PI) / 180, ((p.r ?? 0) * Math.PI) / 180, ((p.rz ?? 0) * Math.PI) / 180);
         inst.scaling = escala(p.e);
         inst.isPickable = false;
         inst.alwaysSelectAsActiveMesh = false;
+        if (!def.kit) inst.freezeWorldMatrix();
         malhas.push(inst);
         if (camada === "frente" && op.sombras) op.sombras(inst);
       }

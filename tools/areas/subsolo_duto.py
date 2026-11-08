@@ -202,6 +202,7 @@ def rocha(a, cx, cy, cz, w, h, d, colisao=True, mat="rocha"):
 def duto_tunel() -> Area:
     a = Area("duto_tunel", "Duto Norte", "subsolo", "duto", None, NX0 - PW, X_FIM + PW)
     a.d["zonaPadrao"] = "tunel"
+    a.d["kits"] = ["r2_tunel"]
     a.caixa((NX0 - PW, -27.0, Z_BOCA), (X_FIM + PW, 7.0, Z_NORTE + PW))
     zona_tunel(a, NX0, NX1, -11.0, 6.5, Z_BOCA - 1.0, Z_NORTE)
     zona_tunel(a, NX1, X_FIM, -26.0, -3.5, EZ0, EZ1)
@@ -246,22 +247,32 @@ def duto_tunel() -> Area:
     return a
 
 
+def vias(a: Area, perfil, s_ini, s_fim, eixo):
+    """Trechos de via de 6 m do kit r2_tunel (lastro, dormentes e trilhos) num trecho reto do perfil, inclinados
+    com a rampa; o último encosta no fim do trecho (pequena sobreposição)."""
+    for (s0, y0), (s1, y1) in zip(perfil, perfil[1:]):
+        a0, a1 = max(s0, s_ini), min(s1, s_fim)
+        if a1 - a0 < 0.5:
+            continue
+        ya, yb = interp(perfil, a0), interp(perfil, a1)
+        comp = math.hypot(a1 - a0, yb - ya)
+        n = max(1, math.ceil(comp / 6.0))
+        inc = inclinacao(perfil, (a0 + a1) / 2)
+        for i in range(n):
+            t = (i + 0.5) / n
+            sc = a0 + (a1 - a0) * t
+            if eixo == "z":
+                a.d["pecas"].append(dict(m="via_6m", x=XT, y=r3(interp(perfil, sc)), z=r3(sc), rx=r3(inc)))
+            else:
+                a.d["pecas"].append(dict(m="via_6m", x=r3(sc), y=r3(interp(perfil, sc)), z=ZT, r=90, rx=r3(inc)))
+
+
 def trilhos(a: Area):
-    """Lastro, dormentes e trilhos, acompanhando as rampas; curva de raio 8 m ligando os dois trechos."""
+    """Lastro, dormentes e trilhos, acompanhando as rampas; curva de raio 8 m ligando os dois trechos.
+    Nos trechos retos, a via é a peça via_6m do kit r2_tunel; na curva, blocos."""
     z_curva = 196.0
     # trecho norte
-    for (z0, y0), (z1, y1) in zip(PERFIL_N, PERFIL_N[1:]):
-        z1c = min(z1, z_curva)
-        if z1c <= z0:
-            continue
-        y1c = interp(PERFIL_N, z1c)
-        faixa_z(a, XT - 1.4, XT + 1.4, z0, z1c, y0 + 0.04, y1c + 0.04, 0.06, "rocha", semColisao=True)
-        for dx in (-BITOLA, BITOLA):
-            faixa_z(a, XT + dx - 0.04, XT + dx + 0.04, z0, z1c, y0 + 0.24, y1c + 0.24, 0.12, "metal", semColisao=True)
-    z = Z_BOCA + 0.6
-    while z < z_curva:
-        C(a, XT, interp(PERFIL_N, z) + 0.07, z, 2.4, 0.1, 0.24, "madeira_escura", rx=inclinacao(PERFIL_N, z), semColisao=True)
-        z += 0.75
+    vias(a, PERFIL_N, Z_BOCA, z_curva, "z")
     # curva (centro em (XT + 8, 196), de 180 a 90 graus)
     raio, cx, cz = 8.0, XT + 8.0, z_curva
     n = 10
@@ -283,19 +294,7 @@ def trilhos(a: Area):
             C(a, cx + raio * math.cos(t), -10.0 + 0.07, cz + raio * math.sin(t), 2.4, 0.1, 0.24, "madeira_escura", ry=ry, semColisao=True)
     # trecho leste
     x_ini = XT + raio
-    for (x0, y0), (x1, y1) in zip(PERFIL_E, PERFIL_E[1:]):
-        x0c = max(x0, x_ini)
-        x1c = min(x1, X_FIM - 0.5)
-        if x1c <= x0c:
-            continue
-        y0c, y1c = interp(PERFIL_E, x0c), interp(PERFIL_E, x1c)
-        faixa_x(a, x0c, x1c, ZT - 1.4, ZT + 1.4, y0c + 0.04, y1c + 0.04, 0.06, "rocha", semColisao=True)
-        for dz in (-BITOLA, BITOLA):
-            faixa_x(a, x0c, x1c, ZT + dz - 0.04, ZT + dz + 0.04, y0c + 0.24, y1c + 0.24, 0.12, "metal", semColisao=True)
-    x = x_ini + 0.4
-    while x < X_FIM - 0.6:
-        C(a, x, interp(PERFIL_E, x) + 0.07, ZT, 0.24, 0.1, 2.4, "madeira_escura", rz=-inclinacao(PERFIL_E, x), semColisao=True)
-        x += 0.75
+    vias(a, PERFIL_E, x_ini, X_FIM - 0.5, "x")
 
 
 def cambotas_e_detalhes(a: Area):
@@ -306,10 +305,11 @@ def cambotas_e_detalhes(a: Area):
     while z < Z_NORTE - 1.0:
         y = interp(PERFIL_N, z)
         if z < EZ0 - 0.5:
-            V(a, NX0, NX0 + 0.22, y, y + ALT, z - 0.15, z + 0.15, "metal")
             if not any(f0 - 0.6 < z < f1 + 0.6 for f0, f1 in furos_leste):
-                V(a, NX1 - 0.22, NX1, y, y + ALT, z - 0.15, z + 0.15, "metal")
-            V(a, NX0, NX1, y + ALT - 0.25, y + ALT, z - 0.15, z + 0.15, "metal")
+                a.peca("cambota", 0.0, y, z)
+            else:
+                V(a, NX0, NX0 + 0.22, y, y + ALT, z - 0.15, z + 0.15, "metal")
+                V(a, NX0, NX1, y + ALT - 0.25, y + ALT, z - 0.15, z + 0.15, "metal")
         # luminárias no teto (quase todas apagadas)
         if k % 2 == 0:
             acesa = k % 6 == 0
@@ -325,9 +325,7 @@ def cambotas_e_detalhes(a: Area):
     k = 0
     while x < X_FIM - 1.0:
         y = interp(PERFIL_E, x)
-        V(a, x - 0.15, x + 0.15, y, y + ALT, EZ0, EZ0 + 0.22, "metal")
-        V(a, x - 0.15, x + 0.15, y, y + ALT, EZ1 - 0.22, EZ1, "metal")
-        V(a, x - 0.15, x + 0.15, y + ALT - 0.25, y + ALT, EZ0, EZ1, "metal")
+        a.peca("cambota", x, y, (EZ0 + EZ1) / 2, r=90)
         if k % 2 == 0:
             acesa = k % 6 == 3
             V(a, x + 2.5 - 0.15, x + 2.5 + 0.15, y + ALT - 0.4, y + ALT - 0.28, ZT + 0.4, ZT + 1.6, "luz_fria" if acesa else "escuro")
@@ -339,15 +337,21 @@ def cambotas_e_detalhes(a: Area):
         k += 1
     # cabos na parede oeste / sul e cano na parede leste / norte, acompanhando as rampas
     for (z0, y0), (z1, y1) in zip(PERFIL_N, PERFIL_N[1:]):
-        for dy, esp in ((3.6, 0.05), (3.85, 0.04), (4.05, 0.06)):
-            faixa_z(a, NX0 + 0.22, NX0 + 0.28, z0, z1, y0 + dy, y1 + dy, esp, "escuro", semColisao=True)
+        n = max(1, math.ceil(math.hypot(z1 - z0, y1 - y0) / 6.0))
+        for i in range(n):
+            zc = z0 + (z1 - z0) * (i + 0.5) / n
+            a.d["pecas"].append(dict(m="cabos_6m", x=NX0 + 0.22, y=r3(interp(PERFIL_N, zc) + 0.6), z=r3(zc),
+                                     rx=r3(inclinacao(PERFIL_N, zc))))
         z1c = min(z1, EZ0)
         if z1c > z0:
             y1c = interp(PERFIL_N, z1c)
             faixa_z(a, NX1 - 0.5, NX1 - 0.25, z0, z1c, y0 + 4.6, y1c + 4.6, 0.25, "ferrugem", semColisao=True)
     for (x0, y0), (x1, y1) in zip(PERFIL_E, PERFIL_E[1:]):
-        for dy, esp in ((3.6, 0.05), (3.85, 0.04), (4.05, 0.06)):
-            faixa_x(a, x0, x1, EZ0 + 0.22, EZ0 + 0.28, y0 + dy, y1 + dy, esp, "escuro", semColisao=True)
+        n = max(1, math.ceil(math.hypot(x1 - x0, y1 - y0) / 6.0))
+        for i in range(n):
+            xc = x0 + (x1 - x0) * (i + 0.5) / n
+            a.d["pecas"].append(dict(m="cabos_6m", x=r3(xc), y=r3(interp(PERFIL_E, xc) + 0.6), z=EZ0 + 0.22, r=-90,
+                                     rx=r3(-inclinacao(PERFIL_E, xc))))
         faixa_x(a, x0, x1, EZ1 - 0.5, EZ1 - 0.25, y0 + 4.6, y1 + 4.6, 0.25, "ferrugem", semColisao=True)
     # caixas elétricas e placas de quilometragem
     for z in (66.0, 121.0, 149.0, 186.0):

@@ -1416,7 +1416,22 @@
    "yaw": 0
   }
  ],
- "pecas": [],
+ "pecas": [
+  {
+   "m": "entulho_r2",
+   "x": 25.937,
+   "y": 27.28,
+   "z": 492.6,
+   "r": 320
+  },
+  {
+   "m": "entulho_r2",
+   "x": 24.151,
+   "y": 27.28,
+   "z": 484.4,
+   "r": 46
+  }
+ ],
  "fundo": [],
  "saidas": [],
  "entradas": {
@@ -1440,6 +1455,9 @@
  "marcos": [],
  "superficie": true,
  "zonaPadrao": "superficie",
+ "kits": [
+  "r2_superficie"
+ ],
  "limites": {
   "min": [
    -40.0,

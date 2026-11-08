@@ -134,7 +134,8 @@
    "mat": "carro_bege",
    "rx": 5.469,
    "ry": 35,
-   "rz": -1.909
+   "rz": -1.909,
+   "invisivel": true
   },
   {
    "x": 181.911,
@@ -146,20 +147,8 @@
    "mat": "carro_bege",
    "rx": 5.469,
    "ry": 35,
-   "rz": -1.909
-  },
-  {
-   "x": 181.912,
-   "y": 1.055,
-   "z": 81.815,
-   "w": 1.66,
-   "h": 0.42,
-   "d": 2.27,
-   "mat": "escuro",
-   "rx": 5.469,
-   "ry": 35,
    "rz": -1.909,
-   "semColisao": true
+   "invisivel": true
   },
   {
    "x": 183.294,
@@ -186,7 +175,17 @@
   }
  ],
  "escadas": [],
- "pecas": [],
+ "pecas": [
+  {
+   "m": "carro_bege",
+   "x": 182.0,
+   "y": 0.011,
+   "z": 82.0,
+   "r": 35,
+   "rx": 5.469,
+   "rz": -1.909
+  }
+ ],
  "fundo": [],
  "saidas": [],
  "entradas": {
@@ -210,6 +209,9 @@
  "marcos": [],
  "superficie": true,
  "zonaPadrao": "superficie",
+ "kits": [
+  "r2_superficie"
+ ],
  "limites": {
   "min": [
    167.0,
