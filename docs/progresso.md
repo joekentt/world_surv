@@ -90,3 +90,8 @@ Os seis testes da seção 3.4 passam. **Falta a aprovação do usuário da sensa
 - Fase 1 fechada: o usuário aprovou o controle com os ajustes de corrida e escada. Suíte completa: 20 testes passam (os 10 que falharam na primeira rodada foram `ERR_CONNECTION_REFUSED`, servidor de desenvolvimento derrubado ao interromper a rodada anterior; repetidos, passaram).
 - Tarefa 1 da fase 2: `AreaDef.limites` (caixa 3D), `caixaDaArea`, `distanciaArea`; `GerenciadorAreas.areaEm`, `atualizar` e `entrarMundo` recebem ponto 3D; com caixas sobrepostas vale a de menor volume (níveis empilhados, como vila e Galerias). Faixas da revisão 1 continuam funcionando pela caixa derivada de inicio e fim.
 - Gerador: `Area.caixa(min, max)`; área aninhada `sala_teste_corredor` para o teste "áreas em 3D".
+
+### 2026-11-08: fase 2, tarefas 2 e 8 (parcial), feitas por subagentes
+
+- Vila em três níveis (79ee07b): caverna x −70..70, z −45..45, teto 25 m; praça 50 × 40; passarelas a 8, 10 e 12 m; Capela a 10 m; Galerias a −5 m com poço até −25 m e grade sobre o poço profundo. Blocos visíveis unidos por material; blocos só visuais (`semColisao`); luzes escolhidas pelo z do jogador. Teste `fase2_vila`: 2 passam (Capela a 10,0 m; poço de 20 m e volta à praça). Revisão: aprovada para blocos.
+- Animações (merge 3b1e707): IK nas pernas, rolagem do pé, parado com respiração e troca de apoio, contra-rotação do tronco, atraso de antebraço e mão, voo na corrida; pesos de locomoção por velocidade suavizada. Fase 0 e fase 1: 11 passam. Traje EPI devolvido para refazer.

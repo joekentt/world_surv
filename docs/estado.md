@@ -2,7 +2,7 @@
 
 **Atualizado em:** 2026-11-05
 
-**Fase atual:** revisão 2, fase 2 (cenário em blocos), tarefa 1 de 7 concluída.
+**Fase atual:** revisão 2, fase 2 (cenário em blocos): tarefas 1 e 2 concluídas; 8 em andamento.
 
 **Situação:** fase 1 fechada (controle aprovado com corrida a 7 m/s e correção da escada; suíte completa passa). Na fase 2, a base de áreas em 3D está pronta (8cb9bd2).
 
@@ -15,17 +15,17 @@
 
 **Tarefas da fase 2** (spec: `docs/spec/08-fases.md` e `docs/spec/05-mapa.md`):
 1. Áreas em 3D: caixa de limites, carregamento pela distância, caixas sobrepostas. **Feita.**
-2. Vila Cisterna em três níveis (caverna de 140 × 90 m, praça, passarelas a 8–12 m, Capela a 10 m, Galerias Secas com poço de 20 m e poço profundo, Portão da Caravana), em blocos.
+2. Vila Cisterna em três níveis, em blocos. **Feita** (79ee07b): `?area=vila_cisterna`, gerador `tools/areas/subsolo_vila.py`, mundo "subsolo", teste `tests/fase2_vila.spec.ts` (~11 min).
 3. Duto Norte (300 m) com a Caverna da Fenda e a Galeria dos Contrabandistas.
 4. Estação Aurora e Boca do Poço (poço de 25 m, eclusa como transição de carregamento).
 5. Superfície de 640 × 675 m com os pontos da seção 5.2.
 6. Kits por estética (incluindo o da estação), zonas de câmera, impostores do horizonte e névoa.
 7. Navmesh em vários níveis e teste de bloqueio da seção 5.3; refazer `tests/fase2.spec.ts`.
-8. Personagens e animações menos robóticos (pedido do usuário em 8/11/2026): locomoção com peso, rolagem do pé, movimento secundário e transições suaves; rever corpo, rosto e roupas contra o critério da seção 8.
+8. Personagens e animações menos robóticos (pedido do usuário em 8/11/2026). Animações e transições **feitas** (merge 3b1e707: pernas por IK, rolagem do pé, curvas assimétricas, mistura suavizada; referências andar 1,91 e correr 6,61 m/s). Falta: traje EPI do protagonista (reprovado na revisão: sem volume, botas, luvas e máscara legível).
 
 **Modo de trabalho (pedido do usuário):** as tarefas são delegadas a subagentes; a sessão principal revisa a entrega (testes, screenshots, critérios da especificação) antes do commit. Para rodar dois em paralelo, um usa worktree e `PORTA_TESTE` diferente de 5173.
 
-**Próximo passo:** tarefas 2 (vila) e 8 (personagens e animações), em paralelo. Ler a seção 5.1 em `docs/spec/05-mapa.md` e a seção 7 em `docs/spec/07-arte-personagens-vila.md`.
+**Próximo passo:** tarefa 3 (Duto Norte) e conclusão da 8 (traje EPI), em paralelo. Ler a seção 5.1 em `docs/spec/05-mapa.md` e a seção 7 em `docs/spec/07-arte-personagens-vila.md`.
 
 **Bloqueios e dúvidas para o usuário:**
 - Nenhum.
