@@ -237,7 +237,7 @@ export class GerenciadorNpcs {
     const agora = this.jogo.tempo;
     if (n.andando) {
       p.anguloForcado = null;
-      p.tocar("andar", { velocidade: n.velocidade / 1.35, transicao: 0.3 });
+      p.tocar("andar", { velocidade: n.velocidade / CFG.movimento.velocidadeReferenciaAndar, transicao: 0.3 });
     } else if (agora < n.reagindoAte) {
       // mantém a reação (aceno) até acabar
     } else {

@@ -68,7 +68,7 @@ export class Jogador {
   private posAtual = new Vector3();
   private acaoUnica: { nome: string; ate: number } | null = null;
   private relogio = 0;
-  private faseDoPasso = 0;
+  private metadePasso = -1;
   escadas: Escada[] = [];
   /** Eixos da câmera no chão (definidos pelo jogo a cada quadro). */
   eixos: () => { frente: Vector3; direita: Vector3 } = () => ({ frente: new Vector3(0, 0, 1), direita: new Vector3(1, 0, 0) });
@@ -499,13 +499,10 @@ export class Jogador {
       return;
     }
     per.locomover(velH, M.velocidadeReferenciaAndar, M.velocidadeReferenciaCorrer, M.andar, 0.18);
-    if (velH > 0.3) {
-      const passada = velH > M.andar + 0.5 ? 1.15 : 0.7;
-      this.faseDoPasso += (velH * dt) / passada;
-      if (this.faseDoPasso >= 1) {
-        this.faseDoPasso -= 1;
-        this.aoPisar?.();
-      }
-    }
+    // som de passo no toque de cada pé (fases 0 e 0,5 do ciclo de andar ou correr)
+    const fase = per.fasePasso();
+    const metade = fase === null || velH < 0.3 ? -1 : Math.floor(fase * 2);
+    if (metade >= 0 && this.metadePasso >= 0 && metade !== this.metadePasso) this.aoPisar?.();
+    this.metadePasso = metade;
   }
 }

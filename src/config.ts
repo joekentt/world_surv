@@ -40,8 +40,8 @@ export const CFG = {
     "passoFisica": 0.016666666666666666,
     "colarNoChao": 2.5,
     "maxPassosPorQuadro": 5,
-    "velocidadeReferenciaAndar": 1.79,
-    "velocidadeReferenciaCorrer": 6.28
+    "velocidadeReferenciaAndar": 1.91,
+    "velocidadeReferenciaCorrer": 6.61
   },
   "camera": {
     "alturaFoco": 1.55,
