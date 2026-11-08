@@ -7,6 +7,7 @@ import { Coletaveis } from "../world/coletaveis";
 import { TurnosDeLuz } from "../world/turnos";
 import { PosProcessamento } from "../world/posprocessamento";
 import { Particulas } from "../world/particulas";
+import { Horizonte } from "../world/horizonte";
 import { Navegacao } from "../npc/navegacao";
 import { GerenciadorNpcs } from "../npc/npcs";
 import { Baloes } from "../ui/baloes";
@@ -73,6 +74,8 @@ export class Jogo {
   pausado = false;
   pos!: PosProcessamento;
   particulas!: Particulas;
+  /** Horizonte da superfície aberta (cidade, montanhas, céu), montado com a área que tem o limite jogável. */
+  horizonte: Horizonte | null = null;
   depoisDoDialogo: (() => void) | null = null;
 
   get loja(): { abrir: (id: string) => void } {
@@ -147,6 +150,10 @@ export class Jogo {
       this.interacao.removerPrefixo(`${a.def.id}:`);
       this.coletaveis.aoDescarregar(a);
       this.particulas.aoDescarregar(a.def.id);
+      if (a.def.limiteJogavel) {
+        this.horizonte?.dispose();
+        this.horizonte = null;
+      }
       this.aoAreaDescarregada?.(a);
     };
     this.iluminacao = new Iluminacao(cena, this.luzAmbiente, this.sol, this.motor.qualidade);
@@ -322,6 +329,7 @@ export class Jogo {
     this.lanterna.setEnabled(this.lanterna.intensity > 0.05);
     this.iluminacao.atualizar(dt, new Vector3(p.x, p.y + 1, p.z), this.tempo);
     this.pos.atualizar(dt, this.iluminacao.poeiraExtra);
+    this.horizonte?.atualizar(this.tempo, this.camera.camera.globalPosition, this.iluminacao.poeiraExtra);
     this.particulas.atualizar(p.x, p.y, !!this.areaAtual?.superficie, this.iluminacao.poeiraExtra, Math.sign(this.jogador.empurrao), this.tempo);
     this.epi.atualizar(dt);
     this.turnos.atualizar(dt);
@@ -439,6 +447,10 @@ export class Jogo {
     this.iluminacao.registrarLuzes(a.luzes);
     void this.coletaveis.aoCarregar(a);
     this.particulas.aoCarregar(a.def.id);
+    if (a.def.limiteJogavel) {
+      this.horizonte?.dispose();
+      this.horizonte = new Horizonte(this.cena, a.def, this.motor.qualidade);
+    }
     for (const [i, s] of (a.def.saidas ?? []).entries()) {
       this.interacao.adicionar({
         id: `${a.def.id}:saida${i}`, x: s.x, y: s.y, z: s.z, rotulo: s.rotulo, raio: 1.5, prioridade: 1,

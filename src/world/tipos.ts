@@ -52,6 +52,11 @@ export interface AreaDef {
   zonas?: ZonaPerigo[];
   marcos?: { id: string; x: number; rotulo: string }[];
   terreno?: Terreno;
+  /**
+   * Limite jogável da superfície (revisão 2): a área que o tem monta o horizonte (cidade, montanhas, céu) e a
+   * parede de tempestade em volta dele enquanto estiver carregada.
+   */
+  limiteJogavel?: { x0: number; x1: number; z0: number; z1: number };
   /** Interiores que servem de abrigo na superfície (dreno do filtro reduzido, fase 3). */
   abrigos?: { id: string; min: Vec3; max: Vec3 }[];
 }

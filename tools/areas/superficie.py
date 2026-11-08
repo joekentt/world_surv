@@ -612,6 +612,7 @@ def area_base() -> Area:
     a.d["zonasCamera"] = [{"tipo": "superficie", "min": [GX0, Y_CAIXA[0], GZ0], "max": [-GX0, Y_CAIXA[1], GZ0 + PASSO * (NZ - 1)]}]
     muralhas_do_rio(a)
     tempestade(a)
+    a.d["limiteJogavel"] = dict(x0=LX0, x1=LX1, z0=LZ0, z1=LZ1)
     viaduto(a)
     antena(a)
     torre_dagua(a)
