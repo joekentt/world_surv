@@ -345,7 +345,7 @@ export class Jogo {
         this.pos.definir(a.estetica);
       }
       if (anterior?.id !== a.id && !this.roteiro?.emEpilogo) this.hud.anunciarArea(a.nome);
-      const epi = !!a.superficie || a.mundo === "boca";
+      const epi = a.mundo === "superficie" || a.mundo === "boca" || !!a.superficie;
       this.jogador.personagem.mostrar("_epi", epi);
       this.jogador.personagem.mostrar("_roupa", !epi);
       if (a.superficie && !this.epi.ativo && !this.subida.emSequencia) {

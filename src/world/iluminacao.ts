@@ -26,6 +26,8 @@ export const PERFIS: Record<string, Perfil> = {
   fenda: { fundo: [0.004, 0.012, 0.012], ambiente: [0.4, 0.8, 0.68], ambienteInt: 0.34, chao: [0.02, 0.06, 0.05], nevoa: [0.01, 0.03, 0.03], densidadeNevoa: 0.012, sol: 0, lanterna: true },
   // Galeria dos Contrabandistas: passagem de 2,8 m, a lanterna bate perto nas paredes (exposição menor no pós)
   contrabandistas: { fundo: [0.006, 0.006, 0.006], ambiente: [0.7, 0.6, 0.45], ambienteInt: 0.22, chao: [0.04, 0.03, 0.02], nevoa: [0.01, 0.008, 0.006], densidadeNevoa: 0.05, sol: 0, lanterna: true },
+  // Estação Aurora: luz fria e esparsa, névoa escura de poeira suspensa; lanterna acesa
+  estacao: { fundo: [0.008, 0.012, 0.016], ambiente: [0.55, 0.72, 0.85], ambienteInt: 0.42, chao: [0.04, 0.05, 0.06], nevoa: [0.03, 0.04, 0.048], densidadeNevoa: 0.022, sol: 0, lanterna: true },
   boca: { fundo: [0.05, 0.01, 0.01], ambiente: [1.0, 0.5, 0.45], ambienteInt: 0.32, chao: [0.15, 0.05, 0.04], nevoa: [0.18, 0.08, 0.07], densidadeNevoa: 0.045, sol: 0, lanterna: false },
   superficie_noite: { fundo: [0.02, 0.03, 0.07], ambiente: [0.35, 0.42, 0.65], ambienteInt: 0.35, chao: [0.05, 0.05, 0.08], nevoa: [0.03, 0.04, 0.08], densidadeNevoa: 0.006, sol: 0.5, corSol: [0.5, 0.6, 0.9], lanterna: true },
   // superfície aberta (revisão 2): névoa rala para a Antena e a Torre d'Água lerem a ~500 m

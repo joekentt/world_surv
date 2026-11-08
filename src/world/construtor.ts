@@ -43,6 +43,8 @@ const CORES_BLOQUEIO: Record<string, [number, number, number]> = {
   // superfície: ruínas, asfalto, carros desbotados e entulho na cor da areia
   tijolo: [0.48, 0.3, 0.22], reboco: [0.6, 0.55, 0.47], asfalto: [0.22, 0.21, 0.2], areia: [0.62, 0.55, 0.42],
   ferro: [0.13, 0.12, 0.12], carro_vermelho: [0.45, 0.17, 0.12], carro_azul: [0.2, 0.27, 0.36], carro_bege: [0.6, 0.54, 0.42],
+  // azulejos antigos da Estação Aurora
+  azulejo_creme: [0.6, 0.57, 0.48], azulejo_verde: [0.22, 0.4, 0.36], azulejo_azul: [0.24, 0.34, 0.46],
 };
 
 /** Materiais que emitem luz própria (lâmpadas, vitrais, facho), sem depender das luzes da cena. */
@@ -58,6 +60,8 @@ const EMISSIVOS: Record<string, { cor: [number, number, number]; alfa?: number }
   tempestade_1: { cor: [0.66, 0.54, 0.37], alfa: 0.42 }, tempestade_2: { cor: [0.69, 0.58, 0.41], alfa: 0.31 },
   tempestade_3: { cor: [0.73, 0.63, 0.46], alfa: 0.21 }, tempestade_4: { cor: [0.78, 0.69, 0.53], alfa: 0.13 },
   tempestade_5: { cor: [0.83, 0.75, 0.6], alfa: 0.07 }, tempestade_6: { cor: [0.88, 0.81, 0.66], alfa: 0.03 },
+  // Boca do Poço: luz vermelha de alerta e névoa da descontaminação
+  luz_alerta: { cor: [1.0, 0.08, 0.04] }, nevoa: { cor: [0.32, 0.13, 0.12], alfa: 0.045 },
 };
 
 /** Materiais grandes e translúcidos que não entram na camada de brilho (borrariam a tela inteira). */

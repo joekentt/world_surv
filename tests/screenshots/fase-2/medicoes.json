@@ -125,7 +125,7 @@
         "duto_tunel"
       ],
       "yFinal": -5,
-      "tempo_s": 17.28
+      "tempo_s": 17.35
     },
     "desvioDesabamento": {
       "yNaPlataforma": -4.1,
@@ -136,12 +136,12 @@
       "tempo_s": 9.64
     },
     "fimDoDuto": {
-      "x": 138.25,
+      "x": 138.17,
       "y": -25,
       "z": 205,
       "area": "duto_tunel"
     },
-    "yMinimoNoPercurso": -25,
+    "yMinimoNoPercurso": -25.01,
     "errosConsole": 0
   },
   "duto_b_fenda": {
@@ -156,12 +156,12 @@
       "areaMeio": "duto_fenda",
       "yMinimo": -5.7,
       "yFinal": -5,
-      "tempo_s": 5.67
+      "tempo_s": 5.64
     },
     "mirante": {
       "y": -1,
-      "x": 59.82,
-      "z": 137.24
+      "x": 59.81,
+      "z": 137.26
     },
     "voltaPassagemB": {
       "areas": [
@@ -183,16 +183,84 @@
     "baseEscada": {
       "x": 0,
       "y": -7,
-      "z": 318.45,
-      "tempo_s": 9.66
+      "z": 318.49,
+      "tempo_s": 9.59
     },
     "topoEscada": {
       "y": 1,
       "x": 0,
-      "z": 321.07,
+      "z": 321,
       "area": "duto_contrabandistas"
     },
     "distanciaAteOAlcapao": 2.6,
+    "errosConsole": 0
+  },
+  "estacao_b_poco": {
+    "subida": {
+      "patamares": [
+        -18.75,
+        -12.5,
+        -6.25,
+        0
+      ],
+      "area": "boca_estacao",
+      "tempo_s": 18.17
+    },
+    "desnivel_m": 25,
+    "ateEclusa": {
+      "x": 178,
+      "y": 0,
+      "z": 218.83,
+      "tempo_s": 9.47
+    },
+    "errosConsole": 0
+  },
+  "estacao_a_duto_ate_mezanino": {
+    "portao": {
+      "areas": [
+        "duto_tunel",
+        "estacao_aurora"
+      ],
+      "yMinimo": -25,
+      "yFinal": -25,
+      "tempo_s": 4.84
+    },
+    "escadaRolante": {
+      "yFinal": -19,
+      "tempo_s": 7.14,
+      "area": "estacao_aurora"
+    },
+    "pontoDeDescanso": {
+      "x": 189.91,
+      "y": -19,
+      "z": 208.1
+    },
+    "descidaAtePoco": {
+      "yFinal": -25,
+      "tempo_s": 28.96
+    },
+    "errosConsole": 0
+  },
+  "estacao_c_eclusa": {
+    "subida": {
+      "mundo": "superficie_aberta",
+      "area": "superficie_boca",
+      "x": 0,
+      "y": 0,
+      "z": 3,
+      "tempo_eclusa_s": 1.98,
+      "areasCarregadas": [
+        "superficie_boca"
+      ]
+    },
+    "volta": {
+      "mundo": "subsolo",
+      "area": "boca_estacao",
+      "x": 178,
+      "y": 0,
+      "z": 217.6,
+      "tempo_eclusa_s": 1.81
+    },
     "errosConsole": 0
   },
   "superficie_fps": {

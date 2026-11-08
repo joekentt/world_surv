@@ -7,6 +7,7 @@ export interface Solido { x: number; y: number; w: number; h: number; d?: number
 export interface Peca { m: string; x: number; y: number; z?: number; r?: number; e?: number | [number, number, number]; }
 /** Escada de mão ou corda: base em (x, z), de y0 a y1; yaw é para onde o jogador olha ao subir (graus no JSON). */
 export interface EscadaDef { x: number; z?: number; y0: number; y1: number; tipo: "escada" | "corda"; yaw?: number; }
+/** Saída para outra área ou mundo; `z` posiciona a interação nas áreas 3D (revisão 2). */
 export interface Saida { x: number; y: number; z?: number; destino: string; entrada: string; rotulo: string; tipo?: "porta" | "eclusa"; }
 export interface Luz { x: number; y: number; z?: number; cor: [number, number, number]; i: number; alcance?: number; tipo?: "ponto" | "foco"; piscar?: boolean; }
 export interface Coletavel { id: string; item: string; x: number; y: number; qtd?: number; }
