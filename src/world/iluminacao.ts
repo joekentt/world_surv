@@ -17,6 +17,8 @@ export interface Perfil {
 export const PERFIS: Record<string, Perfil> = {
   teste: { fundo: [0.32, 0.34, 0.38], ambiente: [0.8, 0.8, 0.82], ambienteInt: 0.55, chao: [0.25, 0.23, 0.2], nevoa: [0.32, 0.34, 0.38], densidadeNevoa: 0, sol: 1.6, corSol: [1, 0.96, 0.9], lanterna: false },
   praca: { fundo: [0.06, 0.045, 0.03], ambiente: [1.0, 0.78, 0.55], ambienteInt: 0.45, chao: [0.25, 0.18, 0.1], nevoa: [0.12, 0.085, 0.05], densidadeNevoa: 0.018, sol: 0, lanterna: false },
+  // caverna da vila em 3D (revisão 2): névoa mais rala e ambiente mais forte, para a escala de 140 m aparecer
+  vila: { fundo: [0.07, 0.055, 0.04], ambiente: [1.0, 0.8, 0.58], ambienteInt: 0.75, chao: [0.3, 0.22, 0.14], nevoa: [0.1, 0.075, 0.05], densidadeNevoa: 0.009, sol: 0, lanterna: false },
   galerias: { fundo: [0.02, 0.05, 0.05], ambiente: [0.55, 0.9, 0.85], ambienteInt: 0.36, chao: [0.08, 0.14, 0.13], nevoa: [0.03, 0.07, 0.07], densidadeNevoa: 0.022, sol: 0, lanterna: false },
   capela: { fundo: [0.05, 0.035, 0.025], ambiente: [1.0, 0.85, 0.6], ambienteInt: 0.22, chao: [0.2, 0.12, 0.08], nevoa: [0.1, 0.07, 0.04], densidadeNevoa: 0.02, sol: 0, lanterna: false },
   duto: { fundo: [0.005, 0.008, 0.01], ambiente: [0.45, 0.6, 0.65], ambienteInt: 0.3, chao: [0.02, 0.04, 0.04], nevoa: [0.0, 0.01, 0.012], densidadeNevoa: 0.04, sol: 0, lanterna: true },

@@ -1,0 +1,40 @@
+{
+ "id": "vila_capela",
+ "nome": "Capela da Vigília",
+ "mundo": "subsolo",
+ "estetica": "capela",
+ "kit": null,
+ "inicio": 45.8,
+ "fim": 64.2,
+ "solidos": [],
+ "escadas": [],
+ "pecas": [],
+ "fundo": [],
+ "saidas": [],
+ "entradas": {
+  "inicio": {
+   "x": 50.0,
+   "y": 10.0,
+   "z": 23.5,
+   "yaw": 90
+  }
+ },
+ "luzes": [],
+ "coletaveis": [],
+ "interativos": [],
+ "zonas": [],
+ "marcos": [],
+ "zonaPadrao": "vila",
+ "limites": {
+  "min": [
+   45.8,
+   9.0,
+   11.8
+  ],
+  "max": [
+   64.2,
+   17.0,
+   32.2
+  ]
+ }
+}

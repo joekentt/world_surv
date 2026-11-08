@@ -54,7 +54,7 @@ export class GerenciadorAreas {
   pisoMinimo(): number {
     const lista = this.areasDoMundo(this.mundo);
     if (this.pisoCache?.mundo !== this.mundo) {
-      const bases = lista.flatMap((a) => a.solidos.map((s) => s.y - s.h / 2));
+      const bases = lista.flatMap((a) => a.solidos.filter((s) => !s.semColisao).map((s) => s.y - s.h / 2));
       this.pisoCache = { mundo: this.mundo, y: bases.length ? Math.min(...bases) : 0 };
     }
     return this.pisoCache.y;
@@ -118,7 +118,7 @@ export class GerenciadorAreas {
   /** Sólidos de todas as áreas carregadas (para checagem de teto e posicionamento). */
   solidos(): Solido[] {
     const s: Solido[] = [];
-    for (const a of this.carregadas.values()) s.push(...a.def.solidos);
+    for (const a of this.carregadas.values()) s.push(...a.def.solidos.filter((x) => !x.semColisao));
     return s;
   }
 }

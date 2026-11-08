@@ -1,0 +1,33 @@
+{
+ "id": "vila_praca",
+ "nome": "Praça do Reservatório",
+ "mundo": "subsolo",
+ "estetica": "vila",
+ "kit": null,
+ "inicio": -25.0,
+ "fim": 25.0,
+ "solidos": [],
+ "escadas": [],
+ "pecas": [],
+ "fundo": [],
+ "saidas": [],
+ "entradas": {},
+ "luzes": [],
+ "coletaveis": [],
+ "interativos": [],
+ "zonas": [],
+ "marcos": [],
+ "zonaPadrao": "vila",
+ "limites": {
+  "min": [
+   -25.0,
+   -2.0,
+   -20.0
+  ],
+  "max": [
+   25.0,
+   7.0,
+   20.0
+  ]
+ }
+}

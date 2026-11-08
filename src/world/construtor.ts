@@ -34,6 +34,18 @@ export interface AreaCarregada {
 
 const CORES_BLOQUEIO: Record<string, [number, number, number]> = {
   chao: [0.32, 0.3, 0.27], parede: [0.42, 0.4, 0.36], plataforma: [0.5, 0.36, 0.2], caixa: [0.55, 0.45, 0.3],
+  rocha: [0.3, 0.27, 0.24], concreto: [0.46, 0.44, 0.4], metal: [0.33, 0.34, 0.36], ferrugem: [0.45, 0.26, 0.15],
+  madeira: [0.42, 0.28, 0.16], chapa_azul: [0.28, 0.36, 0.42], chapa_verde: [0.3, 0.4, 0.32], chapa_clara: [0.58, 0.55, 0.48],
+  lona_vermelha: [0.62, 0.18, 0.12], lona_azul: [0.15, 0.3, 0.55], lona_amarela: [0.75, 0.58, 0.18], lona_verde: [0.22, 0.45, 0.25],
+  pano: [0.7, 0.66, 0.58], grade: [0.16, 0.16, 0.17], escuro: [0.07, 0.065, 0.06],
+};
+
+/** Materiais que emitem luz própria (lâmpadas, vitrais, facho), sem depender das luzes da cena. */
+const EMISSIVOS: Record<string, { cor: [number, number, number]; alfa?: number }> = {
+  luz_ambar: { cor: [1.0, 0.62, 0.26] }, luz_fria: { cor: [0.62, 1.0, 0.92] }, luz_dourada: { cor: [1.0, 0.88, 0.58] },
+  luz_fraca: { cor: [0.55, 0.32, 0.16] }, janela: { cor: [0.85, 0.5, 0.2] },
+  vitral_azul: { cor: [0.2, 0.45, 1.0] }, vitral_vermelho: { cor: [1.0, 0.25, 0.15] }, vitral_verde: { cor: [0.3, 0.9, 0.4] },
+  facho: { cor: [1.0, 0.86, 0.55], alfa: 0.16 },
 };
 
 function materialBloqueio(cena: Scene, nome: string): StandardMaterial {
@@ -41,6 +53,17 @@ function materialBloqueio(cena: Scene, nome: string): StandardMaterial {
   const existente = cena.getMaterialByName(id) as StandardMaterial | null;
   if (existente) return existente;
   const m = new StandardMaterial(id, cena);
+  const em = EMISSIVOS[nome];
+  if (em) {
+    m.diffuseColor = Color3.Black();
+    m.emissiveColor = new Color3(...em.cor);
+    m.disableLighting = true;
+    if (em.alfa !== undefined) {
+      m.alpha = em.alfa;
+      m.backFaceCulling = false;
+    }
+    return m;
+  }
   const c = CORES_BLOQUEIO[nome] ?? [0.45, 0.45, 0.45];
   m.diffuseColor = new Color3(...c);
   m.specularColor = new Color3(0.05, 0.05, 0.05);
@@ -100,6 +123,7 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
   const malhas: AbstractMesh[] = [];
   const luzes: Light[] = [];
   const temKit = !!def.kit;
+  const visiveis: Mesh[] = [];
 
   for (const [i, s] of [...def.solidos, ...bordasFaixaAntiga(def)].entries()) {
     const caixa = MeshBuilder.CreateBox(`${def.id}_solido_${i}`, { width: s.w, height: s.h, depth: s.d ?? CFG.movimento.profundidadeFaixaAntiga }, cena);
@@ -111,11 +135,40 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
     else {
       caixa.material = materialBloqueio(cena, s.mat ?? "parede");
       caixa.receiveShadows = true;
-      malhas.push(caixa);
+      visiveis.push(caixa);
+    }
+    if (s.semColisao) {
+      if (!caixa.isVisible) caixa.dispose();
+      continue;
     }
     const corpo = new PhysicsAggregate(caixa, PhysicsShapeType.BOX, { mass: 0, friction: 0.6 }, cena);
     if (s.semCamera) corpo.shape.filterMembershipMask = CAMADA_SEM_CAMERA;
     corpos.push(corpo);
+  }
+  // Blocos visíveis de mesmo material viram uma malha só (centenas de caixas custariam uma chamada de
+  // desenho cada). As caixas originais ficam ocultas, só com o corpo físico.
+  const porMaterial = new Map<string, Mesh[]>();
+  for (const c of visiveis) {
+    const nome = c.material!.name;
+    if (!porMaterial.has(nome)) porMaterial.set(nome, []);
+    porMaterial.get(nome)!.push(c);
+  }
+  for (const [nome, lista] of porMaterial) {
+    const unida = lista.length > 1 ? Mesh.MergeMeshes(lista, false, true) : null;
+    if (!unida) {
+      malhas.push(...lista);
+      continue;
+    }
+    unida.name = `${def.id}_${nome}`;
+    unida.parent = raiz;
+    unida.isPickable = false;
+    unida.receiveShadows = true;
+    unida.freezeWorldMatrix();
+    malhas.push(unida);
+    for (const c of lista) {
+      if (corpos.some((k) => k.transformNode === c)) c.isVisible = false;
+      else c.dispose();
+    }
   }
 
   if (def.kit) {

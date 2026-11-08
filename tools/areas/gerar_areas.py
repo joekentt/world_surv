@@ -501,3 +501,7 @@ def sala_teste_preservada():
 if __name__ == "__main__":
     for fabrica in (sala_teste, sala_teste_corredor, capela, praca, galerias, duto_norte, boca_do_poco, superficie_sucata, superficie_marco, superficie_antena):
         fabrica().salvar()
+    # Vila Cisterna em três níveis (revisão 2, mundo "subsolo"): módulo próprio
+    import subsolo_vila
+    for area in subsolo_vila.todas():
+        area.salvar()

@@ -1,6 +1,9 @@
 /** Formato das áreas em content/areas/<id>.json. Coordenadas em metros; x e y são o centro das caixas. */
-/** Caixa de colisão: centro (x, y, z), tamanhos w (X), h (Y), d (Z) e rotação opcional em graus (rampas). */
-export interface Solido { x: number; y: number; w: number; h: number; d?: number; z?: number; mat?: string; invisivel?: boolean; semCamera?: boolean; rx?: number; ry?: number; rz?: number; }
+/**
+ * Caixa de colisão: centro (x, y, z), tamanhos w (X), h (Y), d (Z) e rotação opcional em graus (rampas).
+ * `semColisao`: só visual (lonas, lâmpadas, facho de luz, vigas altas); não entra na física nem no piso mínimo.
+ */
+export interface Solido { x: number; y: number; w: number; h: number; d?: number; z?: number; mat?: string; invisivel?: boolean; semCamera?: boolean; semColisao?: boolean; rx?: number; ry?: number; rz?: number; }
 export interface Peca { m: string; x: number; y: number; z?: number; r?: number; e?: number | [number, number, number]; }
 /** Escada de mão ou corda: base em (x, z), de y0 a y1; yaw é para onde o jogador olha ao subir (graus no JSON). */
 export interface EscadaDef { x: number; z?: number; y0: number; y1: number; tipo: "escada" | "corda"; yaw?: number; }

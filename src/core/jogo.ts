@@ -320,7 +320,7 @@ export class Jogo {
     const querLanterna = this.iluminacao.perfil.lanterna ? 9 : 0;
     this.lanterna.intensity += (querLanterna - this.lanterna.intensity) * Math.min(1, dt * 3);
     this.lanterna.setEnabled(this.lanterna.intensity > 0.05);
-    this.iluminacao.atualizar(dt, new Vector3(p.x, p.y + 1, 0), this.tempo);
+    this.iluminacao.atualizar(dt, new Vector3(p.x, p.y + 1, p.z), this.tempo);
     this.pos.atualizar(dt, this.iluminacao.poeiraExtra);
     this.particulas.atualizar(p.x, p.y, !!this.areaAtual?.superficie, this.iluminacao.poeiraExtra, Math.sign(this.jogador.empurrao), this.tempo);
     this.epi.atualizar(dt);
