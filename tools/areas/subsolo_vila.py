@@ -604,27 +604,33 @@ def capela_geometria(a: Area):
     B(a, porta_s[0], porta_s[1], hp, yt, z0, z0 + t, "chapa_clara")
     B(a, x0, x1, YP, yt, z1 - t, z1, "chapa_clara")
     B(a, x1 - t, x1, YP, yt, z0, z1, "chapa_clara")
+    a.d.setdefault("kits", [])
+    a.d["kits"].append("r2_capela")
     # telhado com claraboia sobre o altar (por onde passa o facho)
     clara = (57.0, 60.0, 20.5, 23.5)
     laje(a, x0 - 0.3, x1 + 0.3, z0 - 0.3, z1 + 0.3, yt, yt + 0.4, [clara], "ferrugem")
     # vitrais nas paredes norte, sul e leste (dos dois lados)
     cores = ["vitral_azul", "vitral_vermelho", "vitral_verde", "vitral_azul", "vitral_vermelho"]
+    # vitrais do kit (caixilho de chumbo e vidros de três cores), um em cada face da parede
     for i, x in enumerate((49.0, 52.5, 56.0, 59.5)):
-        V(a, x - 0.7, x + 0.7, YP + 2.4, YP + 4.6, z1 - t - 0.05, z1 + 0.05, cores[i])
+        for zf in (z1 - t - 0.04, z1 + 0.04):
+            a.peca("vitral_capela", x, YP + 2.4, zf)
         if not (porta_s[0] - 0.8 < x < porta_s[1] + 0.8):
-            V(a, x - 0.7, x + 0.7, YP + 2.4, YP + 4.6, z0 - 0.05, z0 + t + 0.05, cores[i + 1])
+            for zf in (z0 - 0.04, z0 + t + 0.04):
+                a.peca("vitral_capela", x, YP + 2.4, zf)
     for z in (16.0, 28.0):
-        V(a, x1 - t - 0.05, x1 + 0.05, YP + 2.4, YP + 4.8, z - 0.9, z + 0.9, cores[(int(z) // 4) % 5])
+        for xf in (x1 - t - 0.04, x1 + 0.04):
+            a.peca("vitral_capela", xf, YP + 2.4, z, r=90, e=[r3(1.8 / 1.4), r3(2.4 / 2.2), 1])
     # bancos de madeira reaproveitada, com corredor central da porta oeste ao altar
     for x in (49.5, 52.0, 54.5, 57.0):
         for (za, zb) in ((14.0, 19.0), (26.0, 30.5)):
             if za < 20 and porta_s[0] - 0.6 < x < porta_s[1] + 0.6:
                 za = 15.5
-            B(a, x - 0.3, x + 0.3, YP, YP + 0.45, za, zb, "madeira")
-            V(a, x + 0.25, x + 0.35, YP + 0.45, YP + 1.0, za, zb, "madeira")
+            B(a, x - 0.3, x + 0.3, YP, YP + 0.45, za, zb, "madeira", invisivel=True)
+            a.peca("banco_capela", x, YP, (za + zb) / 2, e=[1, 1, r3((zb - za) / 5.0)])   # tábuas e encosto (kit)
     # altar com fotos do céu
-    B(a, 60.6, 62.4, YP, YP + 1.1, 20.2, 23.8, "madeira")
-    V(a, 60.5, 62.5, YP + 1.1, YP + 1.18, 20.1, 23.9, "pano")
+    B(a, 60.6, 62.4, YP, YP + 1.1, 20.2, 23.8, "madeira", invisivel=True)
+    a.peca("altar_capela", 61.5, YP, 22.0)                               # toalha, velas e fotos do céu (kit)
     for i, z in enumerate((20.6, 21.6, 22.4, 23.4)):
         V(a, x1 - t - 0.04, x1 - t, YP + 1.6 + (i % 2) * 0.9, YP + 2.3 + (i % 2) * 0.9, z - 0.4, z + 0.4, "vitral_azul")
     V(a, x1 - t - 0.06, x1 - t, YP + 3.4, YP + 4.8, 21.2, 22.8, "luz_dourada")  # sol pintado
@@ -668,6 +674,12 @@ def galerias_secas() -> Area:
     B(a, hx0, ESC_B[1], YG, yt, hz0 - pw, hz0, "rocha")
     B(a, hx0, ESC_B[1], YG, yt, hz1, hz1 + pw, "rocha")
     zona_tunel(a, hx0, hx1, YG - 0.5, yt, hz0, hz1)
+    # fiação puxada no teto dos corredores (kit r2_gueto)
+    a.d["kits"] = ["r2_gueto"]
+    for fx in range(int(hx0) + 3, int(hx1) - 2, 6):
+        a.peca("fiacao_6m", fx, yt - 0.05, (hz0 + hz1) / 2 + 0.6)
+    for fz in range(int(G1[2]) + 3, int(G1[3]) - 2, 6):
+        a.peca("fiacao_6m", (G1[0] + G1[1]) / 2 - 0.4, yt - 0.05, fz, r=90)
     bx0, bx1, bz0, bz1 = ESC_B
     B(a, bx0, bx1, YG - 0.5, YG, bz0, bz1, "chao")
     lance(a, bx0, bx1, bz0, bz1, YG, 0.0, "+x", base=YG)

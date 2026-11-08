@@ -37,6 +37,8 @@ from subsolo_duto import C, degraus, faixa_x  # noqa: E402
 from subsolo_vila import B, V, corrimao, laje, lance, r3, zona_tunel  # noqa: E402
 
 R = random.Random(404)
+# área descartável: recebe as placas genéricas substituídas por peças, para o sorteio (R) seguir igual
+LIXO = Area("lixo", "", "", "", None, 0.0, 1.0)
 VERMELHA = [1.0, 0.16, 0.08]
 FRIA_FRACA = [0.6, 0.85, 1.0]
 
@@ -114,7 +116,23 @@ def azulejos(a: Area, eixo, plano, normal, ini, fim, y0, y1, base="azulejo_creme
             V(a, u0, u1, v0, v1, p0, p1, mat)
         else:
             V(a, p0, p1, v0, v1, u0, u1, mat)
-    caixa(ini, fim, y0, y1, 0.03, base)
+    # painéis de azulejo com textura (kit r2_estacao, 4 x 1 m, os últimos encolhidos) no lugar do bloco de base
+    r = {("x", 1): 180, ("x", -1): 0, ("z", 1): -90, ("z", -1): 90}[(eixo, normal)]
+    p = plano + 0.031 * normal
+    u = ini
+    while u < fim - 0.05:
+        w = min(4.0, fim - u)
+        v = y0
+        while v < y1 - 0.05:
+            h = min(1.0, y1 - v)
+            cu = u + w / 2
+            x, z = (cu, p) if eixo == "x" else (p, cu)
+            peca = dict(m=base, x=r3(x), y=r3(v), z=r3(z), r=r)
+            if w < 3.99 or h < 0.99:
+                peca["e"] = [r3(w / 4.0), r3(h), 1]
+            a.d["pecas"].append(peca)
+            v += 1.0
+        u += 4.0
     caixa(ini, fim, y1 - 0.5, y1 - 0.2, 0.045, faixa)
     caixa(ini, fim, y0, y0 + 0.15, 0.045, "concreto_escuro")
     for _ in range(falhas):
@@ -128,6 +146,7 @@ def azulejos(a: Area, eixo, plano, normal, ini, fim, y0, y1, base="azulejo_creme
 def estacao() -> Area:
     a = Area("estacao_aurora", "Estação Aurora", "subsolo", "estacao", None, HX0, HX1 + W)
     a.d["zonaPadrao"] = "vila"
+    a.d["kits"] = ["r2_estacao"]
     a.caixa((HX0, -27.0, HZ0 - W), (HX1 + W, -12.0, HZ1 + W))
     a.d["bocaDoPoco"] = dict(x=BOCA[0], y=Y0, z=BOCA[1])
 
@@ -175,9 +194,14 @@ def estacao() -> Area:
     azulejos(a, "x", HZ1, -1, HX0, HX1, YV, YV + 4.2, falhas=14)
     azulejos(a, "z", HX1, -1, ILHA[0], ILHA[1], Y0, Y0 + 3.2, base="azulejo_creme", falhas=4)
     for xp in (150.0, 166.0, 186.0):
-        placa(a, xp - 1.8, xp + 1.8, YV + 2.3, YV + 3.0, HZ0 + 0.04, +1)
+        placa(LIXO, xp - 1.8, xp + 1.8, YV + 2.3, YV + 3.0, HZ0 + 0.04, +1)
+        a.peca("placa_aurora", xp, YV + 2.3, HZ0 + 0.1, r=180)
     for xp in (178.0, 194.0):
-        placa(a, xp - 1.8, xp + 1.8, YV + 2.3, YV + 3.0, HZ1 - 0.04, -1)
+        placa(LIXO, xp - 1.8, xp + 1.8, YV + 2.3, YV + 3.0, HZ1 - 0.04, -1)
+        a.peca("placa_aurora", xp, YV + 2.3, HZ1 - 0.1)
+    # painéis de horário apagados pendurados sob o mezanino, de frente para quem anda pela ilha
+    for xp in (171.5, 190.0):
+        a.peca("painel_horarios", xp, YM - 0.4 - 2.2, (ILHA[0] + ILHA[1]) / 2, r=90)
     # mapa da linha (desbotado) na parede leste
     V(a, HX1 - 0.05, HX1 - 0.02, Y0 + 1.2, Y0 + 2.4, 203.0, 207.0, "chapa_clara")
     V(a, HX1 - 0.07, HX1 - 0.05, Y0 + 1.75, Y0 + 1.85, 203.3, 206.7, "lona_vermelha")
@@ -277,15 +301,12 @@ def escadas_rolantes(a: Area):
     for i, (z0, z1) in enumerate(BALAUSTRES):
         for k in range(N_DEG):
             x = ESC_X0 + PIS * k
-            B(a, x, x + PIS, Y0, Y0 + DEG * (k + 1) - 0.2, z0, z1, "chapa_clara", semCamera=True)
-        faixa_x(a, ESC_X0, ESC_X1, z0, z1, y_ini, y_fim, 1.6, "chapa_clara", semCamera=True)
-        faixa_x(a, ESC_X0, ESC_X1, z0 + 0.06, z1 - 0.06, y_ini + 0.07, y_fim + 0.07, 0.07, "escuro", semColisao=True)
-        B(a, ESC_X0 - 0.8, ESC_X0, Y0, Y0 + 1.0, z0, z1, "chapa_clara", semCamera=True)     # pé
-        V(a, ESC_X0 - 0.8, ESC_X0, Y0 + 1.0, Y0 + 1.07, z0 + 0.06, z1 - 0.06, "escuro")
-        B(a, ESC_X1, ESC_X1 + 0.8, YM, YM + 1.0, z0, z1, "chapa_clara", semCamera=True)     # cabeça
-        V(a, ESC_X1, ESC_X1 + 0.8, YM + 1.0, YM + 1.07, z0 + 0.06, z1 - 0.06, "escuro")
-        if i != 1:  # faixa luminosa apagada no rodapé externo
-            V(a, ESC_X0, ESC_X1, Y0 + 0.2, Y0 + 0.3, z0 - 0.02 if i == 0 else z1, z0 if i == 0 else z1 + 0.02, "escuro")
+            B(a, x, x + PIS, Y0, Y0 + DEG * (k + 1) - 0.2, z0, z1, "chapa_clara", semCamera=True, invisivel=True)
+        faixa_x(a, ESC_X0, ESC_X1, z0, z1, y_ini, y_fim, 1.6, "chapa_clara", semCamera=True, invisivel=True)
+        B(a, ESC_X0 - 0.8, ESC_X0, Y0, Y0 + 1.0, z0, z1, "chapa_clara", semCamera=True, invisivel=True)     # pé
+        B(a, ESC_X1, ESC_X1 + 0.8, YM, YM + 1.0, z0, z1, "chapa_clara", semCamera=True, invisivel=True)     # cabeça
+        # painel de inox, corrimão de borracha com as voltas e faixa de luz apagada (kit r2_estacao)
+        a.peca("balaustrada_rolante", ESC_X0, Y0, (z0 + z1) / 2, e=[1, 1, r3((z1 - z0) / 0.34)])
     # placa "fora de serviço" e fita zebrada na boca de uma das escadas
     V(a, ESC_X0 - 1.0, ESC_X0 - 0.95, Y0 + 0.6, Y0 + 0.9, FAIXAS[1][0] + 0.1, FAIXAS[1][1] - 0.1, "lona_amarela")
     placa(a, FAIXAS[0][0] + 0.2, FAIXAS[0][1] - 0.2, Y0 + 1.5, Y0 + 1.9, ESC_X0 - 0.8, -1, eixo="z", mat="lona_vermelha", letras=False)
@@ -413,6 +434,7 @@ def detalhes_da_ilha(a: Area):
 def boca() -> Area:
     a = Area("boca_estacao", "Boca do Poço", "subsolo", "boca", None, 171.0, 185.0)
     a.d["zonaPadrao"] = "vila"
+    a.d["kits"] = ["r2_estacao", "r2_eclusa"]
     a.caixa((171.0, -12.0, 198.0), (185.0, 4.5, 222.0))
     poco(a)
     topo(a)
@@ -533,6 +555,7 @@ def topo(a: Area):
     B(a, 179.3, dx1 + pe, YP, h, dz1, ez0, "concreto")
     B(a, 176.7, 179.3, YP + 2.6, h, dz1, ez0, "concreto")
     B(a, dx0 - pe, dx1 + pe, YP - 0.3, h, ez1, ez1 + 1.0, "concreto")    # porta externa (fechada)
+    a.peca("porta_eclusa_r2", (dx0 + dx1) / 2, YP, ez1)                   # porta redonda com volante (kit)
     # teto
     B(a, sx0 - pe, sx1 + pe, h, h + 0.4, sz0 - pe, sz1 + pe, "concreto_escuro")
     B(a, dx0 - pe, dx1 + pe, h, h + 0.4, sz1 + pe, ez1 + 1.0, "concreto_escuro")
@@ -557,14 +580,10 @@ def topo(a: Area):
     # armários de EPI na parede oeste (um aberto, com a roupa e a máscara) e bancos
     for i in range(6):
         z = 202.8 + i * 1.0
-        B(a, sx0, sx0 + 0.6, YP, YP + 2.1, z, z + 0.95, "chapa_verde" if i % 2 else "chapa_azul")
-        V(a, sx0 + 0.6, sx0 + 0.62, YP + 1.7, YP + 1.85, z + 0.2, z + 0.75, "escuro")       # respiros
-        V(a, sx0 + 0.6, sx0 + 0.63, YP + 1.0, YP + 1.15, z + 0.8, z + 0.86, "metal")        # puxador
-    z = 202.8 + 2 * 1.0
-    V(a, sx0 + 0.58, sx0 + 0.62, YP + 0.1, YP + 2.0, z + 0.02, z + 0.93, "escuro")          # armário aberto
-    C(a, sx0 + 0.95, YP + 1.05, z + 0.1, 0.9, 2.0, 0.04, "chapa_azul", ry=-60, semColisao=True)
-    V(a, sx0 + 0.15, sx0 + 0.5, YP + 0.4, YP + 1.8, z + 0.2, z + 0.75, "lona_amarela")       # roupa de EPI
-    V(a, sx0 + 0.25, sx0 + 0.5, YP + 1.85, YP + 2.05, z + 0.3, z + 0.65, "escuro")          # máscara
+        B(a, sx0, sx0 + 0.6, YP, YP + 2.1, z, z + 0.95, "chapa_verde" if i % 2 else "chapa_azul", invisivel=True)
+        # armário do kit (respiros, puxador; o terceiro aberto, com a roupa de EPI e a máscara)
+        nome = "armario_epi_aberto" if i == 2 else ("armario_epi_verde" if i % 2 else "armario_epi_azul")
+        a.peca(nome, sx0 + 0.3, YP, z + 0.475, r=-90)
     B(a, 176.0, 181.0, YP, YP + 0.45, sz0 + 0.1, sz0 + 0.6, "madeira")                     # banco
     for xp in (176.2, 180.8):
         V(a, xp - 0.04, xp + 0.04, YP, YP + 0.45, sz0 + 0.15, sz0 + 0.55, "metal")
@@ -589,9 +608,7 @@ def topo(a: Area):
     for xw, s in ((dx0, 1), (dx1, -1)):
         V(a, min(xw, xw + 0.12 * s), max(xw, xw + 0.12 * s), YP + 2.7, YP + 2.82, dz0 + 0.1, dz1 - 0.1, "metal")
         for zc in (211.6, 213.25, 214.9):
-            V(a, min(xw + 0.08 * s, xw + 0.14 * s), max(xw + 0.08 * s, xw + 0.14 * s), YP + 2.4, YP + 2.72, zc - 0.03, zc + 0.03, "metal")
-            V(a, min(xw + 0.1 * s, xw + 0.5 * s), max(xw + 0.1 * s, xw + 0.5 * s), YP + 2.33, YP + 2.4, zc - 0.16, zc + 0.16, "metal")
-            V(a, min(xw, xw + 0.06 * s), max(xw, xw + 0.06 * s), YP + 1.2, YP + 1.4, zc + 0.35, zc + 0.55, "lona_vermelha")  # registro
+            a.peca("chuveiro_r2", xw, YP, zc, r=-90 if s > 0 else 90)        # cano, crivo e registro (kit)
         V(a, min(xw, xw + 0.04 * s), max(xw, xw + 0.04 * s), YP + 2.95, YP + 3.05, dz0 + 0.5, dz1 - 0.5, "luz_alerta")
     for zc in (211.6, 213.25, 214.9):
         V(a, 177.4, 178.6, YP, YP + 0.015, zc - 0.4, zc + 0.4, "grade")
