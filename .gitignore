@@ -7,3 +7,4 @@ tools/blender/__pycache__/
 *.blend1
 .cache/
 logs/
+.claude/worktrees/
