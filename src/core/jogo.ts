@@ -345,7 +345,7 @@ export class Jogo {
         this.pos.definir(a.estetica);
       }
       if (anterior?.id !== a.id && !this.roteiro?.emEpilogo) this.hud.anunciarArea(a.nome);
-      const epi = a.mundo === "superficie" || a.mundo === "boca";
+      const epi = a.mundo === "superficie" || a.mundo === "boca" || !!a.superficie;
       this.jogador.personagem.mostrar("_epi", epi);
       this.jogador.personagem.mostrar("_roupa", !epi);
       if (a.superficie && !this.epi.ativo && !this.subida.emSequencia) {
@@ -441,7 +441,7 @@ export class Jogo {
     this.particulas.aoCarregar(a.def.id);
     for (const [i, s] of (a.def.saidas ?? []).entries()) {
       this.interacao.adicionar({
-        id: `${a.def.id}:saida${i}`, x: s.x, y: s.y, rotulo: s.rotulo, raio: 1.5, prioridade: 1,
+        id: `${a.def.id}:saida${i}`, x: s.x, y: s.y, z: s.z, rotulo: s.rotulo, raio: 1.5, prioridade: 1,
         acao: () => void this.usarSaida(s.destino, s.entrada, s.tipo ?? "porta"),
       });
     }

@@ -18,6 +18,9 @@ const FONTES: Fonte[] = [
   ...[14, 31, 52, 66, 90, 104].map((x) => ({ area: "duto_norte", tipo: "gota" as const, x, y: 4.5, z: 1.2 })),
   ...[19, 21.5, 24].map((x) => ({ area: "boca_do_poco", tipo: "nevoa" as const, x, y: 0.2, z: 1.6 })),
   { area: "boca_do_poco", tipo: "nevoa", x: 36, y: 0.2, z: 2.0 },
+  // Estação Aurora (revisão 2): poeira suspensa caindo das frestas do teto; Boca do Poço: névoa dos chuveiros
+  ...[[150, 207], [165, 201], [190, 209]].map(([x, z]) => ({ area: "estacao_aurora", tipo: "poeira" as const, x, y: -13.6, z })),
+  ...[[176, 212.5], [180, 214.2], [178, 218.5]].map(([x, z]) => ({ area: "boca_estacao", tipo: "nevoa" as const, x, y: 0.2, z })),
 ];
 
 function texturaMacia(cena: Scene): Texture {

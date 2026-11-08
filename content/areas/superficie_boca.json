@@ -1,0 +1,80 @@
+{
+ "id": "superficie_boca",
+ "nome": "Boca do Poço",
+ "mundo": "superficie_aberta",
+ "estetica": "superficie",
+ "kit": null,
+ "inicio": -20.0,
+ "fim": 20.0,
+ "solidos": [
+  {
+   "x": 0.0,
+   "y": -0.25,
+   "z": 0.0,
+   "w": 40.0,
+   "h": 0.5,
+   "d": 40.0,
+   "mat": "chao"
+  },
+  {
+   "x": 0.0,
+   "y": 1.3,
+   "z": -1.8,
+   "w": 4.0,
+   "h": 2.6,
+   "d": 2.4,
+   "mat": "concreto"
+  },
+  {
+   "x": 0.0,
+   "y": 1.1,
+   "z": -0.6,
+   "w": 1.8,
+   "h": 2.2,
+   "d": 0.04,
+   "mat": "metal",
+   "semColisao": true
+  }
+ ],
+ "escadas": [],
+ "pecas": [],
+ "fundo": [],
+ "saidas": [
+  {
+   "x": 0.0,
+   "y": 0.0,
+   "z": 0.4,
+   "destino": "boca_estacao",
+   "entrada": "superficie",
+   "rotulo": "Entrar na eclusa",
+   "tipo": "eclusa"
+  }
+ ],
+ "entradas": {
+  "boca": {
+   "x": 0.0,
+   "y": 0.0,
+   "z": 3.0,
+   "yaw": 0
+  }
+ },
+ "luzes": [],
+ "coletaveis": [],
+ "interativos": [],
+ "zonas": [],
+ "marcos": [],
+ "superficie": true,
+ "zonaPadrao": "superficie",
+ "limites": {
+  "min": [
+   -20.0,
+   -2.0,
+   -20.0
+  ],
+  "max": [
+   20.0,
+   10.0,
+   20.0
+  ]
+ }
+}

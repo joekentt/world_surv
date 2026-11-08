@@ -1,6 +1,6 @@
 """Duto Norte, Caverna da Fenda e Galeria dos Contrabandistas, em blocos (revisão 2, fase 2, tarefa 3).
 
-Uso: python3 tools/areas/subsolo_duto.py   (grava content/areas/duto_*.json e estacao_aurora.json)
+Uso: python3 tools/areas/subsolo_duto.py   (grava content/areas/duto_*.json)
 
 Seção 5.1 de docs/spec/05-mapa.md e seção 7 de docs/spec/07-arte-personagens-vila.md.
 Mundo "subsolo", mesmos eixos da vila (Y para cima, norte em +Z, piso da vila em y = 0).
@@ -9,8 +9,8 @@ Traçado (300 m pelo eixo):
   - trecho norte: sai da parede norte da caverna da vila (z = 45, boca de x = -4 a 4) e segue para o
     norte até z = 209, descendo por duas rampas (0 -> -5 m e -5 -> -10 m);
   - curva para leste em (0, 205) e trecho leste até x = 140, descendo de -10 a -25 m por duas rampas;
-  - no fim (x = 140, y = -25) uma parede provisória com porta fechada e a caixa vazia da Estação
-    Aurora (x de 141 a 200), reservada para a tarefa 4.
+  - no fim (x = 140, y = -25) a parede com o portão aberto para a Estação Aurora (tarefa 4, em
+    tools/areas/subsolo_estacao.py, que grava estacao_aurora.json e boca_estacao.json).
 Desvios:
   - Caverna da Fenda (leste do trecho norte, x 14..70, z 92..168): duas passagens a partir do duto
     (z = 103 e z = 155, y = -5) formam um circuito; abismo de 40 m (z 118..140) atravessado por uma
@@ -45,7 +45,8 @@ NX0, NX1 = -4.0, 4.0          # interior do trecho norte
 EZ0, EZ1 = 201.0, 209.0       # interior do trecho leste
 Z_BOCA = 45.0                 # parede norte da caverna da vila
 Z_NORTE = 209.0               # fim do trecho norte (parede norte da curva)
-X_FIM = 140.0                 # parede provisória diante da Estação Aurora
+X_FIM = 140.0                 # parede do fim do duto, com o portão aberto para a Estação Aurora
+PORTAO_FIM = (202.6, 207.4)   # vão do portão (z)
 XT = -1.0                     # eixo do trilho no trecho norte
 ZT = 204.0                    # eixo do trilho no trecho leste
 BITOLA = 0.72                 # meia bitola
@@ -450,21 +451,25 @@ def destrocos(a: Area):
 
 
 def fim_do_duto(a: Area):
-    """Parede provisória com porta fechada diante da Estação Aurora (tarefa 4)."""
+    """Parede do fim do duto com o portão aberto para a Estação Aurora (tarefa 4, subsolo_estacao.py).
+    As folhas abertas ficam do lado da estação."""
     y = -25.0
-    B(a, X_FIM, X_FIM + PW, y - 0.6, y + ALT + ESP_TETO, EZ0 - PW, EZ1 + PW, "concreto")
-    # portão de aço de duas folhas, fechado, com moldura e faixas
-    V(a, X_FIM - 0.3, X_FIM, y, y + 4.2, 202.6, 207.4, "metal")
-    V(a, X_FIM - 0.35, X_FIM - 0.3, y, y + 4.2, 204.97, 205.03, "escuro")
-    for yy in (0.8, 2.2, 3.6):
-        V(a, X_FIM - 0.35, X_FIM - 0.3, y + yy, y + yy + 0.25, 202.6, 207.4, "lona_amarela")
-    V(a, X_FIM - 0.5, X_FIM, y, y + 4.5, 202.2, 202.6, "ferrugem")
-    V(a, X_FIM - 0.5, X_FIM, y, y + 4.5, 207.4, 207.8, "ferrugem")
-    V(a, X_FIM - 0.5, X_FIM, y + 4.2, y + 4.6, 202.2, 207.8, "ferrugem")
+    topo = y + ALT + ESP_TETO
+    p0, p1 = PORTAO_FIM
+    B(a, X_FIM, X_FIM + PW, y - 0.6, topo, EZ0 - PW, p0, "concreto")
+    B(a, X_FIM, X_FIM + PW, y - 0.6, topo, p1, EZ1 + PW, "concreto")
+    B(a, X_FIM, X_FIM + PW, y + 4.2, topo, p0, p1, "concreto")
+    # moldura do vão, placa da estação e lâmpadas de aviso
+    V(a, X_FIM - 0.5, X_FIM, y, y + 4.5, p0 - 0.4, p0, "ferrugem")
+    V(a, X_FIM - 0.5, X_FIM, y, y + 4.5, p1, p1 + 0.4, "ferrugem")
+    V(a, X_FIM - 0.5, X_FIM, y + 4.2, y + 4.6, p0 - 0.4, p1 + 0.4, "ferrugem")
     V(a, X_FIM - 0.4, X_FIM - 0.3, y + 4.75, y + 5.05, 203.6, 206.4, "chapa_clara")   # placa da estação
     V(a, X_FIM - 0.45, X_FIM - 0.3, y + 4.7, y + 4.85, 202.4, 202.7, "vitral_vermelho")
     V(a, X_FIM - 0.45, X_FIM - 0.3, y + 4.7, y + 4.85, 207.3, 207.6, "vitral_vermelho")
-    for z in (202.0, 208.0):  # barreira de sacos diante do portão
+    # para-choque no fim dos trilhos e barreira de sacos diante do portão
+    V(a, X_FIM - 1.0, X_FIM - 0.5, y, y + 0.9, ZT - 1.0, ZT + 1.0, "lona_amarela")
+    V(a, X_FIM - 1.02, X_FIM - 0.98, y + 0.3, y + 0.6, ZT - 1.0, ZT + 1.0, "escuro")
+    for z in (202.0, 208.0):
         B(a, X_FIM - 2.0, X_FIM - 1.2, y, y + 0.7, z - 0.8, z + 0.8, "pano")
 
 
@@ -878,20 +883,8 @@ def galeria_contrabandistas() -> Area:
     return a
 
 
-def estacao_reservada() -> Area:
-    """Caixa vazia da Estação Aurora (tarefa 4): só a reserva do espaço depois da porta do fim do duto."""
-    x0, x1, z0, z1 = ESTACAO
-    a = Area("estacao_aurora", "Estação Aurora", "subsolo", "duto", None, x0, x1)
-    a.d["zonaPadrao"] = "vila"
-    a.caixa((x0, -26.0, z0), (x1, -12.0, z1))
-    a.d["bocaDoPoco"] = dict(x=BOCA_DO_POCO[0], y=-25.0, z=BOCA_DO_POCO[1])
-    a.entrada("inicio", 137.0, -25.0)
-    a.d["entradas"]["inicio"].update(z=205.0, yaw=90)
-    return a
-
-
 def todas():
-    return [duto_tunel(), caverna_fenda(), galeria_contrabandistas(), estacao_reservada()]
+    return [duto_tunel(), caverna_fenda(), galeria_contrabandistas()]
 
 
 if __name__ == "__main__":

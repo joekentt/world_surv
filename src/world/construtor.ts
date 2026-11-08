@@ -40,6 +40,8 @@ const CORES_BLOQUEIO: Record<string, [number, number, number]> = {
   pano: [0.7, 0.66, 0.58], grade: [0.16, 0.16, 0.17], escuro: [0.07, 0.065, 0.06],
   // superfícies úmidas e escuras do Duto Norte (a lanterna do capacete bate de perto sem estourar)
   rocha_escura: [0.19, 0.17, 0.15], madeira_escura: [0.17, 0.11, 0.07], concreto_escuro: [0.21, 0.2, 0.18],
+  // azulejos antigos da Estação Aurora
+  azulejo_creme: [0.6, 0.57, 0.48], azulejo_verde: [0.22, 0.4, 0.36], azulejo_azul: [0.24, 0.34, 0.46],
 };
 
 /** Materiais que emitem luz própria (lâmpadas, vitrais, facho), sem depender das luzes da cena. */
@@ -50,6 +52,8 @@ const EMISSIVOS: Record<string, { cor: [number, number, number]; alfa?: number }
   facho: { cor: [1.0, 0.86, 0.55], alfa: 0.16 },
   // Duto Norte e Caverna da Fenda: musgo luminoso e água escorrendo (brilho fraco no escuro)
   musgo: { cor: [0.1, 0.46, 0.3] }, musgo_fraco: { cor: [0.035, 0.17, 0.12] }, agua: { cor: [0.08, 0.15, 0.18] },
+  // Boca do Poço: luz vermelha de alerta e névoa da descontaminação
+  luz_alerta: { cor: [1.0, 0.08, 0.04] }, nevoa: { cor: [0.32, 0.13, 0.12], alfa: 0.045 },
 };
 
 function materialBloqueio(cena: Scene, nome: string): StandardMaterial {

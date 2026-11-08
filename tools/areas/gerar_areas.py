@@ -509,3 +509,7 @@ if __name__ == "__main__":
     import subsolo_duto
     for area in subsolo_duto.todas():
         area.salvar()
+    # Estação Aurora e Boca do Poço com a eclusa (revisão 2, mundo "subsolo")
+    import subsolo_estacao
+    for area in subsolo_estacao.todas():
+        area.salvar()
