@@ -149,8 +149,9 @@ test.describe("fase 2: superfície aberta", () => {
     const pm = ROTAS.pontos.marco;
     const dMarco = daBoca(ROTAS.marco, r.dist, pm);
     expect(Math.hypot(r.x - pm[0], r.z - pm[1])).toBeLessThan(8);
-    await posicionar(page, pm[0] + 3, r.y + 0.1, pm[1] - 17, -10 * GRAU, -10 * GRAU, -9 * GRAU);
-    await camera(page, -10 * GRAU, -9 * GRAU, 2.5);
+    // vista do Marco a partir da entrada sul da praça, com a Antena ao fundo
+    await posicionar(page, pm[0] + 4, r.y + 0.1, pm[1] - 29, -12 * GRAU, -12 * GRAU, -18 * GRAU);
+    await camera(page, -12 * GRAU, -18 * GRAU, 3);
     await esperarJogo(page, 2.5);
     await page.screenshot({ path: `${DIR}/superficie-3-marco.png` });
 
@@ -167,9 +168,9 @@ test.describe("fase 2: superfície aberta", () => {
     expect(desab.yMin).toBeLessThan(-4);
     expect(desab.z).toBeGreaterThan(228);
 
-    // vista da ponte inteira a partir da margem sul
-    await posicionar(page, -62, 0.1, 174, 30 * GRAU, 32 * GRAU, 16 * GRAU);
-    await camera(page, 32 * GRAU, 16 * GRAU, 6);
+    // do meio da ponte inteira, olhando o leito seco para o leste (muralhas, entulho, ponte desabada ao fundo)
+    await posicionar(page, -44, 0.3, 206, 95 * GRAU, 95 * GRAU, 18 * GRAU);
+    await camera(page, 95 * GRAU, 18 * GRAU, 3);
     await esperarJogo(page, 2.5);
     await page.screenshot({ path: `${DIR}/superficie-2-rio-ponte.png` });
 

@@ -246,10 +246,12 @@
       "mundo": "superficie_aberta",
       "area": "superficie_boca",
       "x": 0,
-      "y": 0,
-      "z": 3,
-      "tempo_eclusa_s": 1.98,
+      "y": 0.06,
+      "z": 8,
+      "tempo_eclusa_s": 1.94,
       "areasCarregadas": [
+        "superficie_aberta",
+        "superficie_ruinas",
         "superficie_boca"
       ]
     },
@@ -259,15 +261,15 @@
       "x": 178,
       "y": 0,
       "z": 217.6,
-      "tempo_eclusa_s": 1.81
+      "tempo_eclusa_s": 2.09
     },
     "errosConsole": 0
   },
   "superficie_fps": {
-    "boca": 3.81,
-    "correndoRuinas": 3.93,
-    "salaTeste": 5.58,
-    "razaoBocaSala": 0.68,
+    "boca": 8.92,
+    "correndoRuinas": 8.96,
+    "salaTeste": 9.41,
+    "razaoBocaSala": 0.95,
     "malhasAtivasRuinas": 69
   },
   "superficie_abrigos": [
@@ -290,10 +292,10 @@
   ],
   "superficie_marco": {
     "rotaReferencia_m": 252.47,
-    "percorrido_m": 251.27,
-    "daBocaAoMarco_m": 265.27,
-    "tempoIda_s": 37.68,
-    "idaEVoltaCorrendo_s": 75.79,
+    "percorrido_m": 251.3,
+    "daBocaAoMarco_m": 265.3,
+    "tempoIda_s": 37.69,
+    "idaEVoltaCorrendo_s": 75.8,
     "areas": [
       "superficie_boca",
       "superficie_ruinas",
@@ -312,22 +314,22 @@
       ]
     },
     "pontedesabada": {
-      "yMin": -4.47,
-      "percorrido_m": 61.51
+      "yMin": -4.46,
+      "percorrido_m": 61.47
     }
   },
   "superficie_antena": {
     "rotaReferencia_m": 489.41,
-    "percorrido_m": 497.06,
-    "daBocaAAntena_m": 515.11,
-    "tempoIda_s": 80.63,
-    "idaEVoltaCorrendo_s": 147.17,
+    "percorrido_m": 496.95,
+    "daBocaAAntena_m": 515,
+    "tempoIda_s": 80.51,
+    "idaEVoltaCorrendo_s": 147.14,
     "yTopo": 27.33,
     "yPlataforma": 37.33
   },
   "superficie_viaduto": {
-    "percorrido_m": 219.25,
-    "tempo_s": 34.94,
+    "percorrido_m": 219.23,
+    "tempo_s": 35.03,
     "areas": [
       "superficie_viaduto",
       "superficie_aberta",
