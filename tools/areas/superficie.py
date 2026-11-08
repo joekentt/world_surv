@@ -325,6 +325,9 @@ def predio(a: Area, q, quebrado=True, telhado=True):
         C(a, cx, gt + 0.4, cz, 2.2, 0.6, 1.6, "concreto", ry=R.uniform(0, 90), rz=R.uniform(-12, 12))
     ab = dict(id=q["id"], min=[r3(x0 + e), r3(g), r3(z0 + e)], max=[r3(x1 - e), r3(g + ANDAR), r3(z1 - e)])
     a.d.setdefault("abrigos", []).append(ab)
+    # câmera do interior: sala (vila) ou, com 6 m ou menos de lado, cômodo apertado (tunel)
+    tipo = "tunel" if min(x1 - x0, z1 - z0) <= 6.5 else "vila"
+    a.d.setdefault("zonasCamera", []).append({"tipo": tipo, "min": ab["min"], "max": [ab["max"][0], r3(g + ANDAR - 0.3), ab["max"][2]]})
 
 
 def carro(a: Area, x, z, yaw, mat=None, afundar=None, inclinar=True):

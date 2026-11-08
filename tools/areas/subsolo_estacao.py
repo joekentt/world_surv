@@ -511,6 +511,8 @@ def topo(a: Area):
     sx0, sx1, sz0, sz1 = SALA
     dx0, dx1, dz0, dz1 = DESC
     ex0, ex1, ez0, ez1 = ECL
+    # descontaminação e câmara da eclusa: 6 m de largura e 3,5 m de pé-direito, câmera de túnel
+    zona_tunel(a, dx0, dx1, YP - 0.5, YP + ALT_T, dz0 - 0.5, ez1 + 0.5)
     pe = 0.5
     # piso com o vão do poço (metade norte do lado da escada e todo o lado do elevador)
     furos = [(PX0, LADO, ESP_Z[1], PZ1), (LADO, PX1, PZ0, PZ1)]

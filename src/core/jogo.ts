@@ -153,6 +153,9 @@ export class Jogo {
       this.interacao.removerPrefixo(`${a.def.id}:`);
       this.coletaveis.aoDescarregar(a);
       this.particulas.aoDescarregar(a.def.id);
+      // zonas de câmera saem com a área (senão as do subsolo valeriam nas mesmas coordenadas da superfície)
+      const zonas = (a.def.zonasCamera ?? []) as ZonaCamera[];
+      if (zonas.length) this.camera.zonas = this.camera.zonas.filter((z) => !zonas.includes(z));
       if (a.def.limiteJogavel) {
         this.horizonte?.dispose();
         this.horizonte = null;
@@ -354,6 +357,7 @@ export class Jogo {
     if (a && a !== this.areaAtual) {
       const anterior = this.areaAtual;
       this.areaAtual = a;
+      this.camera.zonaPadrao = a.zonaPadrao ?? "vila";
       if (!this.roteiro?.emEpilogo) {
         this.iluminacao.definirPerfil(a.estetica, !anterior || anterior.mundo !== a.mundo);
         this.pos.definir(a.estetica);
@@ -481,7 +485,13 @@ export class Jogo {
       this.interacao.adicionar({ id: `${a.def.id}:escada${i}:topo`, x: topo.x, y: topo.y, z: topo.z, raio: CFG_MOV.raioEncaixeEscada,
         rotulo: textos("descerEscada"), prioridade: 2, ativo: () => this.jogador.estado === "chao", acao: () => this.jogador.entrarEscada(esc, true) });
     }
-    if (a.def.zonasCamera) this.camera.zonas.push(...(a.def.zonasCamera as ZonaCamera[]));
+    if (a.def.zonasCamera) {
+      // a menor zona que contém o ponto vale (a câmera usa a primeira que encontra): interiores e túneis
+      // dentro de áreas maiores não dependem da ordem em que as áreas carregam
+      this.camera.zonas.push(...(a.def.zonasCamera as ZonaCamera[]));
+      const vol = (z: ZonaCamera) => (z.max[0] - z.min[0]) * (z.max[1] - z.min[1]) * (z.max[2] - z.min[2]);
+      this.camera.zonas.sort((p, q) => vol(p) - vol(q));
+    }
     if (a.def.escadas) {
       const todas = [...this.areas.carregadas.values()].flatMap((c) => c.def.escadas ?? []);
       this.jogador.escadas = todas;
