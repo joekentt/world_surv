@@ -747,7 +747,8 @@
    "mat": "carro_azul",
    "rx": 0.274,
    "ry": 75,
-   "rz": 1.291
+   "rz": 1.291,
+   "invisivel": true
   },
   {
    "x": 57.709,
@@ -759,20 +760,8 @@
    "mat": "carro_azul",
    "rx": 0.274,
    "ry": 75,
-   "rz": 1.291
-  },
-  {
-   "x": 57.709,
-   "y": -3.348,
-   "z": 202.946,
-   "w": 1.66,
-   "h": 0.42,
-   "d": 2.27,
-   "mat": "escuro",
-   "rx": 0.274,
-   "ry": 75,
    "rz": 1.291,
-   "semColisao": true
+   "invisivel": true
   },
   {
    "x": 58.05,
@@ -795,7 +784,8 @@
    "mat": "metal",
    "rx": 0.545,
    "ry": 120,
-   "rz": 7.839
+   "rz": 7.839,
+   "invisivel": true
   },
   {
    "x": -190.183,
@@ -807,20 +797,8 @@
    "mat": "metal",
    "rx": 0.545,
    "ry": 120,
-   "rz": 7.839
-  },
-  {
-   "x": -190.182,
-   "y": -3.294,
-   "z": 205.266,
-   "w": 1.66,
-   "h": 0.42,
-   "d": 2.27,
-   "mat": "escuro",
-   "rx": 0.545,
-   "ry": 120,
    "rz": 7.839,
-   "semColisao": true
+   "invisivel": true
   },
   {
    "x": -190.304,
@@ -887,7 +865,26 @@
   }
  ],
  "escadas": [],
- "pecas": [],
+ "pecas": [
+  {
+   "m": "carro_azul",
+   "x": 58.0,
+   "y": -4.369,
+   "z": 203.0,
+   "r": 75,
+   "rx": 0.274,
+   "rz": 1.291
+  },
+  {
+   "m": "carro_ferrugem",
+   "x": -190.0,
+   "y": -4.307,
+   "z": 205.0,
+   "r": 120,
+   "rx": 0.545,
+   "rz": 7.839
+  }
+ ],
  "fundo": [],
  "saidas": [],
  "entradas": {
@@ -911,6 +908,9 @@
  "marcos": [],
  "superficie": true,
  "zonaPadrao": "superficie",
+ "kits": [
+  "r2_superficie"
+ ],
  "limites": {
   "min": [
    -318.0,

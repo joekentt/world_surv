@@ -7,6 +7,7 @@ cd "$RAIZ"
 bash tools/blender/personagens/baixar_dados_mpfb2.sh
 "$PY" tools/blender/kits/parede_teste.py
 "$PY" tools/blender/kits/gerar_kits.py
+"$PY" tools/blender/kits/kits_r2.py
 "$PY" tools/blender/personagens/gerar_personagem.py --todos
 "$PY" tools/blender/animacoes/gerar_animacoes.py
 python3 tools/areas/gerar_areas.py

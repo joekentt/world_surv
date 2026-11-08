@@ -1,5 +1,5 @@
 import {
-  Color3, GlowLayer, Matrix, Mesh, MeshBuilder, PhysicsAggregate, PhysicsShapeType, PointLight, SpotLight, StandardMaterial,
+  Color3, GlowLayer, Matrix, Mesh, MeshBuilder, PBRMaterial, Quaternion, PhysicsAggregate, PhysicsShapeType, PointLight, SpotLight, StandardMaterial,
   TransformNode, Vector3, VertexData, type AbstractMesh, type AssetContainer, type Light, type Scene,
 } from "@babylonjs/core";
 import type { Carregador } from "../core/carregador";
@@ -55,17 +55,11 @@ const EMISSIVOS: Record<string, { cor: [number, number, number]; alfa?: number }
   facho: { cor: [1.0, 0.86, 0.55], alfa: 0.16 },
   // Duto Norte e Caverna da Fenda: musgo luminoso e água escorrendo (brilho fraco no escuro)
   musgo: { cor: [0.1, 0.46, 0.3] }, musgo_fraco: { cor: [0.035, 0.17, 0.12] }, agua: { cor: [0.08, 0.15, 0.18] },
-  // superfície: luz de alerta da Antena e as faixas translúcidas da parede de tempestade (mais ralas no alto)
+  // superfície: luz de alerta da Antena (a parede de tempestade é src/world/tempestade.ts)
   luz_vermelha: { cor: [1.0, 0.12, 0.06] },
-  tempestade_1: { cor: [0.66, 0.54, 0.37], alfa: 0.42 }, tempestade_2: { cor: [0.69, 0.58, 0.41], alfa: 0.31 },
-  tempestade_3: { cor: [0.73, 0.63, 0.46], alfa: 0.21 }, tempestade_4: { cor: [0.78, 0.69, 0.53], alfa: 0.13 },
-  tempestade_5: { cor: [0.83, 0.75, 0.6], alfa: 0.07 }, tempestade_6: { cor: [0.88, 0.81, 0.66], alfa: 0.03 },
   // Boca do Poço: luz vermelha de alerta e névoa da descontaminação
   luz_alerta: { cor: [1.0, 0.08, 0.04] }, nevoa: { cor: [0.32, 0.13, 0.12], alfa: 0.045 },
 };
-
-/** Materiais grandes e translúcidos que não entram na camada de brilho (borrariam a tela inteira). */
-const SEM_BRILHO = /^bloqueio_tempestade/;
 
 function materialBloqueio(cena: Scene, nome: string): StandardMaterial {
   const id = `bloqueio_${nome}`;
@@ -150,6 +144,35 @@ function construirTerreno(cena: Scene, id: string, t: Terreno, raiz: TransformNo
   }
 }
 
+/**
+ * Kits da revisão 2: troca o material PBR do glTF por um StandardMaterial equivalente (cor, textura e emissão) e
+ * passa a cor dos vértices para o espaço gama. O PBR sem mapa de ambiente saía escuro, com queda de luz diferente
+ * da dos blocos em volta, e o sombreador dele pesa bem mais no WebGL2 por software.
+ */
+function paraMaterialPadrao(m: Mesh): void {
+  const pbr = m.material;
+  if (!(pbr instanceof PBRMaterial)) return;
+  const cena = m.getScene();
+  const id = `kit_${pbr.name}`;
+  let mat = cena.getMaterialByName(id) as StandardMaterial | null;
+  if (!mat) {
+    mat = new StandardMaterial(id, cena);
+    mat.diffuseColor = pbr.albedoColor.toGammaSpace();
+    if (pbr.albedoTexture) mat.diffuseTexture = pbr.albedoTexture;
+    const em = pbr.emissiveColor.toGammaSpace().scale(Math.min(2, pbr.emissiveIntensity));
+    if (em.r + em.g + em.b > 0.01) mat.emissiveColor = em;
+    mat.specularColor = new Color3(0.06, 0.06, 0.06);
+    mat.backFaceCulling = pbr.backFaceCulling;
+  }
+  m.material = mat;
+  const cores = m.getVerticesData("color");
+  if (cores) {
+    const g = new Float32Array(cores.length);
+    for (let i = 0; i < cores.length; i++) g[i] = (i & 3) === 3 ? cores[i] : Math.pow(cores[i], 1 / 2.2);
+    m.setVerticesData("color", g);
+  }
+}
+
 /** Módulos de kit já carregados: nome do módulo -> malha-fonte (oculta) para instanciar. */
 export async function fontesDoKit(carregador: Carregador, kit: string): Promise<Map<string, Mesh[]>> {
   const c: AssetContainer = await carregador.carregar(`kits/${kit}.glb`);
@@ -174,6 +197,7 @@ export async function fontesDoKit(carregador: Carregador, kit: string): Promise<
       m.rotation.setAll(0);
       m.scaling.setAll(1);
       m.bakeTransformIntoVertices(mundo);
+      if (kit.startsWith("r2_")) paraMaterialPadrao(m);
       m.setEnabled(true);
       m.isVisible = false;
       m.isPickable = false;
@@ -251,29 +275,46 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
       else c.dispose();
     }
   }
-  // Fora da camada de brilho: as faixas da tempestade e, na superfície (quase nada emite luz), tudo o que
-  // não é emissivo, inclusive o terreno; senão cada malha é desenhada de novo no passe do brilho.
+  // Fora da camada de brilho, na superfície (quase nada emite luz): tudo o que não é emissivo, inclusive o
+  // terreno; senão cada malha é desenhada de novo no passe do brilho.
   for (const m of malhas) {
     const nome = m.material?.name ?? "";
     const emissivo = nome.startsWith("bloqueio_") && nome.slice(9) in EMISSIVOS;
-    if (!SEM_BRILHO.test(nome) && (emissivo || !def.superficie)) continue;
+    if (emissivo || !def.superficie) continue;
     for (const camada of cena.effectLayers) if (camada instanceof GlowLayer) camada.addExcludedMesh(m as Mesh);
   }
 
-  if (def.kit) {
-    const fontes = await fontesDoKit(carregador, def.kit);
-    const comuns = await fontesDoKit(carregador, "comum");
+  const nomesKits = def.kit ? [def.kit, "comum"] : def.kits ?? [];
+  if (nomesKits.length) {
+    const todas = await Promise.all(nomesKits.map((k) => fontesDoKit(carregador, k)));
+    // kits da revisão 2: as peças de cada malha-fonte, por célula de 48 m, viram uma malha estática só (geometria
+    // copiada e transformada no carregamento): uma chamada de desenho e nenhum custo por peça a cada quadro, e
+    // as células fora da câmera são descartadas inteiras. Os kits da revisão 1 continuam como instâncias comuns.
+    const unir = !def.kit;
+    /** Lado (m) das células que agrupam as peças: cada célula é selecionada pela câmera à parte. */
+    const CELULA = 48;
+    const grupos = new Map<string, { fonte: Mesh; partes: VertexData[] }>();
     const colocar = (p: Peca, camada: string) => {
-      const lista = fontes.get(p.m) ?? comuns.get(p.m);
+      const lista = todas.map((f) => f.get(p.m)).find((l) => l);
       if (!lista) {
         console.warn(`[area ${def.id}] módulo desconhecido: ${p.m}`);
         return;
       }
+      const rot = new Vector3(((p.rx ?? 0) * Math.PI) / 180, ((p.r ?? 0) * Math.PI) / 180, ((p.rz ?? 0) * Math.PI) / 180);
       for (const fonte of lista) {
+        if (unir) {
+          const m = Matrix.Compose(escala(p.e), Quaternion.FromEulerVector(rot), new Vector3(p.x, p.y, p.z ?? 0));
+          const chave = `${fonte.uniqueId}_${Math.floor(p.x / CELULA)}_${Math.floor((p.z ?? 0) / CELULA)}`;
+          if (!grupos.has(chave)) grupos.set(chave, { fonte, partes: [] });
+          const vd = VertexData.ExtractFromMesh(fonte, true, true);
+          vd.transform(m);
+          grupos.get(chave)!.partes.push(vd);
+          continue;
+        }
         const inst = fonte.createInstance(`${def.id}_${camada}_${p.m}`);
         inst.parent = raiz;
         inst.position.set(p.x, p.y, p.z ?? 0);
-        inst.rotation.y = ((p.r ?? 0) * Math.PI) / 180;
+        inst.rotation.copyFrom(rot);
         inst.scaling = escala(p.e);
         inst.isPickable = false;
         inst.alwaysSelectAsActiveMesh = false;
@@ -283,6 +324,22 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
     };
     for (const p of def.pecas ?? []) colocar(p, "frente");
     for (const p of def.fundo ?? []) colocar(p, "fundo");
+    for (const { fonte, partes } of grupos.values()) {
+      const vd = partes[0];
+      if (partes.length > 1) vd.merge(partes.slice(1), true);
+      const c = new Mesh(`${def.id}_pecas_${fonte.name}`, cena);
+      vd.applyToMesh(c);
+      c.material = fonte.material;
+      c.parent = raiz;
+      c.isPickable = false;
+      c.freezeWorldMatrix();
+      // superfície: células de peças somem além de 230 m (lá a névoa já as apagou quase toda)
+      if (def.superficie) c.addLODLevel(230, null);
+      if (op.sombras) op.sombras(c);
+      // na superfície as peças não emitem luz: fora da camada de brilho, como os blocos
+      if (def.superficie) for (const cg of cena.effectLayers) if (cg instanceof GlowLayer) cg.addExcludedMesh(c);
+      malhas.push(c);
+    }
   }
 
   for (const [i, esc] of (def.escadas ?? []).entries()) {

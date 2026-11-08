@@ -4,7 +4,8 @@
  * `semColisao`: só visual (lonas, lâmpadas, facho de luz, vigas altas); não entra na física nem no piso mínimo.
  */
 export interface Solido { x: number; y: number; w: number; h: number; d?: number; z?: number; mat?: string; invisivel?: boolean; semCamera?: boolean; semColisao?: boolean; rx?: number; ry?: number; rz?: number; }
-export interface Peca { m: string; x: number; y: number; z?: number; r?: number; e?: number | [number, number, number]; }
+/** Peça de kit: módulo `m` na posição (x, y, z), guinada `r` e, opcionais, arfagem `rx` e rolagem `rz` (graus, Euler como as caixas). */
+export interface Peca { m: string; x: number; y: number; z?: number; r?: number; rx?: number; rz?: number; e?: number | [number, number, number]; }
 /** Escada de mão ou corda: base em (x, z), de y0 a y1; yaw é para onde o jogador olha ao subir (graus no JSON). */
 export interface EscadaDef { x: number; z?: number; y0: number; y1: number; tipo: "escada" | "corda"; yaw?: number; }
 /** Saída para outra área ou mundo; `z` posiciona a interação nas áreas 3D (revisão 2). */
@@ -29,6 +30,11 @@ export interface AreaDef {
   mundo: string;
   estetica: string;
   kit?: string;
+  /**
+   * Kits de decoração da revisão 2 (`public/assets/kits/<nome>.glb`): as `pecas` vêm deles e os blocos continuam
+   * visíveis (os que uma peça substitui vêm marcados `invisivel` pelo gerador, com a colisão mantida).
+   */
+  kits?: string[];
   /** Extensão em X. Nas áreas 3D é derivada de `limites` pelo gerador. */
   inicio: number;
   fim: number;
@@ -52,6 +58,11 @@ export interface AreaDef {
   zonas?: ZonaPerigo[];
   marcos?: { id: string; x: number; rotulo: string }[];
   terreno?: Terreno;
+  /**
+   * Limite jogável da superfície (revisão 2): a área que o tem monta o horizonte (cidade, montanhas, céu) e a
+   * parede de tempestade em volta dele enquanto estiver carregada.
+   */
+  limiteJogavel?: { x0: number; x1: number; z0: number; z1: number };
   /** Interiores que servem de abrigo na superfície (dreno do filtro reduzido, fase 3). */
   abrigos?: { id: string; min: Vec3; max: Vec3 }[];
 }

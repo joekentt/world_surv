@@ -7,6 +7,8 @@ import { Coletaveis } from "../world/coletaveis";
 import { TurnosDeLuz } from "../world/turnos";
 import { PosProcessamento } from "../world/posprocessamento";
 import { Particulas } from "../world/particulas";
+import { Horizonte, alturaTerreno } from "../world/horizonte";
+import { ParedeTempestade } from "../world/tempestade";
 import { Navegacao } from "../npc/navegacao";
 import { NavegacaoNiveis } from "../npc/navegacaoNiveis";
 import { GerenciadorNpcs } from "../npc/npcs";
@@ -76,6 +78,10 @@ export class Jogo {
   pausado = false;
   pos!: PosProcessamento;
   particulas!: Particulas;
+  /** Horizonte da superfície aberta (cidade, montanhas, céu), montado com a área que tem o limite jogável. */
+  horizonte: Horizonte | null = null;
+  /** Cortina de poeira no limite jogável da superfície aberta. */
+  paredeTempestade: ParedeTempestade | null = null;
   depoisDoDialogo: (() => void) | null = null;
 
   get loja(): { abrir: (id: string) => void } {
@@ -150,6 +156,15 @@ export class Jogo {
       this.interacao.removerPrefixo(`${a.def.id}:`);
       this.coletaveis.aoDescarregar(a);
       this.particulas.aoDescarregar(a.def.id);
+      // zonas de câmera saem com a área (senão as do subsolo valeriam nas mesmas coordenadas da superfície)
+      const zonas = (a.def.zonasCamera ?? []) as ZonaCamera[];
+      if (zonas.length) this.camera.zonas = this.camera.zonas.filter((z) => !zonas.includes(z));
+      if (a.def.limiteJogavel) {
+        this.horizonte?.dispose();
+        this.horizonte = null;
+        this.paredeTempestade?.dispose();
+        this.paredeTempestade = null;
+      }
       this.aoAreaDescarregada?.(a);
     };
     this.iluminacao = new Iluminacao(cena, this.luzAmbiente, this.sol, this.motor.qualidade);
@@ -326,6 +341,8 @@ export class Jogo {
     this.lanterna.setEnabled(this.lanterna.intensity > 0.05);
     this.iluminacao.atualizar(dt, new Vector3(p.x, p.y + 1, p.z), this.tempo);
     this.pos.atualizar(dt, this.iluminacao.poeiraExtra);
+    this.horizonte?.atualizar(this.tempo, this.camera.camera.globalPosition, this.iluminacao.poeiraExtra);
+    this.paredeTempestade?.atualizar(dt, p, this.iluminacao.poeiraExtra);
     this.particulas.atualizar(p.x, p.y, !!this.areaAtual?.superficie, this.iluminacao.poeiraExtra, Math.sign(this.jogador.empurrao), this.tempo);
     this.epi.atualizar(dt);
     this.turnos.atualizar(dt);
@@ -344,6 +361,7 @@ export class Jogo {
     if (a && a !== this.areaAtual) {
       const anterior = this.areaAtual;
       this.areaAtual = a;
+      this.camera.zonaPadrao = a.zonaPadrao ?? "vila";
       if (!this.roteiro?.emEpilogo) {
         this.iluminacao.definirPerfil(a.estetica, !anterior || anterior.mundo !== a.mundo);
         this.pos.definir(a.estetica);
@@ -443,6 +461,12 @@ export class Jogo {
     this.iluminacao.registrarLuzes(a.luzes);
     void this.coletaveis.aoCarregar(a);
     this.particulas.aoCarregar(a.def.id);
+    if (a.def.limiteJogavel) {
+      this.horizonte?.dispose();
+      this.horizonte = new Horizonte(this.cena, a.def, this.motor.qualidade);
+      this.paredeTempestade?.dispose();
+      this.paredeTempestade = new ParedeTempestade(this.cena, a.def.limiteJogavel, this.motor.qualidade, alturaTerreno(a.def));
+    }
     for (const [i, s] of (a.def.saidas ?? []).entries()) {
       this.interacao.adicionar({
         id: `${a.def.id}:saida${i}`, x: s.x, y: s.y, z: s.z, rotulo: s.rotulo, raio: 1.5, prioridade: 1,
@@ -465,7 +489,13 @@ export class Jogo {
       this.interacao.adicionar({ id: `${a.def.id}:escada${i}:topo`, x: topo.x, y: topo.y, z: topo.z, raio: CFG_MOV.raioEncaixeEscada,
         rotulo: textos("descerEscada"), prioridade: 2, ativo: () => this.jogador.estado === "chao", acao: () => this.jogador.entrarEscada(esc, true) });
     }
-    if (a.def.zonasCamera) this.camera.zonas.push(...(a.def.zonasCamera as ZonaCamera[]));
+    if (a.def.zonasCamera) {
+      // a menor zona que contém o ponto vale (a câmera usa a primeira que encontra): interiores e túneis
+      // dentro de áreas maiores não dependem da ordem em que as áreas carregam
+      this.camera.zonas.push(...(a.def.zonasCamera as ZonaCamera[]));
+      const vol = (z: ZonaCamera) => (z.max[0] - z.min[0]) * (z.max[1] - z.min[1]) * (z.max[2] - z.min[2]);
+      this.camera.zonas.sort((p, q) => vol(p) - vol(q));
+    }
     if (a.def.escadas) {
       const todas = [...this.areas.carregadas.values()].flatMap((c) => c.def.escadas ?? []);
       this.jogador.escadas = todas;

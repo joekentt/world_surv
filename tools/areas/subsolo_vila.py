@@ -81,6 +81,11 @@ def V(a: Area, *args, **k):
     B(a, *args, semColisao=True, **k)
 
 
+def X(a: Area, *args, **k):
+    """Caixa só visual substituída por uma peça de kit (tools/blender/kits/kits_r2.py): não entra na área, mas os
+    argumentos continuam sendo avaliados, para o sorteio (R) seguir igual e o resto da vila não mudar."""
+
+
 def laje(a: Area, x0, x1, z0, z1, y0, y1, furos=(), mat="chao", **k):
     """Laje retangular com furos retangulares: decompõe em faixas sem sobreposição."""
     xs = sorted({x0, x1, *[c for f in furos for c in (f[0], f[1]) if x0 < c < x1]})
@@ -231,6 +236,7 @@ def casa(a: Area, x0, x1, z0, z1, h, mat, frente):
 def caverna() -> Area:
     a = Area("vila_cisterna", "Vila Cisterna", "subsolo", "vila", None, CX0, CX1)
     a.d["zonaPadrao"] = "vila"
+    a.d["kits"] = ["r2_cisterna"]
     a.caixa((CX0, -2.0, CZ0 - 16.0), (CX1, TETO + 2.0, CZ1))
 
     # --- casca: piso com furos (acessos às Galerias e poço), paredes, teto
@@ -278,36 +284,33 @@ def caverna() -> Area:
         pe = (x - 0.6, x + 0.6, z - 0.6, z + 0.6)
         if any(sobrepoe(pe, f, 0.3) for f in FUROS_PISO + CONSTRUCOES + SEM_COLUNAS):
             continue
-        B(a, x - 0.6, x + 0.6, 0, TETO, z - 0.6, z + 0.6, "concreto")
-        V(a, x - 0.85, x + 0.85, 0, 0.6, z - 0.85, z + 0.85, "concreto")          # sapata
-        V(a, x - 1.1, x + 1.1, TETO - 1.2, TETO, z - 1.1, z + 1.1, "concreto")    # capitel
-        V(a, x - 0.62, x + 0.62, 2.0, 2.15, z - 0.62, z + 0.62, "ferrugem")       # marca d'água antiga
+        B(a, x - 0.6, x + 0.6, 0, TETO, z - 0.6, z + 0.6, "concreto", invisivel=True)
+        a.peca("coluna_reservatorio", x, 0.0, z)   # fuste, sapata, anéis, capitel e marca d'água antiga
 
     # --- Praça do Reservatório: mercado de lonas, bomba d'água, Muro dos Subidores, varais
     lonas = ["lona_vermelha", "lona_azul", "lona_amarela", "lona_verde"]
     bancas = [(-22, -14.5), (-15, -14.5), (-10, -14.5), (-22, -9.5), (-15, -9.5),
               (-22, 6.5), (-14, 6.5), (-22, 11.5), (-14, 11.5), (-10, 11.5)]
     for i, (bx, bz) in enumerate(bancas):
-        B(a, bx - 1.3, bx + 1.3, 0, 0.95, bz - 0.5, bz + 0.5, "madeira")                  # balcão
-        for px in (bx - 1.45, bx + 1.45):
-            for pz in (bz - 1.2, bz + 1.2):
-                V(a, px - 0.05, px + 0.05, 0, 2.6, pz - 0.05, pz + 0.05, "madeira")
-        V(a, bx - 1.7, bx + 1.7, 2.55, 2.65, bz - 1.5, bz + 1.5, lonas[i % 4], rx=R.choice([-7, 7]))
+        B(a, bx - 1.3, bx + 1.3, 0, 0.95, bz - 0.5, bz + 0.5, "madeira", invisivel=True)  # balcão
+        X(a, bx - 1.7, bx + 1.7, 2.55, 2.65, bz - 1.5, bz + 1.5, lonas[i % 4], rx=R.choice([-7, 7]))
         for k in range(3):                                                                 # mercadoria
-            V(a, bx - 1.0 + k * 0.8, bx - 0.6 + k * 0.8, 0.95, 1.25, bz - 0.3, bz + 0.2, R.choice(["caixa", "pano", "lona_amarela"]))
+            X(a, bx - 1.0 + k * 0.8, bx - 0.6 + k * 0.8, 0.95, 1.25, bz - 0.3, bz + 0.2, R.choice(["caixa", "pano", "lona_amarela"]))
+        # banca com postes, balcão de tábuas, lona com franja e mercadoria; a lona cai para o lado da rua
+        a.peca("banca_mercado_" + "abcd"[i % 4], bx, 0.0, bz, r=0 if bz < 0 else 180)
     # lonas grandes entre colunas (cobertura do mercado)
     for x0, z0, mat in ((-18, -6, "lona_vermelha"), (-18, 6, "lona_azul"), (6, 6, "lona_amarela")):
-        V(a, x0 + 0.6, x0 + 11.4, 4.2, 4.3, z0 - 3, z0 + 3, mat, rz=R.choice([-4, 4]))
+        X(a, x0 + 0.6, x0 + 11.4, 4.2, 4.3, z0 - 3, z0 + 3, mat, rz=R.choice([-4, 4]))
+        a.peca("lona_mercado_" + {"lona_vermelha": "a", "lona_azul": "b", "lona_amarela": "c"}[mat], x0 + 6.0, 0.0, z0)
     # bomba d'água: tanque, casa da bomba, cano até o teto, cocho
-    B(a, 9.0, 15.0, 0, 1.0, -2.5, 2.5, "concreto")
-    B(a, 9.6, 14.4, 1.0, 3.6, -1.8, 1.8, "ferrugem")
-    B(a, 11.4, 12.6, 3.6, TETO, -0.6, 0.6, "metal")
-    V(a, 11.2, 12.8, 9.0, 9.4, -0.8, 0.8, "ferrugem")
-    V(a, 11.2, 12.8, 16.0, 16.4, -0.8, 0.8, "ferrugem")
-    B(a, 15.0, 17.5, 0, 0.7, -0.8, 0.8, "concreto")
-    V(a, 15.0, 15.8, 1.6, 1.8, -0.15, 0.15, "metal")
-    B(a, 7.0, 8.4, 0, 1.1, -3.0, -1.6, "caixa")                                            # tambores
-    B(a, 7.0, 8.4, 0, 1.1, 1.6, 3.0, "caixa")
+    # (peça bomba_dagua do kit; os blocos ficam só com a colisão)
+    B(a, 9.0, 15.0, 0, 1.0, -2.5, 2.5, "concreto", invisivel=True)
+    B(a, 9.6, 14.4, 1.0, 3.6, -1.8, 1.8, "ferrugem", invisivel=True)
+    B(a, 11.4, 12.6, 3.6, TETO, -0.6, 0.6, "metal", invisivel=True)
+    B(a, 15.0, 17.5, 0, 0.7, -0.8, 0.8, "concreto", invisivel=True)
+    B(a, 7.0, 8.4, 0, 1.1, -3.0, -1.6, "caixa", invisivel=True)                             # tambores
+    B(a, 7.0, 8.4, 0, 1.1, 1.6, 3.0, "caixa", invisivel=True)
+    a.peca("bomba_dagua", 12.0, 0.0, 0.0)
     # Muro dos Subidores: muro com placas e fotos, voltado para o sul
     B(a, 4.0, 16.0, 0, 3.4, 15.0, 15.7, "concreto")
     V(a, 3.8, 16.2, 3.4, 3.6, 14.8, 15.9, "ferrugem")
@@ -321,10 +324,10 @@ def caverna() -> Area:
     for (x0, z0), (x1, z1) in (((-18, -18), (-6, -18)), ((6, 6), (18, 6)), ((6, -18), (18, -18)), ((-30, -6), (-18, -6))):
         y = 3.4
         if z0 == z1:
-            V(a, x0, x1, y, y + 0.03, z0 - 0.02, z0 + 0.02, "escuro")
             for i in range(7):
                 px = x0 + 1.2 + i * 1.5
-                V(a, px - 0.35, px + 0.35, y - 0.9, y, z0 - 0.02, z0 + 0.02, R.choice(lonas + ["pano", "pano"]))
+                X(a, px - 0.35, px + 0.35, y - 0.9, y, z0 - 0.02, z0 + 0.02, R.choice(lonas + ["pano", "pano"]))
+            a.peca("varal_12", (x0 + x1) / 2, 0.0, z0)
     # boca do Duto Norte: pórtico de concreto, lâmpadas de serviço e trilhos desde a praça
     bx0, bx1, by = BOCA_DUTO
     B(a, bx0 - 0.8, bx0, 0, by + 0.8, CZ1 - 0.6, CZ1, "concreto")
@@ -601,27 +604,33 @@ def capela_geometria(a: Area):
     B(a, porta_s[0], porta_s[1], hp, yt, z0, z0 + t, "chapa_clara")
     B(a, x0, x1, YP, yt, z1 - t, z1, "chapa_clara")
     B(a, x1 - t, x1, YP, yt, z0, z1, "chapa_clara")
+    a.d.setdefault("kits", [])
+    a.d["kits"].append("r2_capela")
     # telhado com claraboia sobre o altar (por onde passa o facho)
     clara = (57.0, 60.0, 20.5, 23.5)
     laje(a, x0 - 0.3, x1 + 0.3, z0 - 0.3, z1 + 0.3, yt, yt + 0.4, [clara], "ferrugem")
     # vitrais nas paredes norte, sul e leste (dos dois lados)
     cores = ["vitral_azul", "vitral_vermelho", "vitral_verde", "vitral_azul", "vitral_vermelho"]
+    # vitrais do kit (caixilho de chumbo e vidros de três cores), um em cada face da parede
     for i, x in enumerate((49.0, 52.5, 56.0, 59.5)):
-        V(a, x - 0.7, x + 0.7, YP + 2.4, YP + 4.6, z1 - t - 0.05, z1 + 0.05, cores[i])
+        for zf in (z1 - t - 0.04, z1 + 0.04):
+            a.peca("vitral_capela", x, YP + 2.4, zf)
         if not (porta_s[0] - 0.8 < x < porta_s[1] + 0.8):
-            V(a, x - 0.7, x + 0.7, YP + 2.4, YP + 4.6, z0 - 0.05, z0 + t + 0.05, cores[i + 1])
+            for zf in (z0 - 0.04, z0 + t + 0.04):
+                a.peca("vitral_capela", x, YP + 2.4, zf)
     for z in (16.0, 28.0):
-        V(a, x1 - t - 0.05, x1 + 0.05, YP + 2.4, YP + 4.8, z - 0.9, z + 0.9, cores[(int(z) // 4) % 5])
+        for xf in (x1 - t - 0.04, x1 + 0.04):
+            a.peca("vitral_capela", xf, YP + 2.4, z, r=90, e=[r3(1.8 / 1.4), r3(2.4 / 2.2), 1])
     # bancos de madeira reaproveitada, com corredor central da porta oeste ao altar
     for x in (49.5, 52.0, 54.5, 57.0):
         for (za, zb) in ((14.0, 19.0), (26.0, 30.5)):
             if za < 20 and porta_s[0] - 0.6 < x < porta_s[1] + 0.6:
                 za = 15.5
-            B(a, x - 0.3, x + 0.3, YP, YP + 0.45, za, zb, "madeira")
-            V(a, x + 0.25, x + 0.35, YP + 0.45, YP + 1.0, za, zb, "madeira")
+            B(a, x - 0.3, x + 0.3, YP, YP + 0.45, za, zb, "madeira", invisivel=True)
+            a.peca("banco_capela", x, YP, (za + zb) / 2, e=[1, 1, r3((zb - za) / 5.0)])   # tábuas e encosto (kit)
     # altar com fotos do céu
-    B(a, 60.6, 62.4, YP, YP + 1.1, 20.2, 23.8, "madeira")
-    V(a, 60.5, 62.5, YP + 1.1, YP + 1.18, 20.1, 23.9, "pano")
+    B(a, 60.6, 62.4, YP, YP + 1.1, 20.2, 23.8, "madeira", invisivel=True)
+    a.peca("altar_capela", 61.5, YP, 22.0)                               # toalha, velas e fotos do céu (kit)
     for i, z in enumerate((20.6, 21.6, 22.4, 23.4)):
         V(a, x1 - t - 0.04, x1 - t, YP + 1.6 + (i % 2) * 0.9, YP + 2.3 + (i % 2) * 0.9, z - 0.4, z + 0.4, "vitral_azul")
     V(a, x1 - t - 0.06, x1 - t, YP + 3.4, YP + 4.8, 21.2, 22.8, "luz_dourada")  # sol pintado
@@ -665,6 +674,12 @@ def galerias_secas() -> Area:
     B(a, hx0, ESC_B[1], YG, yt, hz0 - pw, hz0, "rocha")
     B(a, hx0, ESC_B[1], YG, yt, hz1, hz1 + pw, "rocha")
     zona_tunel(a, hx0, hx1, YG - 0.5, yt, hz0, hz1)
+    # fiação puxada no teto dos corredores (kit r2_gueto)
+    a.d["kits"] = ["r2_gueto"]
+    for fx in range(int(hx0) + 3, int(hx1) - 2, 6):
+        a.peca("fiacao_6m", fx, yt - 0.05, (hz0 + hz1) / 2 + 0.6)
+    for fz in range(int(G1[2]) + 3, int(G1[3]) - 2, 6):
+        a.peca("fiacao_6m", (G1[0] + G1[1]) / 2 - 0.4, yt - 0.05, fz, r=90)
     bx0, bx1, bz0, bz1 = ESC_B
     B(a, bx0, bx1, YG - 0.5, YG, bz0, bz1, "chao")
     lance(a, bx0, bx1, bz0, bz1, YG, 0.0, "+x", base=YG)
