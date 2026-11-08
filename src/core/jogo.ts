@@ -8,6 +8,7 @@ import { TurnosDeLuz } from "../world/turnos";
 import { PosProcessamento } from "../world/posprocessamento";
 import { Particulas } from "../world/particulas";
 import { Navegacao } from "../npc/navegacao";
+import { NavegacaoNiveis } from "../npc/navegacaoNiveis";
 import { GerenciadorNpcs } from "../npc/npcs";
 import { Baloes } from "../ui/baloes";
 import { DialogoUI } from "../ui/dialogoUI";
@@ -63,6 +64,8 @@ export class Jogo {
   subida!: Subida;
   turnos!: TurnosDeLuz;
   navegacao!: Navegacao;
+  /** Navmesh em vários níveis dos mundos da revisão 2 (subsolo e superfície), gerado sob demanda. */
+  navegacaoNiveis!: NavegacaoNiveis;
   npcs!: GerenciadorNpcs;
   baloes!: Baloes;
   ui!: { dialogo: DialogoUI };
@@ -176,6 +179,7 @@ export class Jogo {
     } catch (e) {
       console.warn("[navegacao] Recast indisponível, NPCs andam em linha reta", e);
     }
+    this.navegacaoNiveis = new NavegacaoNiveis((m) => this.areas.areasDoMundo(m));
     this.npcs = new GerenciadorNpcs(this, this.turnos, this.navegacao, this.baloes);
     this.ui = { dialogo: new DialogoUI(this.hud.raiz, this.entrada, () => this.audio.tocar("clique", 0.4)) };
     this.paineis = new Paineis(this, this.hud.raiz);
@@ -536,6 +540,17 @@ export class Jogo {
     vc.avancar = () => this.ui.dialogo.avancarTexto();
     vc.falar = (id: string) => { const n = this.npcs.porId(id); if (n) void this.dialogo.iniciar(id, n.def.nome); };
     vc.turno = () => this.turnos.turno;
+    /** Navmesh em vários níveis: gera (uma vez por mundo) e devolve contagens e tempo de geração. */
+    vc.navmesh = (mundo: string) => this.navegacaoNiveis.construir(mundo);
+    /** Rota mais curta pelo navmesh do mundo entre dois pontos [x, y, z]; `ext` é a caixa de busca da projeção. */
+    vc.rotaNav = async (mundo: string, a: [number, number, number], b: [number, number, number], ext?: [number, number, number]) => {
+      await this.navegacaoNiveis.construir(mundo);
+      return this.navegacaoNiveis.rota(mundo, a, b, ext);
+    };
+    vc.projetarNav = async (mundo: string, p: [number, number, number], ext?: [number, number, number]) => {
+      await this.navegacaoNiveis.construir(mundo);
+      return this.navegacaoNiveis.projetar(mundo, p, ext);
+    };
     vc.epi = () => ({ filtro: this.epi.filtro, roupa: this.epi.roupa, saude: this.epi.saude, ativo: this.epi.ativo, tempestade: this.epi.tempestade, morto: this.epi.morto });
   }
 }
