@@ -21,8 +21,11 @@
 5. Superfície de 640 × 675 m com os pontos da seção 5.2.
 6. Kits por estética (incluindo o da estação), zonas de câmera, impostores do horizonte e névoa.
 7. Navmesh em vários níveis e teste de bloqueio da seção 5.3; refazer `tests/fase2.spec.ts`.
+8. Personagens e animações menos robóticos (pedido do usuário em 8/11/2026): locomoção com peso, rolagem do pé, movimento secundário e transições suaves; rever corpo, rosto e roupas contra o critério da seção 8.
 
-**Próximo passo:** tarefa 2 (vila em três níveis). Ler a seção 5.1 em `docs/spec/05-mapa.md` e a seção 7 em `docs/spec/07-arte-personagens-vila.md`.
+**Modo de trabalho (pedido do usuário):** as tarefas são delegadas a subagentes; a sessão principal revisa a entrega (testes, screenshots, critérios da especificação) antes do commit. Para rodar dois em paralelo, um usa worktree e `PORTA_TESTE` diferente de 5173.
+
+**Próximo passo:** tarefas 2 (vila) e 8 (personagens e animações), em paralelo. Ler a seção 5.1 em `docs/spec/05-mapa.md` e a seção 7 em `docs/spec/07-arte-personagens-vila.md`.
 
 **Bloqueios e dúvidas para o usuário:**
 - Nenhum.

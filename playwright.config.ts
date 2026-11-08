@@ -1,5 +1,8 @@
 import { defineConfig } from "@playwright/test";
 
+/** Porta do servidor de testes; mude com PORTA_TESTE para rodar duas cópias do projeto ao mesmo tempo. */
+const porta = Number(process.env.PORTA_TESTE ?? 5173);
+
 /**
  * Chromium sem GPU: o WebGPU roda pelo adaptador de software (SwiftShader/Vulkan) e o
  * WebGL2 pelo ANGLE + SwiftShader. Os fps medidos aqui servem para comparar versões, não
@@ -11,7 +14,7 @@ export default defineConfig({
   workers: 1,
   reporter: [["list"]],
   use: {
-    baseURL: "http://localhost:5173",
+    baseURL: `http://localhost:${porta}`,
     viewport: { width: 1280, height: 720 },
     launchOptions: {
       args: [
@@ -26,5 +29,5 @@ export default defineConfig({
       ],
     },
   },
-  webServer: { command: "npx vite --port 5173 --strictPort", url: "http://localhost:5173", reuseExistingServer: true, timeout: 60_000 },
+  webServer: { command: `npx vite --port ${porta} --strictPort`, url: `http://localhost:${porta}`, reuseExistingServer: true, timeout: 60_000 },
 });
