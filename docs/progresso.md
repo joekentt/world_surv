@@ -100,3 +100,8 @@ Os seis testes da seção 3.4 passam. **Falta a aprovação do usuário da sensa
 
 - Duto Norte (4b33485): túnel em L de 300 m descendo a −25 m, desvios por desabamento, vagonete e vagão; Caverna da Fenda com ponte de 22 m sobre abismo até −45 m (fundo só visual) e mirante; Galeria dos Contrabandistas até a escada da Escotilha Oeste. Luzes nascem apagadas e o limite por material é reaplicado (o carregador glTF o elevava e estourava o WebGL2). Testes: `fase2_duto` 3 de 3, `fase2_vila` 2 de 2, `fase1` 9 de 9.
 - Personagens (merges b05c03a, dd3f6d9): EPI com macacão de volume, botas, luvas, máscara com cartuchos e arnês limpo; NPCs com roupas folgadas, segunda camada, acessório de cabeça, remendos e botas altas; 11,5 a 13,3 mil triângulos por NPC, protagonista 26,9 mil. Fase 0 e fase 1 no branch integrado: 11 passam.
+
+### 2026-11-08: fase 2, tarefas 4 e 5
+
+- Estação Aurora e Boca do Poço (645c0c4): salão de 60 × 20 m a −25 m com escadas rolantes até o mezanino; poço de 25 m com escada em 4 lances; topo com armários, chuveiros e eclusa que troca de mundo nas duas direções. Testes: `fase2_estacao` 3 de 3, `fase2_duto` 3 de 3, `fase1` 9 de 9.
+- Superfície (merge da worktree): terreno em grade de 4 m com colisão de malha, colina da Antena de 25 m, rio 4,5 m abaixo com duas travessias, Marco, Torre d'Água, viaduto, ruínas com abrigos, parede de tempestade provisória. Rotas dentro da seção 5.3 (Marco 75,8 s; Antena 147 s). Brilho (GlowLayer) tirado das malhas não emissivas da superfície e névoa reduzida para a Antena aparecer de longe.
