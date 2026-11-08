@@ -23,7 +23,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import bpy  # noqa: E402
 import bmesh  # noqa: E402
 import numpy as np  # noqa: E402
-from mathutils import Vector, noise  # noqa: E402
+from mathutils import Matrix, Vector, noise  # noqa: E402
+from mathutils.bvhtree import BVHTree  # noqa: E402
+from mathutils.kdtree import KDTree  # noqa: E402
 
 import comum  # noqa: E402
 
@@ -457,32 +459,105 @@ def predicados(apar: dict, m: dict) -> list:
     return pecas
 
 
+def _perto(p: Vector, junta: Vector, raio: float) -> bool:
+    """Distância a uma junta do lado esquerdo, espelhada para o lado do ponto."""
+    alvo = Vector((math.copysign(abs(junta.x), p.x), junta.y, junta.z))
+    return (p - alvo).length < raio
+
+
 def pecas_epi(apar: dict, m: dict) -> list:
+    """Traje de proteção em camadas: macacão com espessura, capuz, máscara, visor, capacete, luvas, botas,
+    joelheiras, cotoveleiras e gola. O arnês do cilindro é geometria própria (criar_arnes)."""
     epi = apar.get("epi")
     if not epi:
         return []
-    olho_z = m["olho_z"]
+    olho_z, olho_x = m["olho_z"], m["olho_x"]
+    tornozelo_z = m["joint-l-ankle"].z
+    escuro = epi.get("luvas", (0.15, 0.14, 0.13))
+    boca_z = m["joint-mouth"].z
+    rosto = lambda p, n: n.y < -0.25 and boca_z - 0.03 < p.z < olho_z + 0.03 and abs(p.x) < olho_x - 0.004  # noqa: E731
     return [
-        ("epi_capacete", {"couro", "orelha"}, 0.034, epi["capacete"], False, lambda p, n: p.z > olho_z + 0.02 or n.y > 0.2),
-        ("epi_visor", {"rosto"}, 0.026, (0.06, 0.08, 0.09), False, lambda p, n: olho_z - 0.022 < p.z < olho_z + 0.03),
-        ("epi_mascara", {"rosto", "cabeca_baixo", "pescoco"}, 0.022, epi["mascara"], False, lambda p, n: p.z <= olho_z - 0.022),
-        ("epi_macacao", {"tronco", "braco", "antebraco", "quadril", "coxa", "canela", "tornozelo", "pe", "mao"}, 0.016,
-         epi["macacao"], False, None),
-        # arnês do cilindro de ar: alças pelos ombros (frente e costas), tira do peito e cinto. Sem ele o
-        # cilindro parece uma peça encaixada nas costas (critério da seção 8).
-        ("epi_arnes", {"tronco", "quadril"}, 0.034, epi.get("arnes", (0.14, 0.13, 0.12)), False,
-         lambda p, n: _no_arnes(p, n, m)),
+        ("epi_capuz", {"couro", "orelha", "cabeca_baixo", "pescoco", "rosto"}, 0.018, epi.get("capuz", (0.2, 0.21, 0.23)), False,
+         lambda p, n: not rosto(p, n)),
+        ("epi_macacao", {"tronco", "braco", "antebraco", "quadril", "coxa", "canela", "tornozelo"}, 0.022,
+         epi["macacao"], False, lambda p, n: p.z > tornozelo_z + 0.12),
+        ("epi_joelheira", {"coxa", "canela"}, 0.036, escuro, False,
+         lambda p, n: n.y < -0.05 and _perto(p, m["joint-l-knee"], 0.075)),
+        ("epi_cotoveleira", {"braco", "antebraco"}, 0.034, escuro, False,
+         lambda p, n: n.y > 0.15 and _perto(p, m["joint-l-elbow"], 0.05)),
+        ("epi_luvas", {"mao"}, 0.006, escuro, False, None),
+        ("epi_punho", {"antebraco"}, 0.034, escuro, False, lambda p, n: _perto(p, m["joint-l-hand"], 0.075)),
+        ("epi_botas", {"pe", "tornozelo", "canela"}, 0.014, epi.get("botas", (0.1, 0.09, 0.08)), False,
+         lambda p, n: p.z < tornozelo_z + 0.24),
     ]
 
 
-def _no_arnes(p: Vector, n: Vector, m: dict) -> bool:
-    # no MPFB2 a numeração da coluna é de cima para baixo: joint-spine-1 fica no alto do peito
-    peito_z = m["joint-spine-1"].z - 0.07
-    cinto_z = m["joint-pelvis"].z + 0.1
-    alca = abs(abs(p.x) - 0.095) < 0.027 and p.z > cinto_z
-    tira_peito = p.y < -0.02 and n.y < -0.4 and abs(p.z - peito_z) < 0.02 and abs(p.x) < 0.11
-    cinto = abs(p.z - cinto_z) < 0.024
-    return alca or tira_peito or cinto
+# casca drapeada: (iterações, espessura mínima em função do ponto, distância máxima ao corpo)
+# A suavização com espessura mínima preenche as concavidades (virilha, entre os glúteos, sob o peito)
+# como um tecido faria, e o corpo deixa de aparecer por baixo da roupa.
+DRAPEADO = {
+    "epi_macacao": (40, lambda p, m: 0.022, 0.06),
+    "epi_capuz": (8, lambda p, m: 0.018, 0.05),
+    "epi_gola": (8, lambda p, m: 0.034, 0.06),
+    "epi_mascara": (12, lambda p, m: 0.014 + 0.03 * math.exp(-((p - m["joint-mouth"]).length / 0.045) ** 2), 0.07),
+    "epi_visor": (6, lambda p, m: 0.03, 0.05),
+    "epi_capacete": (4, lambda p, m: 0.036, 0.06),
+    "epi_joelheira": (5, lambda p, m: 0.038, 0.07),
+    "epi_cotoveleira": (5, lambda p, m: 0.036, 0.07),
+    "epi_luvas": (1, lambda p, m: 0.006, 0.02),
+    "epi_punho": (5, lambda p, m: 0.036, 0.06),
+    "epi_botas": (40, lambda p, m: 0.042 if p.z > m["joint-l-ankle"].z + 0.04 else 0.022, 0.08),
+    "calca": (20, lambda p, m: 0.008, 0.045),
+    "botas": (36, lambda p, m: 0.014, 0.05),
+    "camisa": (4, lambda p, m: 0.004, 0.03),
+    "casaco": (6, lambda p, m: 0.014, 0.04),
+    "avental": (5, lambda p, m: 0.02, 0.04),
+}
+
+
+def _suavizar_base(bm, origem: dict, n: int) -> None:
+    """Suaviza a superfície de referência (dedos dos pés somem) e recalcula as normais dela."""
+    atual = {v: v.co.copy() for v in bm.verts}
+    for v in bm.verts:
+        v.co = origem[v][0].copy()
+    viz = {v: [e.other_vert(v) for e in v.link_edges] for v in bm.verts if not v.is_boundary}
+    for _ in range(n):
+        novos = {v: v.co.lerp(sum((u.co for u in us), Vector()) / len(us), 0.7) for v, us in viz.items() if us}
+        for v, p in novos.items():
+            v.co = p
+    bm.normal_update()
+    for v in bm.verts:
+        origem[v] = (v.co.copy(), v.normal.copy())
+        v.co = atual[v]
+
+
+def drapear(bm, origem: dict, tipo: str, m: dict) -> None:
+    iteracoes, esp_min, dist_max = DRAPEADO[tipo]
+    if tipo in ("epi_botas", "botas", "epi_capuz"):  # some com os dedos dos pés e com as orelhas
+        _suavizar_base(bm, origem, 30 if tipo == "epi_capuz" else 60)
+    # a borda aberta fica presa: suavizada, ela encolheria (barras subiriam, canos de bota baixariam)
+    verts = [v for v in bm.verts if not v.is_boundary]
+    vizinhos = {v: [e.other_vert(v) for e in v.link_edges] for v in verts}
+    for _ in range(iteracoes):
+        novos = {}
+        for v in verts:
+            viz = vizinhos[v]
+            if not viz:
+                continue
+            media = Vector((0, 0, 0))
+            for u in viz:
+                media += u.co
+            novos[v] = v.co.lerp(media / len(viz), 0.6)
+        for v, pos in novos.items():
+            base, nrm = origem[v]
+            emin = esp_min(base, m)
+            d = (pos - base).dot(nrm)
+            if d < emin:
+                pos = pos + nrm * (emin - d)
+            desl = pos - base
+            if desl.length > dist_max:
+                pos = base + desl.normalized() * dist_max
+            v.co = pos
 
 
 def ruido_dobras(p: Vector, escala: float = 18.0) -> float:
@@ -521,14 +596,14 @@ def gerar_pecas(obj, apar: dict, m: dict, nome: str) -> tuple:
     for i, (pn, regs, esp, cor, cobre_corpo, filtro) in enumerate(pecas):
         faces = [f for f, d in dono_face.items() if d == i]
         if faces:
-            objetos.append(duplicar_faces(obj, faces, f"{nome}_{pn}", esp, cor, pn))
+            objetos.append(duplicar_faces(obj, faces, f"{nome}_{pn}", esp, cor, pn, m))
     epi_objs = []
     for (pn, regs, esp, cor, _cobre, filtro) in epi:
         faces = [p.index for p in malha.polygons
                  if all(reg[v] in regs for v in p.vertices)
                  and (filtro is None or all(filtro(malha.vertices[v].co, malha.vertices[v].normal) for v in p.vertices))]
         if faces:
-            epi_objs.append(duplicar_faces(obj, faces, pn, esp, cor, pn))
+            epi_objs.append(duplicar_faces(obj, faces, pn, esp, cor, pn, m))
     # remove do corpo o que fica escondido sob roupas opacas
     bm = bmesh.new()
     bm.from_mesh(malha)
@@ -541,7 +616,7 @@ def gerar_pecas(obj, apar: dict, m: dict, nome: str) -> tuple:
     return objetos, epi_objs, reg
 
 
-def duplicar_faces(obj, faces: list, nome: str, espessura: float, cor, tipo: str) -> bpy.types.Object:
+def duplicar_faces(obj, faces: list, nome: str, espessura: float, cor, tipo: str, m: dict | None = None) -> bpy.types.Object:
     novo = obj.copy()
     novo.data = obj.data.copy()
     novo.name = nome
@@ -554,6 +629,7 @@ def duplicar_faces(obj, faces: list, nome: str, espessura: float, cor, tipo: str
     bmesh.ops.delete(bm, geom=[f for f in bm.faces if f.index not in manter], context="FACES_ONLY")
     bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
     bm.normal_update()
+    origem = {v: (v.co.copy(), v.normal.copy()) for v in bm.verts}
     centro_cabeca = None
     for v in bm.verts:
         extra = espessura
@@ -576,20 +652,27 @@ def duplicar_faces(obj, faces: list, nome: str, espessura: float, cor, tipo: str
         if centro_cabeca is None:
             centro_cabeca = v.co.copy()
     # suaviza a casca para não carregar a microforma da pele
-    if tipo not in ("botas", "luvas", "epi_arnes"):
+    if m is not None and tipo in DRAPEADO:
+        drapear(bm, origem, tipo, m)
+        if tipo in ("epi_botas", "botas"):  # sola plana e grossa
+            for v in bm.verts:
+                base, nrm = origem[v]
+                if base.z < 0.03 and nrm.z < -0.3:
+                    v.co.z = -0.008
+    elif tipo not in ("botas", "luvas"):
         bmesh.ops.smooth_vert(bm, verts=bm.verts, factor=0.5, use_axis_x=True, use_axis_y=True, use_axis_z=True)
     bm.to_mesh(novo.data)
     bm.free()
     # borda com espessura (punhos, barras), sem duplicar a peça toda
     if tipo not in ("cabelo",):
         sol = novo.modifiers.new("borda", "SOLIDIFY")
-        sol.thickness = min(0.006, espessura * 0.8)
+        sol.thickness = min(0.022, espessura * 0.7) if tipo in DRAPEADO and tipo.startswith("epi_") else min(0.006, espessura * 0.8)
         sol.offset = -1
         sol.use_rim_only = True
         sol.use_even_offset = True
         comum.aplicar_modificadores(novo)
     remover_lascas(novo)
-    pintar_peca(novo, cor, tipo)
+    pintar_peca(novo, cor, tipo, m)
     mat = comum.material(f"{nome}_mat", (1, 1, 1), rugosidade=0.85 if not tipo.startswith("epi_visor") else 0.15,
                          metal=0.0)
     if tipo == "epi_visor":
@@ -611,7 +694,7 @@ def remover_lascas(obj, limite: float = 0.1) -> None:
     bm.free()
 
 
-def pintar_peca(obj, cor, tipo: str) -> None:
+def pintar_peca(obj, cor, tipo: str, m: dict | None = None) -> None:
     """Cor base + desgaste, remendos e sujeira de barra em COLOR_0."""
     malha = obj.data
     if "Col" not in malha.color_attributes:
@@ -635,15 +718,35 @@ def pintar_peca(obj, cor, tipo: str) -> None:
                 gasto = noise.fractal(p * 9 + Vector((semente_r, 0, 0)), 0.6, 2.0, 3)
                 c = [x * (0.92 + 0.12 * gasto) for x in c]
                 r = noise.noise(p * 6 + Vector((semente_r, 3, 1)))
-                if tipo not in ("luvas", "cabelo", "botas") and r > 0.32:
+                sem_remendo = ("luvas", "cabelo", "botas") + tuple(t for t in DRAPEADO if t.startswith("epi_")
+                                                                 and t not in ("epi_macacao", "epi_capuz"))
+                if tipo not in sem_remendo and r > 0.32:
                     c = remendo_cor[:]
                     if r < 0.35:  # costura do remendo
                         c = [x * 0.5 for x in c]
+                if tipo == "epi_macacao" and m is not None:
+                    c = detalhe_macacao(p, c, m)
                 barra = max(0.0, 1.0 - p.z / 0.3) * 0.3
                 if tipo.startswith("epi_") or tipo in ("calca",):
                     sujeira = (0.42, 0.36, 0.28)
                     c = [x * (1 - barra) + s * barra for x, s in zip(c, sujeira)]
             attr.data[li].color = (*comum.lin(c), 1.0)
+
+
+def detalhe_macacao(p: Vector, c: list, m: dict) -> list:
+    """Painéis, costuras e faixas refletivas do macacão (na cor de vértice, sobre a casca com volume)."""
+    peito_z = m["joint-spine-1"].z - 0.05
+    cintura_z = m["joint-pelvis"].z + 0.12
+    joelho_z = m["joint-l-knee"].z
+    no_tronco = abs(p.x) < 0.2 and p.z > m["joint-pelvis"].z - 0.05
+    no_braco = abs(p.x) > 0.2 and p.z > m["joint-pelvis"].z
+    costura = [x * 0.55 for x in c]
+    if no_tronco and abs(p.z - cintura_z) < 0.006:
+        return costura
+    if not no_tronco and not no_braco and abs(p.y) < 0.005:
+        return costura
+    _ = (peito_z, joelho_z)
+    return c
 
 
 def pintar_pele(obj, apar: dict, m: dict) -> None:
@@ -732,15 +835,6 @@ def criar_extras_rigidos(apar: dict, m: dict, nome: str, epi: bool) -> list:
         objs.append(o)
     if epi:
         e = apar["epi"]
-        bm = bmesh.new()
-        for lado in (1, -1):
-            comum.cilindro(bm, (lado * 0.055, m["joint-mouth"].y - 0.055, m["joint-mouth"].z - 0.005), 0.026, 0.035, 14, eixo="Y")
-        comum.cilindro(bm, (0, m["joint-mouth"].y - 0.07, m["joint-mouth"].z - 0.015), 0.018, 0.03, 10, eixo="Y")
-        o = comum.objeto_de_bmesh("epi_filtros", bm)
-        comum.biselar(o, 0.004)
-        comum.aplicar_modificadores(o)
-        _rigido(o, "head", (0.18, 0.18, 0.2), "epi_filtros_mat")
-        objs.append(o)
         # cilindro de ar nas costas
         bm = bmesh.new()
         costas_y = m["joint-spine-3"].y + 0.15
@@ -752,13 +846,333 @@ def criar_extras_rigidos(apar: dict, m: dict, nome: str, epi: bool) -> list:
         comum.aplicar_modificadores(o)
         _rigido(o, "spine_03", e["capacete"], "epi_cilindro_mat")
         objs.append(o)
-        # lanterna do capacete
-        bm = bmesh.new()
-        comum.cilindro(bm, (0, m["joint-head"].y - 0.11, m["olho_z"] + 0.085), 0.018, 0.04, 12, eixo="Y")
-        o = comum.objeto_de_bmesh("epi_lanterna", bm)
-        _rigido(o, "head", (0.9, 0.85, 0.6), "epi_lanterna_mat", emissao=True)
-        objs.append(o)
     _ = cabeca_topo
+    return objs
+
+
+# ------------------------------------------------------------------ arnês do cilindro de ar
+
+def _sobre(arvore, origem: Vector, direcao: Vector):
+    loc, nrm, _i, _d = arvore.ray_cast(origem, direcao.normalized(), 2.0)
+    return (loc.copy(), nrm.copy()) if loc is not None else None
+
+
+def _reamostrar(pts: list, passo: float, fechado: bool) -> list:
+    if fechado:
+        pts = pts + [pts[0]]
+    total = sum((b - a).length for a, b in zip(pts, pts[1:]))
+    n = max(2, int(total / passo))
+    saida, acum, i = [], 0.0, 0
+    for k in range(n + (0 if fechado else 1)):
+        alvo = total * k / n
+        while i < len(pts) - 2 and acum + (pts[i + 1] - pts[i]).length < alvo:
+            acum += (pts[i + 1] - pts[i]).length
+            i += 1
+        seg = (pts[i + 1] - pts[i]).length or 1e-6
+        saida.append(pts[i].lerp(pts[i + 1], min(1.0, (alvo - acum) / seg)))
+    return saida
+
+
+def _faixa(bm, arvore, pts: list, largura: float, altura: float, fechado: bool, afastamento: float = 0.004) -> None:
+    """Fita de seção retangular que acompanha a superfície (bordas retas, sem serrilhado)."""
+    for _ in range(3):  # suaviza o caminho e reprojeta na casca
+        lisos = []
+        for k, p in enumerate(pts):
+            if not fechado and k in (0, len(pts) - 1):
+                lisos.append(p)
+                continue
+            a, b = pts[k - 1], pts[(k + 1) % len(pts)]
+            lisos.append((a + p * 2 + b) / 4)
+        pts = [arvore.find_nearest(p)[0].copy() for p in lisos]
+    secoes = []
+    for k, p in enumerate(pts):
+        _loc, nrm, _i, _d = arvore.find_nearest(p)
+        a = pts[k - 1] if (fechado or k > 0) else p
+        b = pts[(k + 1) % len(pts)] if (fechado or k < len(pts) - 1) else p
+        tan = (b - a).normalized()
+        lat = tan.cross(nrm).normalized() * (largura / 2)
+        base = p + nrm * afastamento
+        topo = base + nrm * altura
+        secoes.append([bm.verts.new(v) for v in (base - lat, base + lat, topo + lat, topo - lat)])
+    n = len(secoes)
+    for k in range(n if fechado else n - 1):
+        s0, s1 = secoes[k], secoes[(k + 1) % n]
+        for j in range(4):
+            bm.faces.new((s0[j], s1[j], s1[(j + 1) % 4], s0[(j + 1) % 4]))
+    if not fechado:
+        bm.faces.new(list(reversed(secoes[0])))
+        bm.faces.new(secoes[-1])
+
+
+def _pesos_de(obj, fonte) -> None:
+    """Copia os pesos do vértice mais próximo da peça de referência (a casca do macacão)."""
+    kd = KDTree(len(fonte.data.vertices))
+    for i, v in enumerate(fonte.data.vertices):
+        kd.insert(v.co, i)
+    kd.balance()
+    nomes = [g.name for g in fonte.vertex_groups]
+    grupos = {}
+    for v in obj.data.vertices:
+        _co, idx, _d = kd.find(v.co)
+        for g in fonte.data.vertices[idx].groups:
+            nome = nomes[g.group]
+            if nome not in grupos:
+                grupos[nome] = obj.vertex_groups.new(name=nome)
+            grupos[nome].add([v.index], g.weight, "REPLACE")
+
+
+def _pintar_liso(obj, cor, escala: float = 9.0) -> None:
+    attr = obj.data.color_attributes.new("Col", "BYTE_COLOR", "CORNER")
+    for poly in obj.data.polygons:
+        for li in poly.loop_indices:
+            co = obj.data.vertices[obj.data.loops[li].vertex_index].co
+            t = min(1.1, max(0.75, 0.94 + 0.1 * noise.fractal(co * escala, 0.6, 2.0, 3)))
+            attr.data[li].color = (*comum.lin([min(1.0, x * t) for x in cor]), 1.0)
+
+
+def criar_arnes(macacao, m: dict, cor) -> list:
+    """Alças pelos ombros (frente e costas), tira do peito, cinto e fivelas, como geometria própria
+    projetada sobre a casca do macacão."""
+    for p in macacao.data.polygons:
+        p.use_smooth = True
+    arvore = BVHTree.FromObject(macacao, bpy.context.evaluated_depsgraph_get())
+    cinto_z = m["joint-pelvis"].z + 0.1
+    topo_z = m["joint-neck"].z - 0.03
+    peito_z = m["joint-spine-1"].z - 0.07
+    bm = bmesh.new()
+    for lado in (1, -1):
+        x = 0.095 * lado
+        pts = []
+        for k in range(14):
+            z = cinto_z + (topo_z - 0.05 - cinto_z) * k / 13
+            for y0, dy in ((-0.6, 1), (0.6, -1)):
+                r = _sobre(arvore, Vector((x, y0, z)), Vector((0, dy, 0)))
+                if r:
+                    pts.append(r[0])
+        for k in range(9):
+            y = -0.09 + 0.18 * k / 8
+            r = _sobre(arvore, Vector((x, y, topo_z + 0.4)), Vector((0, 0, -1)))
+            if r and r[0].z > topo_z - 0.12:  # só o alto do ombro (um raio que passa reto acertaria a coxa)
+                pts.append(r[0])
+        centro = Vector((x, 0.0, cinto_z + 0.2))
+        pts.sort(key=lambda p: math.atan2(p.y - centro.y, p.z - centro.z))
+        _faixa(bm, arvore, _reamostrar(pts, 0.02, False), 0.045, 0.007, False, 0.007)
+    cinto = []
+    for k in range(48):
+        a = 2 * math.pi * k / 48
+        r = _sobre(arvore, Vector((0, 0.0, cinto_z)), Vector((math.cos(a), math.sin(a), 0)))
+        if r:
+            cinto.append(r[0])
+    _faixa(bm, arvore, _reamostrar(cinto, 0.02, True), 0.05, 0.008, True, 0.007)
+    peito = []
+    for k in range(11):
+        r = _sobre(arvore, Vector((-0.1 + 0.2 * k / 10, -0.6, peito_z)), Vector((0, 1, 0)))
+        if r:
+            peito.append(r[0])
+    _faixa(bm, arvore, _reamostrar(peito, 0.02, False), 0.032, 0.006, False, 0.007)
+    arnes = comum.objeto_de_bmesh("epi_arnes", bm)
+    # faixas refletivas em anel (antebraços, canelas e peito) e zíper no meio da frente
+    bm = bmesh.new()
+    for lado in (1, -1):
+        def junta(nome):
+            j = m[nome]
+            return Vector((lado * abs(j.x), j.y, j.z))
+        for a, b, frac, larg in (("joint-l-elbow", "joint-l-hand", 0.45, 0.035),
+                                 ("joint-l-knee", "joint-l-ankle", 0.3, 0.04),
+                                 ("joint-l-knee", "joint-l-ankle", 0.5, 0.03)):
+            pa, pb = junta(a), junta(b)
+            eixo = (pb - pa).normalized()
+            centro = pa.lerp(pb, frac)
+            u = eixo.orthogonal().normalized()
+            w = eixo.cross(u).normalized()
+            anel = []
+            for k in range(40):
+                ang = 2 * math.pi * k / 40
+                r = _sobre(arvore, centro, u * math.cos(ang) + w * math.sin(ang))
+                if r and (r[0] - centro).length < 0.15:
+                    anel.append(r[0])
+            if len(anel) > 20:
+                _faixa(bm, arvore, _reamostrar(anel, 0.015, True), larg, 0.002, True, 0.002)
+    anel = []
+    for k in range(64):
+        ang = 2 * math.pi * k / 64
+        r = _sobre(arvore, Vector((0, 0.0, peito_z + 0.06)), Vector((math.cos(ang), math.sin(ang), 0)))
+        if r and abs(r[0].x) < 0.2:
+            anel.append(r[0])
+    _faixa(bm, arvore, _reamostrar(anel, 0.015, True), 0.035, 0.002, True, 0.002)
+    refletivas = comum.objeto_de_bmesh("epi_refletivas", bm)
+    _pesos_de(refletivas, macacao)
+    _pintar_liso(refletivas, (0.8, 0.8, 0.74), 4.0)
+    comum.atribuir(refletivas, comum.material("epi_refletivas_mat", (1, 1, 1), 0.3, emissao=(0.08, 0.08, 0.07),
+                                              forca_emissao=1.0))
+    bm = bmesh.new()
+    ziper = []
+    for k in range(16):
+        z = cinto_z - 0.12 + (topo_z - 0.03 - (cinto_z - 0.12)) * k / 15
+        r = _sobre(arvore, Vector((0, -0.6, z)), Vector((0, 1, 0)))
+        if r:
+            ziper.append(r[0])
+    _faixa(bm, arvore, _reamostrar(ziper, 0.015, False), 0.014, 0.003, False, 0.002)
+    ziper_obj = comum.objeto_de_bmesh("epi_ziper", bm)
+    _pesos_de(ziper_obj, macacao)
+    _pintar_liso(ziper_obj, (0.2, 0.2, 0.2))
+    comum.atribuir(ziper_obj, comum.material("epi_ziper_mat", (1, 1, 1), 0.5, metal=0.4))
+    _pesos_de(arnes, macacao)
+    _pintar_liso(arnes, cor)
+    comum.atribuir(arnes, comum.material("epi_arnes_mat", (1, 1, 1), 0.7))
+    # fivelas do peito e do cinto
+    bm = bmesh.new()
+    for z, larg in ((peito_z, 0.05), (cinto_z, 0.06)):
+        r = _sobre(arvore, Vector((0, -0.6, z)), Vector((0, 1, 0)))
+        if r:
+            comum.caixa(bm, r[0] + Vector((0, -0.013, 0)), (larg, 0.012, 0.04))
+    fivelas = comum.objeto_de_bmesh("epi_fivelas", bm)
+    comum.biselar(fivelas, 0.004)
+    comum.aplicar_modificadores(fivelas)
+    _pesos_de(fivelas, macacao)
+    _pintar_liso(fivelas, (0.55, 0.55, 0.52))
+    comum.atribuir(fivelas, comum.material("epi_fivelas_mat", (1, 1, 1), 0.35, metal=0.7))
+    for p in arnes.data.polygons:
+        p.use_smooth = False
+    return [arnes, fivelas, refletivas, ziper_obj]
+
+
+# ------------------------------------------------------------------ capacete, óculos e máscara do EPI
+
+def _cilindro_eixo(bm, centro: Vector, eixo: Vector, raio: float, altura: float, seg: int = 18) -> None:
+    verts = comum.cilindro(bm, (0, 0, 0), raio, altura, seg)
+    rot = Vector((0, 0, 1)).rotation_difference(eixo.normalized()).to_matrix().to_4x4()
+    bmesh.ops.transform(bm, matrix=Matrix.Translation(centro) @ rot, verts=verts)
+
+
+def _elipsoide(bm, centro: Vector, raios: tuple, manter, seg: int = 40, aneis: int = 24) -> None:
+    verts = comum.esfera(bm, (0, 0, 0), 1.0, seg, aneis)
+    bmesh.ops.transform(bm, matrix=Matrix.Translation(centro) @ Matrix.Diagonal((*raios, 1.0)), verts=verts)
+    fora = [v for v in verts if not manter(v.co)]
+    bmesh.ops.delete(bm, geom=fora, context="VERTS")
+
+
+def criar_cabeca_epi(b: np.ndarray, m: dict, e: dict) -> list:
+    """Capacete, óculos de proteção e máscara de filtro como peças rígidas presas à cabeça,
+    ajustadas às medidas da cabeça (cascas tiradas do rosto deixavam bordas serrilhadas e lábios à mostra)."""
+    _, faces = carregar_base()
+    corpo = b[indices_grupo("body")]
+    arvore = BVHTree.FromPolygons([tuple(v) for v in b], faces["body"])
+    olho_z, boca = m["olho_z"], m["joint-mouth"]
+    cab = corpo[(corpo[:, 2] > m["joint-neck"].z + 0.07) & (np.abs(corpo[:, 0]) < 0.13)]
+    cranio = corpo[(corpo[:, 2] > olho_z + 0.03) & (np.abs(corpo[:, 0]) < 0.13)]  # acima das orelhas
+    hx = float(np.abs(cranio[:, 0]).max())
+    ymin, ymax, topo = float(cab[:, 1].min()), float(cab[:, 1].max()), float(cab[:, 2].max())
+    yc = (ymin + ymax) / 2
+    objs = []
+    # capacete: casco elíptico com a borda seguindo o corte (acima dos óculos na frente, mais baixa atrás)
+    zc = olho_z + 0.035
+    rx, ry, rz = hx + 0.016, (ymax - ymin) / 2 + 0.018, topo - zc + 0.02
+    centro = Vector((0, yc + 0.004, zc))
+
+    def borda_z(y):
+        return olho_z + 0.045 - 0.5 * max(0.0, y - yc)
+
+    def ponto(teta, fi):
+        return centro + Vector((rx * math.sin(fi) * math.sin(teta), -ry * math.sin(fi) * math.cos(teta), rz * math.cos(fi)))
+
+    bm = bmesh.new()
+    n_teta, n_fi = 48, 14
+    aneis = []
+    for i in range(n_teta):
+        teta = 2 * math.pi * i / n_teta
+        lo, hi = 0.0, math.pi
+        for _ in range(30):  # ângulo polar em que o casco encontra a borda
+            meio = (lo + hi) / 2
+            q = ponto(teta, meio)
+            lo, hi = (meio, hi) if q.z > borda_z(q.y) else (lo, meio)
+        aneis.append([bm.verts.new(ponto(teta, lo * (k / n_fi) ** 0.9)) for k in range(1, n_fi + 1)])
+    polo = bm.verts.new(ponto(0, 0))
+    for i in range(n_teta):
+        a, b_ = aneis[i], aneis[(i + 1) % n_teta]
+        bm.faces.new((polo, a[0], b_[0]))
+        for k in range(n_fi - 1):
+            bm.faces.new((a[k], a[k + 1], b_[k + 1], b_[k]))
+    bmesh.ops.reverse_faces(bm, faces=bm.faces)
+    o = comum.objeto_de_bmesh("epi_capacete", bm)
+    for f in o.data.polygons:
+        f.use_smooth = True
+    sol = o.modifiers.new("casco", "SOLIDIFY")
+    sol.thickness = 0.008
+    sol.offset = -1
+    comum.aplicar_modificadores(o)
+    _rigido(o, "head", e["capacete"], "epi_capacete_mat")
+    objs.append(o)
+    # lanterna na frente do capacete
+    bm = bmesh.new()
+    q = ponto(0.0, 1.05)
+    _cilindro_eixo(bm, q + Vector((0, -0.01, 0)), Vector((0, -1, 0.35)), 0.018, 0.035, 14)
+    o = comum.objeto_de_bmesh("epi_lanterna", bm)
+    _rigido(o, "head", (0.9, 0.85, 0.6), "epi_lanterna_mat", emissao=True)
+    objs.append(o)
+    # óculos: aro de borracha e lente escura que contornam o rosto, e a tira por trás da cabeça
+    def contorno(z, de, ate, n):
+        pts = []
+        for k in range(n):
+            a = math.radians(de + (ate - de) * k / (n - 1))
+            r = _sobre(arvore, Vector((0, yc, z)), Vector((math.sin(a), -math.cos(a), 0)))
+            if r:
+                pts.append(r[0])
+        return pts
+    bm = bmesh.new()
+    _faixa(bm, arvore, _reamostrar(contorno(olho_z + 0.003, -72, 72, 36), 0.01, False), 0.05, 0.012, False, 0.006)
+    o = comum.objeto_de_bmesh("epi_oculos_aro", bm)
+    _rigido(o, "head", (0.08, 0.08, 0.085), "epi_oculos_aro_mat")
+    objs.append(o)
+    bm = bmesh.new()
+    _faixa(bm, arvore, _reamostrar(contorno(olho_z + 0.003, -58, 58, 30), 0.01, False), 0.034, 0.004, False, 0.019)
+    o = comum.objeto_de_bmesh("epi_visor", bm)
+    _rigido(o, "head", (0.05, 0.07, 0.08), "epi_visor_mat")
+    o.data.materials[0] = comum.material("epi_visor_lente_mat", (0.05, 0.07, 0.08), 0.08, metal=0.6)
+    objs.append(o)
+    # máscara: concha de borracha sobre nariz e boca, com cartuchos laterais e válvula na frente
+    perto_boca = corpo[(np.abs(corpo[:, 0]) < 0.02) & (np.abs(corpo[:, 2] - boca.z) < 0.02)]
+    labios_y = float(perto_boca[:, 1].min())
+    c = Vector((0, labios_y + 0.03, boca.z + 0.004))
+    rm = (0.073, 0.074, 0.07)
+    bm = bmesh.new()
+    _elipsoide(bm, c, rm, lambda co: co.y < c.y + 0.022, 36, 22)
+    o = comum.objeto_de_bmesh("epi_mascara", bm)
+    for f in o.data.polygons:
+        f.use_smooth = True
+    sol = o.modifiers.new("casca", "SOLIDIFY")
+    sol.thickness = 0.006
+    sol.offset = 1
+    comum.aplicar_modificadores(o)
+    _rigido(o, "head", e["mascara"], "epi_mascara_mat")
+    objs.append(o)
+    bm = bmesh.new()
+    for lado in (1, -1):
+        eixo = Vector((lado * 0.75, -0.62, -0.2)).normalized()
+        pos = c + Vector((lado * 0.052, -0.045, -0.014))
+        _cilindro_eixo(bm, pos + eixo * 0.012, eixo, 0.03, 0.036)
+        _cilindro_eixo(bm, pos + eixo * 0.032, eixo, 0.024, 0.006)
+    _cilindro_eixo(bm, c + Vector((0, -rm[1] - 0.004, -0.024)), Vector((0, -1, -0.25)), 0.02, 0.024, 14)
+    o = comum.objeto_de_bmesh("epi_filtros", bm)
+    comum.biselar(o, 0.003)
+    comum.aplicar_modificadores(o)
+    _rigido(o, "head", e.get("filtros", (0.62, 0.56, 0.3)), "epi_filtros_mat")
+    objs.append(o)
+    # gola: anel acolchoado na base do pescoço, sobre o capuz e o macacão
+    pescoco = m["joint-neck"]
+    bm = bmesh.new()
+    anel = []
+    for k in range(48):
+        a = 2 * math.pi * k / 48
+        r = _sobre(arvore, Vector((0, pescoco.y, pescoco.z - 0.015)), Vector((math.cos(a), math.sin(a), 0)))
+        if r and (r[0] - pescoco).length < 0.15:
+            anel.append(r[0])
+    _faixa(bm, arvore, _reamostrar(anel, 0.012, True), 0.055, 0.016, True, 0.02)
+    o = comum.objeto_de_bmesh("epi_gola", bm)
+    for f in o.data.polygons:
+        f.use_smooth = True
+    _rigido(o, "neck_01", e.get("luvas", (0.15, 0.14, 0.13)), "epi_gola_mat")
+    objs.append(o)
     return objs
 
 
@@ -827,13 +1241,21 @@ def gerar(id_: str) -> str:
     arm = criar_armature(b)
     corpo = construir_corpo(b, f"{id_}_corpo")
     roupas, epi, _ = gerar_pecas(corpo, apar, m, id_)
+    macacao = next((o for o in epi if o.name == "epi_macacao"), None)
+    if macacao is not None:
+        epi += criar_arnes(macacao, m, apar["epi"].get("arnes", (0.12, 0.11, 0.1)))
+        epi += criar_cabeca_epi(b, m, apar["epi"])
     pintar_pele(corpo, apar, m)
     comum.atribuir(corpo, comum.material(f"{id_}_pele_mat", (1, 1, 1), rugosidade=0.55))
     olhos = criar_olhos(b, apar, id_)
     extras = criar_extras_rigidos(apar, m, id_, bool(epi))
     decimar(corpo, 0.42)
-    cabeca_pecas = ("_cabelo", "_lenco", "_capuz", "_turbante", "_gorro", "epi_mascara", "epi_visor", "epi_capacete", "epi_arnes")
+    cabeca_pecas = ("_cabelo", "_lenco", "_capuz", "_turbante", "_gorro", "epi_mascara", "epi_visor", "epi_capacete",
+                     "epi_luvas", "epi_botas", "epi_capuz")
     for o in roupas + epi:
+        if o.name in ("epi_arnes", "epi_fivelas", "epi_refletivas", "epi_ziper", "epi_capacete", "epi_lanterna",
+                      "epi_oculos_aro", "epi_visor", "epi_mascara", "epi_filtros", "epi_gola"):  # geometria própria, já enxuta
+            continue
         decimar(o, 0.6 if o.name.endswith(cabeca_pecas) else 0.35)
     todos = [corpo, olhos] + roupas + epi + extras
     vincular(todos, arm)

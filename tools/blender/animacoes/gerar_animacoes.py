@@ -445,7 +445,7 @@ def parado(t):
         p.lado(f"upperarm_{lado}", -0.9 * w * sinal + 0.6 * resp)
         p.frente(f"upperarm_{lado}", 1.2 * s(t, 0.1 + 0.25 * sinal) - 0.5 * resp)
         cotovelo(p, f"{lado}", 18 + 2.0 * s(t, 0.2 + 0.25 * sinal) + 1.5 * resp)
-        dedos_curvos(p, 13 + 3 * s(t, 0.3 * sinal), lado)
+        dedos_curvos(p, 6 + 3 * s(t, 0.3 * sinal), lado)
     olhar = curva(t, [(0.0, 0.0), (0.16, 5.0), (0.3, 6.0), (0.5, -1.0), (0.68, -6.0), (0.84, -4.0)])
     acena = curva(t, [(0.0, 0.0), (0.25, -2.0), (0.55, 1.5), (0.8, 0.5)])
     rol_tronco = rol_pelvis + 4.5 * w
@@ -506,7 +506,7 @@ def andar(t):
         cotovelo(p, lado, 20 + 9 * (1 + c(t, -fase - 0.13)))
         p.frente(f"hand_{lado}", 5 * c(t, -fase - 0.2))
         p.torce(f"clavicle_{lado}", -2.5 * b * sinal)
-        dedos_curvos(p, 14 + 4 * c(t, -fase - 0.15), lado)
+        dedos_curvos(p, 8 + 4 * c(t, -fase - 0.15), lado)
     return p
 
 
