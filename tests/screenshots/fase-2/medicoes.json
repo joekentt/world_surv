@@ -210,8 +210,8 @@
     "ateEclusa": {
       "x": 178,
       "y": 0,
-      "z": 218.83,
-      "tempo_s": 9.47
+      "z": 218.8,
+      "tempo_s": 9.51
     },
     "errosConsole": 0
   },
@@ -223,21 +223,21 @@
       ],
       "yMinimo": -25,
       "yFinal": -25,
-      "tempo_s": 4.84
+      "tempo_s": 4.85
     },
     "escadaRolante": {
       "yFinal": -19,
-      "tempo_s": 7.14,
+      "tempo_s": 7.16,
       "area": "estacao_aurora"
     },
     "pontoDeDescanso": {
-      "x": 189.91,
+      "x": 189.9,
       "y": -19,
-      "z": 208.1
+      "z": 208.08
     },
     "descidaAtePoco": {
       "yFinal": -25,
-      "tempo_s": 28.96
+      "tempo_s": 29.1
     },
     "errosConsole": 0
   },
@@ -248,7 +248,7 @@
       "x": 0,
       "y": 0.06,
       "z": 8,
-      "tempo_eclusa_s": 1.94,
+      "tempo_eclusa_s": 1.7,
       "areasCarregadas": [
         "superficie_aberta",
         "superficie_ruinas",
@@ -261,7 +261,7 @@
       "x": 178,
       "y": 0,
       "z": 217.6,
-      "tempo_eclusa_s": 2.09
+      "tempo_eclusa_s": 2.17
     },
     "errosConsole": 0
   },
