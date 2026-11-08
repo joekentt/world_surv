@@ -29,6 +29,8 @@ export class Personagem {
   /** O controlador do jogador define o giro diretamente (yaw e inclinação nas curvas). */
   controleExterno = false;
   private pesosLocomocao = { parado: 1, andar: 0, correr: 0 };
+  /** Velocidade pedida e velocidade suavizada que comanda a mistura (a física não muda). */
+  private loc = { alvo: 0, suave: 0, refAndar: 1, refCorrer: 1, vAndar: 1 };
   pausado = false;
 
   private constructor(readonly id: string, raiz: TransformNode) {
@@ -65,33 +67,79 @@ export class Personagem {
 
   /**
    * Mistura de locomoção (seção 3.3): parado, andar e correr tocam juntos com pesos pela velocidade,
-   * e a velocidade de reprodução acompanha a velocidade real para o pé não deslizar.
+   * e a velocidade de reprodução acompanha a velocidade real para o pé não deslizar. Os pesos seguem
+   * uma velocidade suavizada (partida, parada e troca andar/correr sem estalo) e andar e correr ficam
+   * na mesma fase do passo, para os pés não se cruzarem durante a mistura.
    */
   locomover(velocidade: number, refAndar: number, refCorrer: number, vAndar: number, transicao = 0.18): void {
-    const v = Math.max(0, velocidade);
-    let pp = 0, pa = 0, pc = 0;
-    if (v <= vAndar) {
-      pa = v / vAndar;
-      pp = 1 - pa;
-    } else {
-      pc = Math.min(1, (v - vAndar) / Math.max(0.01, refCorrer * 1.1 - vAndar));
-      pa = 1 - pc;
-    }
-    this.pesosLocomocao = { parado: pp, andar: pa, correr: pc };
-    const ga = this.grupos.get("andar"), gc = this.grupos.get("correr"), gp = this.grupos.get("parado");
-    if (ga) ga.speedRatio = Math.min(1.8, Math.max(0.55, v / refAndar));
-    if (gc) gc.speedRatio = Math.min(1.6, Math.max(0.6, v / refCorrer));
+    const L = this.loc;
+    L.alvo = Math.max(0, velocidade);
+    L.refAndar = refAndar;
+    L.refCorrer = refCorrer;
+    L.vAndar = vAndar;
     if (this.atual === "locomocao") return;
+    L.suave = L.alvo;
     this.empurrarParaSaida();
     this.atual = "locomocao";
     this.duracaoTransicao = transicao;
     this.entrada = 0;
+    const ga = this.grupos.get("andar"), gc = this.grupos.get("correr"), gp = this.grupos.get("parado");
     for (const g of [gp, ga, gc]) {
       if (!g) continue;
       this.saindo = this.saindo.filter((s) => s.g !== g);
       g.weight = 0;
-      if (!g.isPlaying) g.start(true, g.speedRatio);
     }
+    // andar e correr recomeçam juntos, no toque do pé esquerdo, para ficarem em fase
+    for (const g of [ga, gc]) if (g?.isStarted) g.stop();
+    this.atualizarLocomocao(0);
+    for (const g of [gp, ga, gc]) if (g && !g.isPlaying) g.start(true, g.speedRatio);
+    // correr segue a fase normalizada de andar (ciclos de durações diferentes, mesmo passo)
+    const raiz = ga?.animatables[0];
+    if (gc && raiz) gc.syncAllAnimationsWith(raiz);
+  }
+
+  /** Fase do passo (0 a 1, toque do pé esquerdo em 0 e do direito em 0,5); correr segue a fase de andar. */
+  fasePasso(): number | null {
+    if (this.atual !== "locomocao") return null;
+    const { andar, correr } = this.pesosLocomocao;
+    const g = this.grupos.get("andar");
+    if (andar + correr < 0.3 || !g?.isPlaying) return null;
+    const n = g.to - g.from;
+    return n > 0 ? (((g.getCurrentFrame() - g.from) / n) % 1 + 1) % 1 : null;
+  }
+
+  private atualizarLocomocao(dt: number): void {
+    const L = this.loc;
+    // acelerar responde um pouco mais rápido que frear
+    const tau = L.alvo > L.suave ? 0.08 : 0.11;
+    L.suave += (L.alvo - L.suave) * (dt > 0 ? 1 - Math.exp(-dt / tau) : 1);
+    const v = L.suave;
+    let pp = 0, pa = 0, pc = 0;
+    if (v <= L.vAndar) {
+      const u = v / L.vAndar;
+      pa = u * u * (3 - 2 * u);
+      pp = 1 - pa;
+    } else {
+      const u = Math.min(1, (v - L.vAndar) / Math.max(0.01, L.refCorrer - L.vAndar));
+      pc = u * u * (3 - 2 * u);
+      pa = 1 - pc;
+    }
+    this.pesosLocomocao = { parado: pp, andar: pa, correr: pc };
+    const ga = this.grupos.get("andar"), gc = this.grupos.get("correr");
+    const ra = Math.min(1.8, Math.max(0.55, v / L.refAndar));
+    const rc = Math.min(1.6, Math.max(0.6, v / L.refCorrer));
+    if (!ga || !gc) {
+      if (ga) ga.speedRatio = ra;
+      if (gc) gc.speedRatio = rc;
+      return;
+    }
+    // mesma frequência de passo para os dois ciclos, ponderada pelos pesos: andar dita o relógio e
+    // correr acompanha a fase de andar (syncAllAnimationsWith em locomover)
+    const ta = Math.max(1e-3, ga.to - ga.from), tc = Math.max(1e-3, gc.to - gc.from);
+    const soma = Math.max(1e-3, pa + pc);
+    const freq = (pa * (ra / ta) + pc * (rc / tc)) / soma || ra / ta;
+    ga.speedRatio = freq * ta;
+    gc.speedRatio = freq * tc;
   }
 
   private empurrarParaSaida(): void {
@@ -158,10 +206,13 @@ export class Personagem {
   atualizar(dt: number): void {
     const passo = this.duracaoTransicao > 0 ? dt / this.duracaoTransicao : 1;
     if (this.atual === "locomocao") {
+      this.atualizarLocomocao(dt);
       this.entrada = Math.min(1, this.entrada + passo);
       for (const nome of ["parado", "andar", "correr"] as const) {
         const g = this.grupos.get(nome);
-        if (g) g.weight = this.pesosLocomocao[nome] * this.entrada;
+        // peso zero pausa o grupo no Babylon: andar e correr ficam com um mínimo invisível para
+        // continuarem correndo em fase e entrarem na mistura sem salto
+        if (g) g.weight = Math.max(nome === "parado" ? 0 : 1e-3, this.pesosLocomocao[nome] * this.entrada);
       }
     } else if (this.atual && this.entrada < 1) {
       this.entrada = Math.min(1, this.entrada + passo);
