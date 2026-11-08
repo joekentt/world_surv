@@ -19,13 +19,24 @@ type Ret = { x0: number; x1: number; z0: number; z1: number };
 /** Névoa do horizonte: fração do céu na cor de um pedaço a `d` metros da câmera. */
 const DENSIDADE_HORIZONTE = 0.00062;
 /** Mínimo de névoa: a cidade é vista através da poeira da parede de tempestade. */
-const NEVOA_MINIMA = 0.28;
+const NEVOA_MINIMA = 0.36;
 /** Raio da cidade em volta do centro do mapa: com a câmera na borda oposta, fica abaixo do maxZ de 2500 m. */
 const RAIO_CIDADE = 1900;
 const FAIXAS = [900, 1400, RAIO_CIDADE];
 const SETORES = 8;
 /** Luz a nordeste: rumo de 45° (norte = +Z, leste = +X) a partir do centro do mapa. */
 const DIST_LUZ_NE = 1550;
+
+/** Altura do terreno da área (amostra mais próxima da grade); zero sem terreno. */
+export function alturaTerreno(def: AreaDef): (x: number, z: number) => number {
+  const t = def.terreno;
+  if (!t) return () => 0;
+  return (x, z) => {
+    const i = Math.min(t.nx - 1, Math.max(0, Math.round((x - t.x0) / t.passo)));
+    const j = Math.min(t.nz - 1, Math.max(0, Math.round((z - t.z0) / t.passo)));
+    return t.alturas[j * t.nx + i];
+  };
+}
 
 function aleatorio(semente: number): () => number {
   let s = semente >>> 0;
@@ -96,20 +107,17 @@ export class Horizonte {
   private luzNE: { malha: Mesh; mat: StandardMaterial } | null = null;
   private ceu: { malha: Mesh; mat: StandardMaterial } | null = null;
   private readonly centro: { x: number; z: number };
+  private readonly lim: { x0: number; x1: number; z0: number; z1: number };
 
   constructor(private cena: Scene, def: AreaDef, qualidade: "alta" | "media") {
     const lim = def.limiteJogavel!;
+    this.lim = lim;
     this.centro = { x: (lim.x0 + lim.x1) / 2, z: (lim.z0 + lim.z1) / 2 };
     const t = def.terreno;
     const borda: Ret = t
       ? { x0: t.x0, x1: t.x0 + t.passo * (t.nx - 1), z0: t.z0, z1: t.z0 + t.passo * (t.nz - 1) }
       : { x0: lim.x0 - 60, x1: lim.x1 + 60, z0: lim.z0 - 60, z1: lim.z1 + 60 };
-    const altura = (x: number, z: number) => {
-      if (!t) return 0;
-      const i = Math.min(t.nx - 1, Math.max(0, Math.round((x - t.x0) / t.passo)));
-      const j = Math.min(t.nz - 1, Math.max(0, Math.round((z - t.z0) / t.passo)));
-      return t.alturas[j * t.nx + i];
-    };
+    const altura = alturaTerreno(def);
     this.construirChao(borda, altura);
     this.construirCidade(borda, qualidade);
     this.construirMontanhas();
@@ -361,7 +369,11 @@ export class Horizonte {
     const lum = 0.3 * nevoa.r + 0.59 * nevoa.g + 0.11 * nevoa.b;
     const brilho = Math.min(1.15, Math.max(0.05, lum / 0.85));
     const escondido = poeira > 0.55;
-    const extra = 1 - Math.pow(1 - Math.min(1, poeira / 0.55), 2);
+    // perto da parede de tempestade a poeira fica entre a câmera e a cidade: até 45% a mais de névoa a 0 m
+    const l = this.lim;
+    const dLimite = Math.max(0, Math.min(camera.x - l.x0, l.x1 - camera.x, camera.z - l.z0, l.z1 - camera.z));
+    const perto = 0.45 * Math.max(0, 1 - dLimite / 90);
+    const extra = 1 - (1 - perto) * Math.pow(1 - Math.min(1, poeira / 0.55), 2);
     for (const p of this.pedacos) {
       for (const m of p.malhas) m.setEnabled(!escondido);
       if (escondido) continue;
@@ -370,7 +382,7 @@ export class Horizonte {
         const d = Math.hypot(p.cx! - camera.x, p.cz! - camera.z);
         k = Math.max(NEVOA_MINIMA, 1 - Math.exp(-Math.pow(DENSIDADE_HORIZONTE * d, 2)));
       }
-      k = k + (1 - k) * extra;
+      k = k + (1 - k) * (p.nevoa === undefined ? extra : extra * 0.5);
       p.mat.emissiveColor.set(
         p.cor[0] * brilho * (1 - k) + ceu[0] * k,
         p.cor[1] * brilho * (1 - k) + ceu[1] * k,

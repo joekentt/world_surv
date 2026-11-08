@@ -404,17 +404,8 @@ def muralhas_do_rio(a: Area):
 
 
 def tempestade(a: Area):
-    """Parede de tempestade: duas camadas além do limite, em faixas cada vez mais ralas para cima (somem no céu),
-    e a colisão invisível no limite."""
-    alturas = (-12.0, 28.0, 55.0, 85.0, 125.0, 175.0, 250.0)
-    faixas = [(alturas[i], alturas[i + 1], f"tempestade_{i + 1}") for i in range(6)]
-    for o in (6.0, 40.0):
-        x0, x1, z0, z1 = LX0 - o, LX1 + o, LZ0 - o, LZ1 + o
-        for y0, y1, mat in faixas:
-            V(a, x0 - 0.3, x0, y0, y1, z0, z1, mat)
-            V(a, x1, x1 + 0.3, y0, y1, z0, z1, mat)
-            V(a, x0, x1, y0, y1, z0 - 0.3, z0, mat)
-            V(a, x0, x1, y0, y1, z1, z1 + 0.3, mat)
+    """Colisão invisível no limite jogável. A cortina de poeira é desenhada pelo jogo em volta de `limiteJogavel`
+    (src/world/tempestade.ts)."""
     for x0, x1, z0, z1 in ((LX0 - 2, LX0, LZ0 - 2, LZ1 + 2), (LX1, LX1 + 2, LZ0 - 2, LZ1 + 2),
                            (LX0, LX1, LZ0 - 2, LZ0), (LX0, LX1, LZ1, LZ1 + 2)):
         B(a, x0, x1, -30.0, 170.0, z0, z1, "parede", invisivel=True, semCamera=True)

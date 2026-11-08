@@ -7,7 +7,8 @@ import { Coletaveis } from "../world/coletaveis";
 import { TurnosDeLuz } from "../world/turnos";
 import { PosProcessamento } from "../world/posprocessamento";
 import { Particulas } from "../world/particulas";
-import { Horizonte } from "../world/horizonte";
+import { Horizonte, alturaTerreno } from "../world/horizonte";
+import { ParedeTempestade } from "../world/tempestade";
 import { Navegacao } from "../npc/navegacao";
 import { GerenciadorNpcs } from "../npc/npcs";
 import { Baloes } from "../ui/baloes";
@@ -76,6 +77,8 @@ export class Jogo {
   particulas!: Particulas;
   /** Horizonte da superfície aberta (cidade, montanhas, céu), montado com a área que tem o limite jogável. */
   horizonte: Horizonte | null = null;
+  /** Cortina de poeira no limite jogável da superfície aberta. */
+  paredeTempestade: ParedeTempestade | null = null;
   depoisDoDialogo: (() => void) | null = null;
 
   get loja(): { abrir: (id: string) => void } {
@@ -153,6 +156,8 @@ export class Jogo {
       if (a.def.limiteJogavel) {
         this.horizonte?.dispose();
         this.horizonte = null;
+        this.paredeTempestade?.dispose();
+        this.paredeTempestade = null;
       }
       this.aoAreaDescarregada?.(a);
     };
@@ -330,6 +335,7 @@ export class Jogo {
     this.iluminacao.atualizar(dt, new Vector3(p.x, p.y + 1, p.z), this.tempo);
     this.pos.atualizar(dt, this.iluminacao.poeiraExtra);
     this.horizonte?.atualizar(this.tempo, this.camera.camera.globalPosition, this.iluminacao.poeiraExtra);
+    this.paredeTempestade?.atualizar(dt, p, this.iluminacao.poeiraExtra);
     this.particulas.atualizar(p.x, p.y, !!this.areaAtual?.superficie, this.iluminacao.poeiraExtra, Math.sign(this.jogador.empurrao), this.tempo);
     this.epi.atualizar(dt);
     this.turnos.atualizar(dt);
@@ -450,6 +456,8 @@ export class Jogo {
     if (a.def.limiteJogavel) {
       this.horizonte?.dispose();
       this.horizonte = new Horizonte(this.cena, a.def, this.motor.qualidade);
+      this.paredeTempestade?.dispose();
+      this.paredeTempestade = new ParedeTempestade(this.cena, a.def.limiteJogavel, this.motor.qualidade, alturaTerreno(a.def));
     }
     for (const [i, s] of (a.def.saidas ?? []).entries()) {
       this.interacao.adicionar({

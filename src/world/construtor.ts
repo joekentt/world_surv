@@ -55,17 +55,11 @@ const EMISSIVOS: Record<string, { cor: [number, number, number]; alfa?: number }
   facho: { cor: [1.0, 0.86, 0.55], alfa: 0.16 },
   // Duto Norte e Caverna da Fenda: musgo luminoso e água escorrendo (brilho fraco no escuro)
   musgo: { cor: [0.1, 0.46, 0.3] }, musgo_fraco: { cor: [0.035, 0.17, 0.12] }, agua: { cor: [0.08, 0.15, 0.18] },
-  // superfície: luz de alerta da Antena e as faixas translúcidas da parede de tempestade (mais ralas no alto)
+  // superfície: luz de alerta da Antena (a parede de tempestade é src/world/tempestade.ts)
   luz_vermelha: { cor: [1.0, 0.12, 0.06] },
-  tempestade_1: { cor: [0.66, 0.54, 0.37], alfa: 0.42 }, tempestade_2: { cor: [0.69, 0.58, 0.41], alfa: 0.31 },
-  tempestade_3: { cor: [0.73, 0.63, 0.46], alfa: 0.21 }, tempestade_4: { cor: [0.78, 0.69, 0.53], alfa: 0.13 },
-  tempestade_5: { cor: [0.83, 0.75, 0.6], alfa: 0.07 }, tempestade_6: { cor: [0.88, 0.81, 0.66], alfa: 0.03 },
   // Boca do Poço: luz vermelha de alerta e névoa da descontaminação
   luz_alerta: { cor: [1.0, 0.08, 0.04] }, nevoa: { cor: [0.32, 0.13, 0.12], alfa: 0.045 },
 };
-
-/** Materiais grandes e translúcidos que não entram na camada de brilho (borrariam a tela inteira). */
-const SEM_BRILHO = /^bloqueio_tempestade/;
 
 function materialBloqueio(cena: Scene, nome: string): StandardMaterial {
   const id = `bloqueio_${nome}`;
@@ -251,12 +245,12 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
       else c.dispose();
     }
   }
-  // Fora da camada de brilho: as faixas da tempestade e, na superfície (quase nada emite luz), tudo o que
-  // não é emissivo, inclusive o terreno; senão cada malha é desenhada de novo no passe do brilho.
+  // Fora da camada de brilho, na superfície (quase nada emite luz): tudo o que não é emissivo, inclusive o
+  // terreno; senão cada malha é desenhada de novo no passe do brilho.
   for (const m of malhas) {
     const nome = m.material?.name ?? "";
     const emissivo = nome.startsWith("bloqueio_") && nome.slice(9) in EMISSIVOS;
-    if (!SEM_BRILHO.test(nome) && (emissivo || !def.superficie)) continue;
+    if (emissivo || !def.superficie) continue;
     for (const camada of cena.effectLayers) if (camada instanceof GlowLayer) camada.addExcludedMesh(m as Mesh);
   }
 
