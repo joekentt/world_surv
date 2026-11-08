@@ -52,7 +52,12 @@
         0.22,
         0.12
       ],
-      "mangas": "curtas"
+      "mangas": "curtas",
+      "colete": [
+        0.3,
+        0.3,
+        0.28
+      ]
     },
     "olhos": [
       0.18,
