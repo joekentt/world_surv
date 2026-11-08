@@ -24,7 +24,12 @@
       ]
     },
     "cabeca": {
-      "tipo": "nenhum"
+      "tipo": "lenco",
+      "cor": [
+        0.7,
+        0.55,
+        0.3
+      ]
     },
     "roupa": {
       "camisa": [
@@ -42,7 +47,12 @@
         0.22,
         0.16
       ],
-      "mangas": "curtas"
+      "mangas": "curtas",
+      "colete": [
+        0.32,
+        0.38,
+        0.3
+      ]
     },
     "olhos": [
       0.18,

@@ -24,7 +24,12 @@
       ]
     },
     "cabeca": {
-      "tipo": "nenhum"
+      "tipo": "lenco_pescoco",
+      "cor": [
+        0.45,
+        0.3,
+        0.2
+      ]
     },
     "roupa": {
       "camisa": [
