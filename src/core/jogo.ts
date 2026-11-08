@@ -345,7 +345,7 @@ export class Jogo {
         this.pos.definir(a.estetica);
       }
       if (anterior?.id !== a.id && !this.roteiro?.emEpilogo) this.hud.anunciarArea(a.nome);
-      const epi = a.mundo === "superficie" || a.mundo === "boca";
+      const epi = !!a.superficie || a.mundo === "boca";
       this.jogador.personagem.mostrar("_epi", epi);
       this.jogador.personagem.mostrar("_roupa", !epi);
       if (a.superficie && !this.epi.ativo && !this.subida.emSequencia) {
@@ -355,7 +355,7 @@ export class Jogo {
       this.ambienteSonoro(a);
       this.estado.avisar(`area:${a.id}`);
       if (a.mundo === "vila" && anterior && anterior.mundo !== "vila" && !this.roteiro?.emEpilogo) void this.salvar();
-      if (anterior && anterior.mundo === "superficie" && a.mundo !== "superficie") {
+      if (anterior?.superficie && !a.superficie) {
         this.estado.definirFlag("voltou_recente", true);
         this.estado.definirFlag("voltou_dificil", this.epi.filtro < this.estado.capacidadeFiltro() * 0.25);
         setTimeout(() => this.estado.definirFlag("voltou_recente", false), 150_000);
@@ -417,8 +417,8 @@ export class Jogo {
     const vila = a.mundo === "vila";
     this.audio.laco("ambiente_vila", vila || a.mundo === "boca" ? 0.35 : 0);
     this.audio.laco("goteira", a.mundo === "duto" ? 0.6 : vila ? 0.2 : 0);
-    this.audio.laco("ambiente_superficie", a.mundo === "superficie" ? 0.5 : 0);
-    this.audio.laco("vento", a.mundo === "superficie" ? 0.35 : a.mundo === "duto" ? 0.12 : 0);
+    this.audio.laco("ambiente_superficie", a.superficie ? 0.5 : 0);
+    this.audio.laco("vento", a.superficie ? 0.35 : a.mundo === "duto" ? 0.12 : 0);
     const emissores: { som: string; x: number; y: number; raio: number; volume: number }[] = [];
     for (const area of this.areas.areasDoMundo(a.mundo)) {
       for (const i of area.interativos ?? []) {
@@ -441,7 +441,7 @@ export class Jogo {
     this.particulas.aoCarregar(a.def.id);
     for (const [i, s] of (a.def.saidas ?? []).entries()) {
       this.interacao.adicionar({
-        id: `${a.def.id}:saida${i}`, x: s.x, y: s.y, rotulo: s.rotulo, raio: 1.5, prioridade: 1,
+        id: `${a.def.id}:saida${i}`, x: s.x, y: s.y, z: s.z, rotulo: s.rotulo, raio: 1.5, prioridade: 1,
         acao: () => void this.usarSaida(s.destino, s.entrada, s.tipo ?? "porta"),
       });
     }

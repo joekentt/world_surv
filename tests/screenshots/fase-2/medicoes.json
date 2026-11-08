@@ -194,5 +194,76 @@
     },
     "distanciaAteOAlcapao": 2.6,
     "errosConsole": 0
+  },
+  "superficie_fps": {
+    "boca": 3.81,
+    "correndoRuinas": 3.93,
+    "salaTeste": 5.58,
+    "razaoBocaSala": 0.68,
+    "malhasAtivasRuinas": 69
+  },
+  "superficie_abrigos": [
+    {
+      "id": "abrigo_ruinas_a",
+      "dist": 67.08
+    },
+    {
+      "id": "abrigo_ruinas_b",
+      "dist": 93.41
+    },
+    {
+      "id": "abrigo_ruinas_c",
+      "dist": 127
+    },
+    {
+      "id": "abrigo_ruinas_d",
+      "dist": 124.53
+    }
+  ],
+  "superficie_marco": {
+    "rotaReferencia_m": 252.47,
+    "percorrido_m": 251.27,
+    "daBocaAoMarco_m": 265.27,
+    "tempoIda_s": 37.68,
+    "idaEVoltaCorrendo_s": 75.79,
+    "areas": [
+      "superficie_boca",
+      "superficie_ruinas",
+      "superficie_aberta",
+      "superficie_rio",
+      "superficie_praca_marco"
+    ],
+    "yMinNaRota": -0.52
+  },
+  "superficie_rio": {
+    "bloqueioEmX0": {
+      "parouEm": [
+        0,
+        0,
+        187.66
+      ]
+    },
+    "pontedesabada": {
+      "yMin": -4.47,
+      "percorrido_m": 61.51
+    }
+  },
+  "superficie_antena": {
+    "rotaReferencia_m": 489.41,
+    "percorrido_m": 497.06,
+    "daBocaAAntena_m": 515.11,
+    "tempoIda_s": 80.63,
+    "idaEVoltaCorrendo_s": 147.17,
+    "yTopo": 27.33,
+    "yPlataforma": 37.33
+  },
+  "superficie_viaduto": {
+    "percorrido_m": 219.25,
+    "tempo_s": 34.94,
+    "areas": [
+      "superficie_viaduto",
+      "superficie_aberta",
+      "superficie_colina"
+    ]
   }
 }

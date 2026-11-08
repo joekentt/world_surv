@@ -7,7 +7,7 @@ export interface Solido { x: number; y: number; w: number; h: number; d?: number
 export interface Peca { m: string; x: number; y: number; z?: number; r?: number; e?: number | [number, number, number]; }
 /** Escada de mão ou corda: base em (x, z), de y0 a y1; yaw é para onde o jogador olha ao subir (graus no JSON). */
 export interface EscadaDef { x: number; z?: number; y0: number; y1: number; tipo: "escada" | "corda"; yaw?: number; }
-export interface Saida { x: number; y: number; destino: string; entrada: string; rotulo: string; tipo?: "porta" | "eclusa"; }
+export interface Saida { x: number; y: number; z?: number; destino: string; entrada: string; rotulo: string; tipo?: "porta" | "eclusa"; }
 export interface Luz { x: number; y: number; z?: number; cor: [number, number, number]; i: number; alcance?: number; tipo?: "ponto" | "foco"; piscar?: boolean; }
 export interface Coletavel { id: string; item: string; x: number; y: number; qtd?: number; }
 export interface Interativo { id: string; tipo: string; x: number; y: number; z?: number; rotulo?: string; npc?: string; [k: string]: unknown; }
@@ -15,6 +15,12 @@ export interface ZonaPerigo { x0: number; x1: number; tipo: "poeira" | "radiacao
 
 export type Vec3 = [number, number, number];
 export interface Ponto3 { x: number; y: number; z: number }
+
+/**
+ * Terreno com relevo (superfície, revisão 2): grade regular de alturas a partir de (x0, z0), com `passo` m
+ * entre amostras; `alturas` em linhas de z crescente, nx amostras por linha. Vira malha com colisão de malha.
+ */
+export interface Terreno { x0: number; z0: number; passo: number; nx: number; nz: number; alturas: number[] }
 
 export interface AreaDef {
   id: string;
@@ -44,4 +50,7 @@ export interface AreaDef {
   interativos?: Interativo[];
   zonas?: ZonaPerigo[];
   marcos?: { id: string; x: number; rotulo: string }[];
+  terreno?: Terreno;
+  /** Interiores que servem de abrigo na superfície (dreno do filtro reduzido, fase 3). */
+  abrigos?: { id: string; min: Vec3; max: Vec3 }[];
 }

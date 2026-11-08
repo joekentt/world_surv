@@ -55,6 +55,7 @@ export class GerenciadorAreas {
     const lista = this.areasDoMundo(this.mundo);
     if (this.pisoCache?.mundo !== this.mundo) {
       const bases = lista.flatMap((a) => a.solidos.filter((s) => !s.semColisao).map((s) => s.y - s.h / 2));
+      for (const a of lista) if (a.terreno) bases.push(a.terreno.alturas.reduce((m, v) => Math.min(m, v), Infinity));
       this.pisoCache = { mundo: this.mundo, y: bases.length ? Math.min(...bases) : 0 };
     }
     return this.pisoCache.y;

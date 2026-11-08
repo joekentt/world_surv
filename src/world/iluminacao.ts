@@ -28,7 +28,8 @@ export const PERFIS: Record<string, Perfil> = {
   contrabandistas: { fundo: [0.006, 0.006, 0.006], ambiente: [0.7, 0.6, 0.45], ambienteInt: 0.22, chao: [0.04, 0.03, 0.02], nevoa: [0.01, 0.008, 0.006], densidadeNevoa: 0.05, sol: 0, lanterna: true },
   boca: { fundo: [0.05, 0.01, 0.01], ambiente: [1.0, 0.5, 0.45], ambienteInt: 0.32, chao: [0.15, 0.05, 0.04], nevoa: [0.18, 0.08, 0.07], densidadeNevoa: 0.045, sol: 0, lanterna: false },
   superficie_noite: { fundo: [0.02, 0.03, 0.07], ambiente: [0.35, 0.42, 0.65], ambienteInt: 0.35, chao: [0.05, 0.05, 0.08], nevoa: [0.03, 0.04, 0.08], densidadeNevoa: 0.006, sol: 0.5, corSol: [0.5, 0.6, 0.9], lanterna: true },
-  superficie: { fundo: [0.95, 0.9, 0.74], ambiente: [1.0, 0.96, 0.85], ambienteInt: 0.85, chao: [0.6, 0.55, 0.45], nevoa: [0.9, 0.85, 0.7], densidadeNevoa: 0.012, sol: 3.2, corSol: [1.0, 0.95, 0.82], lanterna: false },
+  // superfície aberta (revisão 2): névoa rala para a Antena e a Torre d'Água lerem a ~500 m
+  superficie: { fundo: [0.95, 0.9, 0.74], ambiente: [1.0, 0.96, 0.85], ambienteInt: 0.6, chao: [0.6, 0.55, 0.45], nevoa: [0.9, 0.85, 0.7], densidadeNevoa: 0.0016, sol: 1.8, corSol: [1.0, 0.95, 0.82], lanterna: false },
 };
 
 /**

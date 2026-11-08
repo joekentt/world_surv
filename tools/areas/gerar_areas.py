@@ -509,3 +509,7 @@ if __name__ == "__main__":
     import subsolo_duto
     for area in subsolo_duto.todas():
         area.salvar()
+    # Superfície aberta de 640 x 675 m (revisão 2, mundo "superficie_aberta"): módulo próprio
+    import superficie
+    for area in superficie.todas():
+        superficie.salvar(area)

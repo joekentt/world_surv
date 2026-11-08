@@ -1,10 +1,10 @@
 import {
-  Color3, Matrix, Mesh, MeshBuilder, PhysicsAggregate, PhysicsShapeType, PointLight, SpotLight, StandardMaterial,
-  TransformNode, Vector3, type AbstractMesh, type AssetContainer, type Light, type Scene,
+  Color3, GlowLayer, Matrix, Mesh, MeshBuilder, PhysicsAggregate, PhysicsShapeType, PointLight, SpotLight, StandardMaterial,
+  TransformNode, Vector3, VertexData, type AbstractMesh, type AssetContainer, type Light, type Scene,
 } from "@babylonjs/core";
 import type { Carregador } from "../core/carregador";
 import { CFG } from "../config";
-import type { AreaDef, Peca, Solido } from "./tipos";
+import type { AreaDef, Peca, Solido, Terreno } from "./tipos";
 
 /** Camada de colisão de sólidos que barram o personagem mas não a câmera (paredes invisíveis). */
 export const CAMADA_SEM_CAMERA = 1 << 4;
@@ -40,6 +40,9 @@ const CORES_BLOQUEIO: Record<string, [number, number, number]> = {
   pano: [0.7, 0.66, 0.58], grade: [0.16, 0.16, 0.17], escuro: [0.07, 0.065, 0.06],
   // superfícies úmidas e escuras do Duto Norte (a lanterna do capacete bate de perto sem estourar)
   rocha_escura: [0.19, 0.17, 0.15], madeira_escura: [0.17, 0.11, 0.07], concreto_escuro: [0.21, 0.2, 0.18],
+  // superfície: ruínas, asfalto, carros desbotados e entulho na cor da areia
+  tijolo: [0.48, 0.3, 0.22], reboco: [0.6, 0.55, 0.47], asfalto: [0.22, 0.21, 0.2], areia: [0.62, 0.55, 0.42],
+  ferro: [0.13, 0.12, 0.12], carro_vermelho: [0.45, 0.17, 0.12], carro_azul: [0.2, 0.27, 0.36], carro_bege: [0.6, 0.54, 0.42],
 };
 
 /** Materiais que emitem luz própria (lâmpadas, vitrais, facho), sem depender das luzes da cena. */
@@ -50,7 +53,15 @@ const EMISSIVOS: Record<string, { cor: [number, number, number]; alfa?: number }
   facho: { cor: [1.0, 0.86, 0.55], alfa: 0.16 },
   // Duto Norte e Caverna da Fenda: musgo luminoso e água escorrendo (brilho fraco no escuro)
   musgo: { cor: [0.1, 0.46, 0.3] }, musgo_fraco: { cor: [0.035, 0.17, 0.12] }, agua: { cor: [0.08, 0.15, 0.18] },
+  // superfície: luz de alerta da Antena e as faixas translúcidas da parede de tempestade (mais ralas no alto)
+  luz_vermelha: { cor: [1.0, 0.12, 0.06] },
+  tempestade_1: { cor: [0.66, 0.54, 0.37], alfa: 0.42 }, tempestade_2: { cor: [0.69, 0.58, 0.41], alfa: 0.31 },
+  tempestade_3: { cor: [0.73, 0.63, 0.46], alfa: 0.21 }, tempestade_4: { cor: [0.78, 0.69, 0.53], alfa: 0.13 },
+  tempestade_5: { cor: [0.83, 0.75, 0.6], alfa: 0.07 }, tempestade_6: { cor: [0.88, 0.81, 0.66], alfa: 0.03 },
 };
+
+/** Materiais grandes e translúcidos que não entram na camada de brilho (borrariam a tela inteira). */
+const SEM_BRILHO = /^bloqueio_tempestade/;
 
 function materialBloqueio(cena: Scene, nome: string): StandardMaterial {
   const id = `bloqueio_${nome}`;
@@ -72,6 +83,67 @@ function materialBloqueio(cena: Scene, nome: string): StandardMaterial {
   m.diffuseColor = new Color3(...c);
   m.specularColor = new Color3(0.05, 0.05, 0.05);
   return m;
+}
+
+/** Cor de cada vértice do terreno: areia, rocha nas encostas íngremes e lama seca nas baixadas. */
+function corTerreno(y: number, inclinacao: number, ruido: number): [number, number, number] {
+  const areia = [0.66, 0.58, 0.44], rocha = [0.46, 0.41, 0.35], lama = [0.5, 0.44, 0.36];
+  const kr = Math.min(1, Math.max(0, (inclinacao - 0.35) / 0.35));
+  const kl = Math.min(1, Math.max(0, (-y - 1.5) / 2));
+  const v = 0.92 + ruido * 0.16;
+  return [0, 1, 2].map((i) => (areia[i] + (rocha[i] - areia[i]) * kr + (lama[i] - areia[i]) * kl * (1 - kr)) * v) as [number, number, number];
+}
+
+/** Células por pedaço de malha do terreno (pedaços menores são descartados fora do campo de visão). */
+const BLOCO_TERRENO = 40;
+
+/** Malhas do terreno com colisão de malha no Havok, em pedaços de BLOCO_TERRENO células. */
+function construirTerreno(cena: Scene, id: string, t: Terreno, raiz: TransformNode, corpos: PhysicsAggregate[], malhas: AbstractMesh[]): void {
+  let mat = cena.getMaterialByName("bloqueio_terreno") as StandardMaterial | null;
+  if (!mat) {
+    mat = new StandardMaterial("bloqueio_terreno", cena);
+    mat.diffuseColor = Color3.White();
+    mat.specularColor = new Color3(0.02, 0.02, 0.02);
+  }
+  const alt = (i: number, j: number) => t.alturas[Math.min(t.nz - 1, Math.max(0, j)) * t.nx + Math.min(t.nx - 1, Math.max(0, i))];
+  for (let j0 = 0; j0 < t.nz - 1; j0 += BLOCO_TERRENO) {
+    for (let i0 = 0; i0 < t.nx - 1; i0 += BLOCO_TERRENO) {
+      const i1 = Math.min(t.nx - 1, i0 + BLOCO_TERRENO), j1 = Math.min(t.nz - 1, j0 + BLOCO_TERRENO);
+      const w = i1 - i0 + 1;
+      const pos: number[] = [], cores: number[] = [], ind: number[] = [];
+      for (let j = j0; j <= j1; j++) {
+        for (let i = i0; i <= i1; i++) {
+          const y = alt(i, j);
+          pos.push(t.x0 + i * t.passo, y, t.z0 + j * t.passo);
+          const incl = Math.hypot(alt(i + 1, j) - alt(i - 1, j), alt(i, j + 1) - alt(i, j - 1)) / (2 * t.passo);
+          const ruido = (Math.sin(i * 12.9898 + j * 78.233) * 43758.5453) % 1;
+          cores.push(...corTerreno(y, incl, Math.abs(ruido)), 1);
+        }
+      }
+      for (let j = 0; j < j1 - j0; j++) {
+        for (let i = 0; i < i1 - i0; i++) {
+          const a = i + j * w, b = i + 1 + j * w, c = i + (j + 1) * w, d = i + 1 + (j + 1) * w;
+          ind.push(b, d, c, a, b, c);
+        }
+      }
+      const normais: number[] = [];
+      VertexData.ComputeNormals(pos, ind, normais);
+      const vd = new VertexData();
+      vd.positions = pos;
+      vd.indices = ind;
+      vd.normals = normais;
+      vd.colors = cores;
+      const m = new Mesh(`${id}_terreno_${i0}_${j0}`, cena);
+      vd.applyToMesh(m);
+      m.material = mat;
+      m.parent = raiz;
+      m.isPickable = false;
+      m.receiveShadows = true;
+      corpos.push(new PhysicsAggregate(m, PhysicsShapeType.MESH, { mass: 0, friction: 0.6 }, cena));
+      m.freezeWorldMatrix();
+      malhas.push(m);
+    }
+  }
 }
 
 /** Módulos de kit já carregados: nome do módulo -> malha-fonte (oculta) para instanciar. */
@@ -128,6 +200,7 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
   const luzes: Light[] = [];
   const temKit = !!def.kit;
   const visiveis: Mesh[] = [];
+  if (def.terreno) construirTerreno(cena, def.id, def.terreno, raiz, corpos, malhas);
 
   for (const [i, s] of [...def.solidos, ...bordasFaixaAntiga(def)].entries()) {
     const caixa = MeshBuilder.CreateBox(`${def.id}_solido_${i}`, { width: s.w, height: s.h, depth: s.d ?? CFG.movimento.profundidadeFaixaAntiga }, cena);
@@ -173,6 +246,14 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
       if (corpos.some((k) => k.transformNode === c)) c.isVisible = false;
       else c.dispose();
     }
+  }
+  // Fora da camada de brilho: as faixas da tempestade e, na superfície (quase nada emite luz), tudo o que
+  // não é emissivo, inclusive o terreno; senão cada malha é desenhada de novo no passe do brilho.
+  for (const m of malhas) {
+    const nome = m.material?.name ?? "";
+    const emissivo = nome.startsWith("bloqueio_") && nome.slice(9) in EMISSIVOS;
+    if (!SEM_BRILHO.test(nome) && (emissivo || !def.superficie)) continue;
+    for (const camada of cena.effectLayers) if (camada instanceof GlowLayer) camada.addExcludedMesh(m as Mesh);
   }
 
   if (def.kit) {
