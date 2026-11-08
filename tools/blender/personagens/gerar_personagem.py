@@ -468,7 +468,21 @@ def pecas_epi(apar: dict, m: dict) -> list:
         ("epi_mascara", {"rosto", "cabeca_baixo", "pescoco"}, 0.022, epi["mascara"], False, lambda p, n: p.z <= olho_z - 0.022),
         ("epi_macacao", {"tronco", "braco", "antebraco", "quadril", "coxa", "canela", "tornozelo", "pe", "mao"}, 0.016,
          epi["macacao"], False, None),
+        # arnês do cilindro de ar: alças pelos ombros (frente e costas), tira do peito e cinto. Sem ele o
+        # cilindro parece uma peça encaixada nas costas (critério da seção 8).
+        ("epi_arnes", {"tronco", "quadril"}, 0.034, epi.get("arnes", (0.14, 0.13, 0.12)), False,
+         lambda p, n: _no_arnes(p, n, m)),
     ]
+
+
+def _no_arnes(p: Vector, n: Vector, m: dict) -> bool:
+    # no MPFB2 a numeração da coluna é de cima para baixo: joint-spine-1 fica no alto do peito
+    peito_z = m["joint-spine-1"].z - 0.07
+    cinto_z = m["joint-pelvis"].z + 0.1
+    alca = abs(abs(p.x) - 0.095) < 0.027 and p.z > cinto_z
+    tira_peito = p.y < -0.02 and n.y < -0.4 and abs(p.z - peito_z) < 0.02 and abs(p.x) < 0.11
+    cinto = abs(p.z - cinto_z) < 0.024
+    return alca or tira_peito or cinto
 
 
 def ruido_dobras(p: Vector, escala: float = 18.0) -> float:
@@ -562,7 +576,7 @@ def duplicar_faces(obj, faces: list, nome: str, espessura: float, cor, tipo: str
         if centro_cabeca is None:
             centro_cabeca = v.co.copy()
     # suaviza a casca para não carregar a microforma da pele
-    if tipo not in ("botas", "luvas"):
+    if tipo not in ("botas", "luvas", "epi_arnes"):
         bmesh.ops.smooth_vert(bm, verts=bm.verts, factor=0.5, use_axis_x=True, use_axis_y=True, use_axis_z=True)
     bm.to_mesh(novo.data)
     bm.free()
@@ -751,6 +765,14 @@ def criar_extras_rigidos(apar: dict, m: dict, nome: str, epi: bool) -> list:
 def _rigido(obj, osso: str, cor, nome_mat: str, emissao: bool = False) -> None:
     vg = obj.vertex_groups.new(name=osso)
     vg.add(list(range(len(obj.data.vertices))), 1.0, "REPLACE")
+    # cor de vértice clara com desgaste leve: ao juntar com as roupas (que têm "Col"), uma peça sem o
+    # atributo recebe preto e perde a cor do material
+    attr = obj.data.color_attributes.new("Col", "BYTE_COLOR", "CORNER")
+    for poly in obj.data.polygons:
+        for li in poly.loop_indices:
+            co = obj.data.vertices[obj.data.loops[li].vertex_index].co
+            t = min(1.0, max(0.72, 0.88 + 0.1 * noise.fractal(co * 11, 0.6, 2.0, 3)))
+            attr.data[li].color = (*comum.lin((t, t, t)), 1.0)
     for p in obj.data.polygons:
         p.use_smooth = True
     if emissao:
@@ -810,7 +832,7 @@ def gerar(id_: str) -> str:
     olhos = criar_olhos(b, apar, id_)
     extras = criar_extras_rigidos(apar, m, id_, bool(epi))
     decimar(corpo, 0.42)
-    cabeca_pecas = ("_cabelo", "_lenco", "_capuz", "_turbante", "_gorro", "epi_mascara", "epi_visor", "epi_capacete")
+    cabeca_pecas = ("_cabelo", "_lenco", "_capuz", "_turbante", "_gorro", "epi_mascara", "epi_visor", "epi_capacete", "epi_arnes")
     for o in roupas + epi:
         decimar(o, 0.6 if o.name.endswith(cabeca_pecas) else 0.35)
     todos = [corpo, olhos] + roupas + epi + extras
