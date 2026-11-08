@@ -49,6 +49,9 @@ POCO = (-47.0, -33.0, -31.0, -17.0)        # interior do poço vertical
 FUNDO = YG - 20.0                          # fundo do poço (-25)
 BURACO = (-43.0, -37.0, -27.0, -21.0)      # grade sobre o poço profundo
 
+# Boca do Duto Norte na parede norte (x0, x1, altura); o duto em si fica em subsolo_duto.py
+BOCA_DUTO = (-4.0, 4.0, 5.5)
+
 # Passarelas e Capela
 YP = 10.0
 P2 = (-44.0, 44.0, 22.0, 25.0)             # passarela norte
@@ -234,7 +237,10 @@ def caverna() -> Area:
     laje(a, CX0, CX1, CZ0, CZ1, -LAJE, 0.0, FUROS_PISO, "chao")
     B(a, CX0 - 2, CX0, -LAJE, TETO, CZ0 - 2, CZ1 + 2, "rocha")
     B(a, CX1, CX1 + 2, -LAJE, TETO, CZ0 - 2, CZ1 + 2, "rocha")
-    B(a, CX0, CX1, -LAJE, TETO, CZ1, CZ1 + 2, "rocha")
+    # parede norte com a boca do Duto Norte (x de -4 a 4, 5,5 m de altura; ver subsolo_duto.py)
+    B(a, CX0, BOCA_DUTO[0], -LAJE, TETO, CZ1, CZ1 + 2, "rocha")
+    B(a, BOCA_DUTO[1], CX1, -LAJE, TETO, CZ1, CZ1 + 2, "rocha")
+    B(a, BOCA_DUTO[0], BOCA_DUTO[1], BOCA_DUTO[2], TETO, CZ1, CZ1 + 2, "rocha")
     # parede sul com a boca do Portão da Caravana (16 m de largura, 14 m de altura)
     B(a, CX0, -8.0, -LAJE, TETO, CZ0 - 2, CZ0, "rocha")
     B(a, 8.0, CX1, -LAJE, TETO, CZ0 - 2, CZ0, "rocha")
@@ -257,6 +263,8 @@ def caverna() -> Area:
         q = dict(x=r3(cx), y=r3(y0 + h / 2), z=r3(cz), w=r3(w), h=r3(h), d=r3(d), mat="rocha", ry=R.randint(0, 89))
         if y0 > 0:
             q["semColisao"] = True
+        if lado == "n" and abs(cx) - math.hypot(w, d) / 2 < BOCA_DUTO[1] + 1.5 and y0 < BOCA_DUTO[2] + 1.0:
+            continue  # não tapa a boca do Duto Norte
         a.d["solidos"].append(q)
     for _ in range(34):
         cx, cz = R.uniform(CX0 + 3, CX1 - 3), R.uniform(CZ0 + 3, CZ1 - 3)
@@ -317,6 +325,18 @@ def caverna() -> Area:
             for i in range(7):
                 px = x0 + 1.2 + i * 1.5
                 V(a, px - 0.35, px + 0.35, y - 0.9, y, z0 - 0.02, z0 + 0.02, R.choice(lonas + ["pano", "pano"]))
+    # boca do Duto Norte: pórtico de concreto, lâmpadas de serviço e trilhos desde a praça
+    bx0, bx1, by = BOCA_DUTO
+    B(a, bx0 - 0.8, bx0, 0, by + 0.8, CZ1 - 0.6, CZ1, "concreto")
+    B(a, bx1, bx1 + 0.8, 0, by + 0.8, CZ1 - 0.6, CZ1, "concreto")
+    B(a, bx0 - 0.8, bx1 + 0.8, by, by + 0.8, CZ1 - 0.6, CZ1, "concreto")
+    V(a, -2.0, 2.0, by + 0.15, by + 0.6, CZ1 - 0.65, CZ1 - 0.6, "ferrugem")      # placa
+    for tx in (bx0 - 0.4, bx1 + 0.4):
+        V(a, tx - 0.15, tx + 0.15, by - 1.0, by - 0.6, CZ1 - 0.75, CZ1 - 0.6, "luz_ambar")
+    for i in range(10):  # faixas de aviso no pórtico
+        V(a, bx0 - 0.8, bx0 - 0.75, 0.3 + i * 0.6, 0.6 + i * 0.6, CZ1 - 0.6, CZ1, "lona_amarela" if i % 2 else "escuro")
+    for tx in (-1.72, -0.28):
+        V(a, tx - 0.04, tx + 0.04, 0.0, 0.08, 20.0, CZ1, "metal")
     # trilho do Portão até a praça
     for tx in (-0.8, 0.8):
         V(a, tx - 0.06, tx + 0.06, 0.0, 0.05, CZ0 - 12, -20.0, "metal")

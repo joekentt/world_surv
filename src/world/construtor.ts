@@ -38,6 +38,8 @@ const CORES_BLOQUEIO: Record<string, [number, number, number]> = {
   madeira: [0.42, 0.28, 0.16], chapa_azul: [0.28, 0.36, 0.42], chapa_verde: [0.3, 0.4, 0.32], chapa_clara: [0.58, 0.55, 0.48],
   lona_vermelha: [0.62, 0.18, 0.12], lona_azul: [0.15, 0.3, 0.55], lona_amarela: [0.75, 0.58, 0.18], lona_verde: [0.22, 0.45, 0.25],
   pano: [0.7, 0.66, 0.58], grade: [0.16, 0.16, 0.17], escuro: [0.07, 0.065, 0.06],
+  // superfícies úmidas e escuras do Duto Norte (a lanterna do capacete bate de perto sem estourar)
+  rocha_escura: [0.19, 0.17, 0.15], madeira_escura: [0.17, 0.11, 0.07], concreto_escuro: [0.21, 0.2, 0.18],
 };
 
 /** Materiais que emitem luz própria (lâmpadas, vitrais, facho), sem depender das luzes da cena. */
@@ -46,6 +48,8 @@ const EMISSIVOS: Record<string, { cor: [number, number, number]; alfa?: number }
   luz_fraca: { cor: [0.55, 0.32, 0.16] }, janela: { cor: [0.85, 0.5, 0.2] },
   vitral_azul: { cor: [0.2, 0.45, 1.0] }, vitral_vermelho: { cor: [1.0, 0.25, 0.15] }, vitral_verde: { cor: [0.3, 0.9, 0.4] },
   facho: { cor: [1.0, 0.86, 0.55], alfa: 0.16 },
+  // Duto Norte e Caverna da Fenda: musgo luminoso e água escorrendo (brilho fraco no escuro)
+  musgo: { cor: [0.1, 0.46, 0.3] }, musgo_fraco: { cor: [0.035, 0.17, 0.12] }, agua: { cor: [0.08, 0.15, 0.18] },
 };
 
 function materialBloqueio(cena: Scene, nome: string): StandardMaterial {
@@ -240,6 +244,9 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
     luz.parent = raiz;
     (luz as unknown as { _base: number })._base = l.i;
     (luz as unknown as { _piscar: boolean })._piscar = !!l.piscar;
+    // nasce apagada: a Iluminacao acende só as mais próximas (acesas todas de uma vez, os shaders
+    // recompilados estouram o limite de blocos de uniformes do WebGL2)
+    luz.setEnabled(false);
     luzes.push(luz);
   }
   void maxLuzes;

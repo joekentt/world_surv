@@ -11,6 +11,8 @@ export const GRADES: Record<string, Grade> = {
   galerias: { exposicao: 2.1, contraste: 1.1, vinheta: 2.8, vinhetaCor: [0.0, 0.05, 0.05], bloom: 0.6, grao: 14, saturacao: -10 },
   capela: { exposicao: 2.0, contraste: 1.08, vinheta: 2.6, vinhetaCor: [0.06, 0.03, 0.0], bloom: 0.9, grao: 8, saturacao: 15 },
   duto: { exposicao: 2.8, contraste: 1.1, vinheta: 3.6, vinhetaCor: [0, 0, 0], bloom: 0.8, grao: 18, saturacao: -15 },
+  fenda: { exposicao: 2.3, contraste: 1.1, vinheta: 2.8, vinhetaCor: [0, 0.02, 0.02], bloom: 0.55, grao: 14, saturacao: -5 },
+  contrabandistas: { exposicao: 1.5, contraste: 1.12, vinheta: 3.4, vinhetaCor: [0.02, 0.01, 0], bloom: 0.7, grao: 18, saturacao: -5 },
   boca: { exposicao: 1.9, contraste: 1.08, vinheta: 2.6, vinhetaCor: [0.1, 0.0, 0.0], bloom: 0.75, grao: 12, saturacao: 5 },
   superficie: { exposicao: 1.0, contraste: 1.08, vinheta: 1.2, vinhetaCor: [0.3, 0.25, 0.15], bloom: 0.25, grao: 10, saturacao: -25 },
   superficie_noite: { exposicao: 1.9, contraste: 1.1, vinheta: 2.8, vinhetaCor: [0, 0, 0.05], bloom: 1.0, grao: 16, saturacao: -10 },

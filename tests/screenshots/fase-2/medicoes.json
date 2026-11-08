@@ -12,7 +12,7 @@
     "escadaDeMao_chaoYMin": 0,
     "escadaDeMao_topo": {
       "y": 10,
-      "x": 51.45,
+      "x": 51.49,
       "z": -5
     },
     "passarelaLeste": {
@@ -25,7 +25,7 @@
     },
     "escadaria": {
       "yFinal": 10,
-      "tempo_s": 8.44
+      "tempo_s": 8.48
     },
     "passarelaNorte": {
       "yMin": 10,
@@ -62,7 +62,7 @@
         "vila_cisterna",
         "vila_praca"
       ],
-      "tempo_s": 18.45
+      "tempo_s": 18.36
     },
     "escadas": [
       {
@@ -75,12 +75,12 @@
         "desceu": 2,
         "y": -15,
         "x": -37.43,
-        "z": -28.68
+        "z": -28.65
       },
       {
         "desceu": 3,
         "y": -20,
-        "x": -44.65,
+        "x": -44.69,
         "z": -26.57
       },
       {
@@ -92,20 +92,20 @@
       {
         "subiu": 1,
         "y": -20,
-        "x": -44.43,
-        "z": -19.02
+        "x": -44.46,
+        "z": -19
       },
       {
         "subiu": 2,
         "y": -15,
-        "x": -45,
-        "z": -28.5
+        "x": -45.01,
+        "z": -28.42
       },
       {
         "subiu": 3,
         "y": -10,
-        "x": -35.55,
-        "z": -29.02
+        "x": -35.58,
+        "z": -29.01
       },
       {
         "subiu": 4,
@@ -115,6 +115,84 @@
       }
     ],
     "yMinimoNoPercurso": -25,
+    "errosConsole": 0
+  },
+  "duto_a_vila_ate_o_fim": {
+    "boca_e_rampa1": {
+      "areas": [
+        "vila_praca",
+        "vila_cisterna",
+        "duto_tunel"
+      ],
+      "yFinal": -5,
+      "tempo_s": 17.28
+    },
+    "desvioDesabamento": {
+      "yNaPlataforma": -4.1,
+      "yDepois": -5
+    },
+    "rampa2": {
+      "yFinal": -10,
+      "tempo_s": 9.64
+    },
+    "fimDoDuto": {
+      "x": 138.25,
+      "y": -25,
+      "z": 205,
+      "area": "duto_tunel"
+    },
+    "yMinimoNoPercurso": -25,
+    "errosConsole": 0
+  },
+  "duto_b_fenda": {
+    "passagemA": {
+      "areas": [
+        "duto_tunel",
+        "duto_fenda"
+      ]
+    },
+    "ponte": {
+      "yMeio": -5.7,
+      "areaMeio": "duto_fenda",
+      "yMinimo": -5.7,
+      "yFinal": -5,
+      "tempo_s": 5.67
+    },
+    "mirante": {
+      "y": -1,
+      "x": 59.82,
+      "z": 137.24
+    },
+    "voltaPassagemB": {
+      "areas": [
+        "duto_fenda",
+        "duto_tunel"
+      ],
+      "yFinal": -5
+    },
+    "errosConsole": 0
+  },
+  "duto_c_galeria": {
+    "trecho1": {
+      "areas": [
+        "duto_tunel",
+        "duto_contrabandistas"
+      ],
+      "yFinal": -8.5
+    },
+    "baseEscada": {
+      "x": 0,
+      "y": -7,
+      "z": 318.45,
+      "tempo_s": 9.66
+    },
+    "topoEscada": {
+      "y": 1,
+      "x": 0,
+      "z": 321.07,
+      "area": "duto_contrabandistas"
+    },
+    "distanciaAteOAlcapao": 2.6,
     "errosConsole": 0
   }
 }

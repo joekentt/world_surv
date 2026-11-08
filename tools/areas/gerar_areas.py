@@ -505,3 +505,7 @@ if __name__ == "__main__":
     import subsolo_vila
     for area in subsolo_vila.todas():
         area.salvar()
+    # Duto Norte, Caverna da Fenda e Galeria dos Contrabandistas (revisão 2, mundo "subsolo")
+    import subsolo_duto
+    for area in subsolo_duto.todas():
+        area.salvar()
