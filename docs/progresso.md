@@ -95,3 +95,8 @@ Os seis testes da seção 3.4 passam. **Falta a aprovação do usuário da sensa
 
 - Vila em três níveis (79ee07b): caverna x −70..70, z −45..45, teto 25 m; praça 50 × 40; passarelas a 8, 10 e 12 m; Capela a 10 m; Galerias a −5 m com poço até −25 m e grade sobre o poço profundo. Blocos visíveis unidos por material; blocos só visuais (`semColisao`); luzes escolhidas pelo z do jogador. Teste `fase2_vila`: 2 passam (Capela a 10,0 m; poço de 20 m e volta à praça). Revisão: aprovada para blocos.
 - Animações (merge 3b1e707): IK nas pernas, rolagem do pé, parado com respiração e troca de apoio, contra-rotação do tronco, atraso de antebraço e mão, voo na corrida; pesos de locomoção por velocidade suavizada. Fase 0 e fase 1: 11 passam. Traje EPI devolvido para refazer.
+
+### 2026-11-08: fase 2, tarefas 3 e 8 concluídas
+
+- Duto Norte (4b33485): túnel em L de 300 m descendo a −25 m, desvios por desabamento, vagonete e vagão; Caverna da Fenda com ponte de 22 m sobre abismo até −45 m (fundo só visual) e mirante; Galeria dos Contrabandistas até a escada da Escotilha Oeste. Luzes nascem apagadas e o limite por material é reaplicado (o carregador glTF o elevava e estourava o WebGL2). Testes: `fase2_duto` 3 de 3, `fase2_vila` 2 de 2, `fase1` 9 de 9.
+- Personagens (merges b05c03a, dd3f6d9): EPI com macacão de volume, botas, luvas, máscara com cartuchos e arnês limpo; NPCs com roupas folgadas, segunda camada, acessório de cabeça, remendos e botas altas; 11,5 a 13,3 mil triângulos por NPC, protagonista 26,9 mil. Fase 0 e fase 1 no branch integrado: 11 passam.
