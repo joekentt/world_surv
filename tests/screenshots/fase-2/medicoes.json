@@ -8,7 +8,7 @@
     "escadaDeMao_chaoYMin": 0,
     "escadaDeMao_topo": {
       "y": 10,
-      "x": 51.49,
+      "x": 51.45,
       "z": -5
     },
     "passarelaLeste": {
@@ -21,7 +21,7 @@
     },
     "escadaria": {
       "yFinal": 10,
-      "tempo_s": 8.48
+      "tempo_s": 8.46
     },
     "passarelaNorte": {
       "yMin": 10,
@@ -58,7 +58,7 @@
         "vila_cisterna",
         "vila_praca"
       ],
-      "tempo_s": 18.36
+      "tempo_s": 18.33
     },
     "escadas": [
       {
@@ -71,43 +71,43 @@
         "desceu": 2,
         "y": -15,
         "x": -37.43,
-        "z": -28.65
+        "z": -28.68
       },
       {
         "desceu": 3,
         "y": -20,
-        "x": -44.69,
+        "x": -44.61,
         "z": -26.57
       },
       {
         "desceu": 4,
         "y": -25,
         "x": -42.57,
-        "z": -19.32
+        "z": -19.28
       },
       {
         "subiu": 1,
         "y": -20,
-        "x": -44.46,
-        "z": -19
+        "x": -44.48,
+        "z": -19.06
       },
       {
         "subiu": 2,
         "y": -15,
-        "x": -45.01,
+        "x": -45,
         "z": -28.42
       },
       {
         "subiu": 3,
         "y": -10,
-        "x": -35.58,
-        "z": -29.01
+        "x": -35.61,
+        "z": -29
       },
       {
         "subiu": 4,
         "y": -5,
         "x": -35,
-        "z": -19.54
+        "z": -19.5
       }
     ],
     "yMinimoNoPercurso": -25,
@@ -121,7 +121,7 @@
         "duto_tunel"
       ],
       "yFinal": -5,
-      "tempo_s": 17.35
+      "tempo_s": 17.42
     },
     "desvioDesabamento": {
       "yNaPlataforma": -4.1,
@@ -129,15 +129,15 @@
     },
     "rampa2": {
       "yFinal": -10,
-      "tempo_s": 9.64
+      "tempo_s": 9.75
     },
     "fimDoDuto": {
-      "x": 138.17,
+      "x": 138.15,
       "y": -25,
       "z": 205,
       "area": "duto_tunel"
     },
-    "yMinimoNoPercurso": -25.01,
+    "yMinimoNoPercurso": -25,
     "errosConsole": 0
   },
   "duto_b_fenda": {
@@ -152,12 +152,12 @@
       "areaMeio": "duto_fenda",
       "yMinimo": -5.7,
       "yFinal": -5,
-      "tempo_s": 5.64
+      "tempo_s": 5.72
     },
     "mirante": {
       "y": -1,
-      "x": 59.81,
-      "z": 137.26
+      "x": 59.85,
+      "z": 137.2
     },
     "voltaPassagemB": {
       "areas": [
@@ -179,13 +179,13 @@
     "baseEscada": {
       "x": 0,
       "y": -7,
-      "z": 318.49,
-      "tempo_s": 9.59
+      "z": 318.47,
+      "tempo_s": 9.62
     },
     "topoEscada": {
       "y": 1,
       "x": 0,
-      "z": 321,
+      "z": 320.96,
       "area": "duto_contrabandistas"
     },
     "distanciaAteOAlcapao": 2.6,
@@ -200,14 +200,14 @@
         0
       ],
       "area": "boca_estacao",
-      "tempo_s": 18.17
+      "tempo_s": 18.26
     },
     "desnivel_m": 25,
     "ateEclusa": {
       "x": 178,
       "y": 0,
-      "z": 218.8,
-      "tempo_s": 9.51
+      "z": 218.76,
+      "tempo_s": 9.5
     },
     "errosConsole": 0
   },
@@ -219,7 +219,7 @@
       ],
       "yMinimo": -25,
       "yFinal": -25,
-      "tempo_s": 4.85
+      "tempo_s": 4.87
     },
     "escadaRolante": {
       "yFinal": -19,
@@ -227,13 +227,13 @@
       "area": "estacao_aurora"
     },
     "pontoDeDescanso": {
-      "x": 189.9,
+      "x": 189.91,
       "y": -19,
-      "z": 208.08
+      "z": 208.1
     },
     "descidaAtePoco": {
       "yFinal": -25,
-      "tempo_s": 29.1
+      "tempo_s": 29.08
     },
     "errosConsole": 0
   },
@@ -244,7 +244,7 @@
       "x": 0,
       "y": 0.06,
       "z": 8,
-      "tempo_eclusa_s": 1.7,
+      "tempo_eclusa_s": 1.78,
       "areasCarregadas": [
         "superficie_aberta",
         "superficie_ruinas",
@@ -257,16 +257,16 @@
       "x": 178,
       "y": 0,
       "z": 217.6,
-      "tempo_eclusa_s": 2.17
+      "tempo_eclusa_s": 1.72
     },
     "errosConsole": 0
   },
   "superficie_fps": {
-    "boca": 8.92,
-    "correndoRuinas": 8.96,
-    "salaTeste": 9.41,
-    "razaoBocaSala": 0.95,
-    "malhasAtivasRuinas": 69
+    "boca": 7,
+    "correndoRuinas": 7.7,
+    "salaTeste": 9.53,
+    "razaoBocaSala": 0.73,
+    "malhasAtivasRuinas": 148
   },
   "superficie_abrigos": [
     {
@@ -288,9 +288,9 @@
   ],
   "superficie_marco": {
     "rotaReferencia_m": 252.47,
-    "percorrido_m": 251.3,
-    "daBocaAoMarco_m": 265.3,
-    "tempoIda_s": 37.69,
+    "percorrido_m": 251.31,
+    "daBocaAoMarco_m": 265.31,
+    "tempoIda_s": 37.82,
     "idaEVoltaCorrendo_s": 75.8,
     "areas": [
       "superficie_boca",
@@ -311,21 +311,21 @@
     },
     "pontedesabada": {
       "yMin": -4.46,
-      "percorrido_m": 61.47
+      "percorrido_m": 61.52
     }
   },
   "superficie_antena": {
     "rotaReferencia_m": 489.41,
-    "percorrido_m": 496.95,
-    "daBocaAAntena_m": 515,
-    "tempoIda_s": 80.51,
-    "idaEVoltaCorrendo_s": 147.14,
+    "percorrido_m": 496.96,
+    "daBocaAAntena_m": 515.01,
+    "tempoIda_s": 80.47,
+    "idaEVoltaCorrendo_s": 147.15,
     "yTopo": 27.33,
     "yPlataforma": 37.33
   },
   "superficie_viaduto": {
-    "percorrido_m": 219.23,
-    "tempo_s": 35.03,
+    "percorrido_m": 219.13,
+    "tempo_s": 34.99,
     "areas": [
       "superficie_viaduto",
       "superficie_aberta",
@@ -336,7 +336,7 @@
     "convencao": "ida da entrada da eclusa (0, 8) ao destino; volta até o ponto de uso da saída aberta mais próxima; tempo = distância no plano / 7 m/s; tempoDaOrigem_s soma os trechos retos até os centros da Boca e da saída",
     "navmesh": {
       "mundo": "superficie_aberta",
-      "ms": 3461,
+      "ms": 3882,
       "triangulos": 103446,
       "tiles": 440,
       "poligonos": 4942,
@@ -663,12 +663,14 @@
       {
         "nome": "galerias -> praça",
         "navmesh_m": 38.28,
-        "percorrido_m": 37.88,
-        "tempo_s": 7.74,
-        "yMin": -5.23,
-        "salto": 0.95,
+        "percorrido_m": 37.87,
+        "tempo_s": 7.7,
+        "yMin": -5.22,
+        "salto": 0.73,
         "escadas": 0,
         "areas": [
+          "vila_galerias",
+          "vila_cisterna",
           "vila_galerias",
           "vila_cisterna",
           "vila_praca"
@@ -679,8 +681,8 @@
       {
         "nome": "praça -> Duto Norte",
         "navmesh_m": 106.03,
-        "percorrido_m": 105.52,
-        "tempo_s": 16.08,
+        "percorrido_m": 105.49,
+        "tempo_s": 16.06,
         "yMin": -5,
         "salto": 0.35,
         "escadas": 0,
@@ -694,11 +696,11 @@
       },
       {
         "nome": "Duto Norte -> Estação Aurora",
-        "navmesh_m": 249.52,
+        "navmesh_m": 249.54,
         "percorrido_m": 249.28,
-        "tempo_s": 40.42,
-        "yMin": -25.02,
-        "salto": 0.51,
+        "tempo_s": 40.3,
+        "yMin": -25.01,
+        "salto": 0.47,
         "escadas": 0,
         "areas": [
           "duto_tunel",
@@ -709,9 +711,9 @@
       },
       {
         "nome": "Estação -> poço -> eclusa",
-        "navmesh_m": 51.51,
-        "percorrido_m": 51.16,
-        "tempo_s": 36.99,
+        "navmesh_m": 51.56,
+        "percorrido_m": 51.37,
+        "tempo_s": 37.01,
         "yMin": -25,
         "salto": 0.35,
         "escadas": 4,
@@ -725,8 +727,8 @@
       {
         "nome": "Boca -> Antena",
         "navmesh_m": 494.79,
-        "percorrido_m": 494.22,
-        "tempo_s": 74.42,
+        "percorrido_m": 494.29,
+        "tempo_s": 74.41,
         "yMin": -0.84,
         "salto": 0.42,
         "escadas": 0,
@@ -743,10 +745,10 @@
         "mundoFim": "superficie_aberta"
       }
     ],
-    "tempoDeJogo_s": 175.65,
-    "tempoReal_s": 822,
-    "fpsSuperficieCorrendo": 8.57,
-    "fpsAltoDaAntena": 5.12,
+    "tempoDeJogo_s": 175.48,
+    "tempoReal_s": 634,
+    "fpsSuperficieCorrendo": 7.55,
+    "fpsAltoDaAntena": 7.2,
     "yPlataformaAntena": 37.33,
     "teleportes": "só para o screenshot das passarelas (ida e volta ao mesmo ponto da praça)"
   }

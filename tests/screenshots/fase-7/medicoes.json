@@ -1,12 +1,12 @@
 {
   "build_webgpu": {
     "ativo": "webgpu",
-    "fps": 1.1,
+    "fps": 0.9,
     "requisicoesExternas": 0
   },
   "build_webgl2": {
     "ativo": "webgl2",
-    "fps": 2.9,
+    "fps": 2.5,
     "requisicoesExternas": 0
   }
 }
