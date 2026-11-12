@@ -15,6 +15,18 @@ export interface Coletavel { id: string; item: string; x: number; y: number; qtd
 export interface Interativo { id: string; tipo: string; x: number; y: number; z?: number; rotulo?: string; npc?: string; [k: string]: unknown; }
 export interface ZonaPerigo { x0: number; x1: number; tipo: "poeira" | "radiacao"; intensidade: number; }
 
+/** Seta do letreiro, relativa a quem lê a face. */
+export type SetaLetreiro = "esquerda" | "direita" | "frente" | "sobe" | "desce";
+export type CorNeon = "ciano" | "magenta" | "ambar" | "verde";
+/** Face de um letreiro: `texto` e `sub` são chaves de content/textos/letreiros.json. */
+export interface FaceLetreiro { texto: string; sub?: string; seta?: SetaLetreiro; cor?: CorNeon }
+/**
+ * Letreiro de neon da sinalização de rota (tools/areas/sinalizacao.py, montado em src/world/letreiros.ts).
+ * (x, y, z) é o centro da face; `r` (graus) é para onde a face legível aponta (0 = +Z); `verso` é a face de trás;
+ * `suspenso` é a altura até onde sobem os dois cabos que o penduram.
+ */
+export interface LetreiroDef extends FaceLetreiro { id: string; x: number; y: number; z: number; r: number; largura: number; altura: number; cor: CorNeon; verso?: FaceLetreiro; suspenso?: number }
+
 export type Vec3 = [number, number, number];
 export interface Ponto3 { x: number; y: number; z: number }
 
@@ -65,4 +77,6 @@ export interface AreaDef {
   limiteJogavel?: { x0: number; x1: number; z0: number; z1: number };
   /** Interiores que servem de abrigo na superfície (dreno do filtro reduzido, fase 3). */
   abrigos?: { id: string; min: Vec3; max: Vec3 }[];
+  /** Letreiros de neon da sinalização de rota (revisão 2). */
+  letreiros?: LetreiroDef[];
 }

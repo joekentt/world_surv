@@ -11,7 +11,14 @@
  "pecas": [],
  "fundo": [],
  "saidas": [],
- "entradas": {},
+ "entradas": {
+  "inicio": {
+   "x": 2.5,
+   "y": 0.0,
+   "z": -19.0,
+   "yaw": -0.12
+  }
+ },
  "luzes": [],
  "coletaveis": [],
  "interativos": [],

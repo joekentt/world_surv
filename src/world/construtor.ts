@@ -4,6 +4,7 @@ import {
 } from "@babylonjs/core";
 import type { Carregador } from "../core/carregador";
 import { CFG } from "../config";
+import { construirLetreiros } from "./letreiros";
 import type { AreaDef, Peca, Solido, Terreno } from "./tipos";
 
 /** Camada de colisão de sólidos que barram o personagem mas não a câmera (paredes invisíveis). */
@@ -59,6 +60,9 @@ const EMISSIVOS: Record<string, { cor: [number, number, number]; alfa?: number }
   luz_vermelha: { cor: [1.0, 0.12, 0.06] },
   // Boca do Poço: luz vermelha de alerta e névoa da descontaminação
   luz_alerta: { cor: [1.0, 0.08, 0.04] }, nevoa: { cor: [0.32, 0.13, 0.12], alfa: 0.045 },
+  // faixas de luz-guia da rota (tools/areas/sinalizacao.py): magenta na vila, ciano no duto, âmbar na estação e no poço
+  neon_ciano: { cor: [0.12, 0.85, 1.0] }, neon_magenta: { cor: [0.85, 0.12, 0.6] }, neon_ambar: { cor: [1.0, 0.56, 0.1] },
+  neon_verde: { cor: [0.55, 1.0, 0.12] },
 };
 
 function materialBloqueio(cena: Scene, nome: string): StandardMaterial {
@@ -373,6 +377,10 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
     }
   }
 
+  // letreiros de neon da sinalização de rota (emissivos, sem luz real)
+  const letreiros = def.letreiros?.length ? construirLetreiros(cena, def.letreiros, raiz, def.id, !!def.superficie) : null;
+  if (letreiros) malhas.push(...letreiros.malhas);
+
   const maxLuzes = op.qualidade === "alta" ? 8 : 4;
   for (const [i, l] of (def.luzes ?? []).entries()) {
     const pos = new Vector3(l.x, l.y, l.z ?? -1);
@@ -399,6 +407,7 @@ export async function construirArea(cena: Scene, carregador: Carregador, def: Ar
       for (const c of corpos) c.dispose();
       for (const l of luzes) l.dispose();
       raiz.dispose(false, false);
+      letreiros?.liberar();
     },
   };
 }

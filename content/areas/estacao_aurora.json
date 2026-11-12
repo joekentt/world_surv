@@ -8228,6 +8228,236 @@
    "d": 1.2,
    "mat": "lona_amarela",
    "semColisao": true
+  },
+  {
+   "x": 140.799,
+   "y": -24.985,
+   "z": 204.667,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 123.69
+  },
+  {
+   "x": 142.463,
+   "y": -24.985,
+   "z": 203.558,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 123.69
+  },
+  {
+   "x": 144.127,
+   "y": -24.985,
+   "z": 202.448,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 123.69
+  },
+  {
+   "x": 145.646,
+   "y": -24.985,
+   "z": 201.436,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 0.851,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 123.69
+  },
+  {
+   "x": 146.6,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 148.6,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 150.6,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 152.6,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 154.6,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 156.6,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 158.6,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 160.6,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 162.6,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 164.6,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 166.6,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 168.6,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 170.6,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 172.6,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 174.6,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 1.2,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 176.425,
+   "y": -24.985,
+   "z": 201.2,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 0.85,
+   "mat": "neon_ambar",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 176.85,
+   "y": -24.985,
+   "z": 201.575,
+   "w": 0.07,
+   "h": 0.025,
+   "d": 0.75,
+   "mat": "neon_ambar",
+   "semColisao": true
   }
  ],
  "escadas": [],
@@ -10221,5 +10451,33 @@
   "x": 178.0,
   "y": -25.0,
   "z": 205.0
- }
+ },
+ "letreiros": [
+  {
+   "id": "estacao_entrada",
+   "texto": "boca_do_poco",
+   "x": 156.0,
+   "y": -21.0,
+   "z": 202.0,
+   "r": 270,
+   "largura": 4.8,
+   "altura": 1.0,
+   "cor": "ambar",
+   "seta": "frente",
+   "sub": "superficie",
+   "suspenso": -13.0
+  },
+  {
+   "id": "estacao_porta_poco",
+   "texto": "superficie",
+   "x": 176.85,
+   "y": -21.85,
+   "z": 201.93,
+   "r": 180,
+   "largura": 3.0,
+   "altura": 0.7,
+   "cor": "ambar",
+   "seta": "sobe"
+  }
+ ]
 }

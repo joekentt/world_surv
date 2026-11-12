@@ -518,6 +518,36 @@
    "d": 1.2,
    "mat": "lona_amarela",
    "semColisao": true
+  },
+  {
+   "x": -7.0,
+   "y": 4.15,
+   "z": 13.7,
+   "w": 0.24,
+   "h": 6.5,
+   "d": 0.24,
+   "mat": "ferro",
+   "semColisao": true
+  },
+  {
+   "x": 7.0,
+   "y": 4.15,
+   "z": 13.7,
+   "w": 0.24,
+   "h": 6.5,
+   "d": 0.24,
+   "mat": "ferro",
+   "semColisao": true
+  },
+  {
+   "x": 0.0,
+   "y": 7.325,
+   "z": 13.7,
+   "w": 14.24,
+   "h": 0.25,
+   "d": 0.24,
+   "mat": "ferro",
+   "semColisao": true
   }
  ],
  "escadas": [],
@@ -569,5 +599,34 @@
    140.0,
    40.0
   ]
- }
+ },
+ "letreiros": [
+  {
+   "id": "sup_eclusa_porta",
+   "texto": "eclusa",
+   "x": 0.0,
+   "y": 4.1,
+   "z": 5.12,
+   "r": 0,
+   "largura": 4.4,
+   "altura": 0.7,
+   "cor": "ambar",
+   "seta": "desce",
+   "sub": "vila"
+  },
+  {
+   "id": "sup_portico",
+   "texto": "eclusa",
+   "x": 0.0,
+   "y": 6.35,
+   "z": 13.7,
+   "r": 0,
+   "largura": 5.4,
+   "altura": 1.3,
+   "cor": "ambar",
+   "seta": "frente",
+   "sub": "vila",
+   "suspenso": 7.2
+  }
+ ]
 }

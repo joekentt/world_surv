@@ -8,7 +8,7 @@
     "escadaDeMao_chaoYMin": 0,
     "escadaDeMao_topo": {
       "y": 10,
-      "x": 51.45,
+      "x": 51.56,
       "z": -5
     },
     "passarelaLeste": {
@@ -21,7 +21,7 @@
     },
     "escadaria": {
       "yFinal": 10,
-      "tempo_s": 8.46
+      "tempo_s": 8.44
     },
     "passarelaNorte": {
       "yMin": 10,
@@ -56,9 +56,11 @@
       "areas": [
         "vila_galerias",
         "vila_cisterna",
+        "vila_galerias",
+        "vila_cisterna",
         "vila_praca"
       ],
-      "tempo_s": 18.33
+      "tempo_s": 18.46
     },
     "escadas": [
       {
@@ -71,12 +73,12 @@
         "desceu": 2,
         "y": -15,
         "x": -37.43,
-        "z": -28.68
+        "z": -28.65
       },
       {
         "desceu": 3,
         "y": -20,
-        "x": -44.61,
+        "x": -44.58,
         "z": -26.57
       },
       {
@@ -88,26 +90,26 @@
       {
         "subiu": 1,
         "y": -20,
-        "x": -44.48,
-        "z": -19.06
+        "x": -44.46,
+        "z": -19
       },
       {
         "subiu": 2,
         "y": -15,
         "x": -45,
-        "z": -28.42
+        "z": -28.46
       },
       {
         "subiu": 3,
         "y": -10,
-        "x": -35.61,
-        "z": -29
+        "x": -35.48,
+        "z": -29.02
       },
       {
         "subiu": 4,
         "y": -5,
         "x": -35,
-        "z": -19.5
+        "z": -19.54
       }
     ],
     "yMinimoNoPercurso": -25,
@@ -200,14 +202,14 @@
         0
       ],
       "area": "boca_estacao",
-      "tempo_s": 18.26
+      "tempo_s": 18.05
     },
     "desnivel_m": 25,
     "ateEclusa": {
       "x": 178,
       "y": 0,
-      "z": 218.76,
-      "tempo_s": 9.5
+      "z": 218.84,
+      "tempo_s": 9.52
     },
     "errosConsole": 0
   },
@@ -219,21 +221,21 @@
       ],
       "yMinimo": -25,
       "yFinal": -25,
-      "tempo_s": 4.87
+      "tempo_s": 4.81
     },
     "escadaRolante": {
       "yFinal": -19,
-      "tempo_s": 7.16,
+      "tempo_s": 7.14,
       "area": "estacao_aurora"
     },
     "pontoDeDescanso": {
-      "x": 189.91,
+      "x": 189.89,
       "y": -19,
-      "z": 208.1
+      "z": 208.07
     },
     "descidaAtePoco": {
       "yFinal": -25,
-      "tempo_s": 29.08
+      "tempo_s": 28.99
     },
     "errosConsole": 0
   },
@@ -244,7 +246,7 @@
       "x": 0,
       "y": 0.06,
       "z": 8,
-      "tempo_eclusa_s": 1.78,
+      "tempo_eclusa_s": 2.1,
       "areasCarregadas": [
         "superficie_aberta",
         "superficie_ruinas",
@@ -257,7 +259,7 @@
       "x": 178,
       "y": 0,
       "z": 217.6,
-      "tempo_eclusa_s": 1.72
+      "tempo_eclusa_s": 2.24
     },
     "errosConsole": 0
   },
@@ -751,5 +753,30 @@
     "fpsAltoDaAntena": 7.2,
     "yPlataformaAntena": 37.33,
     "teleportes": "só para o screenshot das passarelas (ida e volta ao mesmo ponto da praça)"
+  },
+  "rota_sinalizada": {
+    "inicio": {
+      "area": "vila_praca",
+      "mundo": "subsolo",
+      "x": 2.5,
+      "z": -19,
+      "yaw": -0.12,
+      "letreirosNaCena": 9
+    },
+    "rota": {
+      "comprimento_m": 444.82,
+      "horizontal_m": 418.25,
+      "escadas": 4,
+      "pontos": 31,
+      "letreiros": 18,
+      "letreirosDeRota": 12,
+      "maiorDistanciaAoLetreiro_m": 27.49,
+      "pontoMaisLonge": [
+        1.88,
+        -3.36,
+        118.67
+      ]
+    },
+    "errosConsole": 0
   }
 }

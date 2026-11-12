@@ -6209,6 +6209,135 @@
    "d": 1.2,
    "mat": "agua",
    "semColisao": true
+  },
+  {
+   "x": 3.96,
+   "y": 1.3,
+   "z": 51.6,
+   "w": 0.06,
+   "h": 0.06,
+   "d": 12.8,
+   "mat": "neon_ciano",
+   "semColisao": true
+  },
+  {
+   "x": 3.96,
+   "y": -1.2,
+   "z": 78.0,
+   "w": 0.06,
+   "h": 0.06,
+   "d": 40.311,
+   "mat": "neon_ciano",
+   "semColisao": true,
+   "rx": 7.13
+  },
+  {
+   "x": 3.96,
+   "y": -3.7,
+   "z": 99.75,
+   "w": 0.06,
+   "h": 0.06,
+   "d": 3.5,
+   "mat": "neon_ciano",
+   "semColisao": true
+  },
+  {
+   "x": 3.96,
+   "y": -3.7,
+   "z": 129.0,
+   "w": 0.06,
+   "h": 0.06,
+   "d": 49.0,
+   "mat": "neon_ciano",
+   "semColisao": true
+  },
+  {
+   "x": 3.96,
+   "y": -3.7,
+   "z": 158.25,
+   "w": 0.06,
+   "h": 0.06,
+   "d": 3.5,
+   "mat": "neon_ciano",
+   "semColisao": true
+  },
+  {
+   "x": 3.96,
+   "y": -6.2,
+   "z": 177.5,
+   "w": 0.06,
+   "h": 0.06,
+   "d": 35.355,
+   "mat": "neon_ciano",
+   "semColisao": true,
+   "rx": 8.13
+  },
+  {
+   "x": 3.96,
+   "y": -8.7,
+   "z": 198.0,
+   "w": 0.06,
+   "h": 0.06,
+   "d": 6.0,
+   "mat": "neon_ciano",
+   "semColisao": true
+  },
+  {
+   "x": 17.0,
+   "y": -8.7,
+   "z": 201.04,
+   "w": 0.06,
+   "h": 0.06,
+   "d": 26.0,
+   "mat": "neon_ciano",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 60.0,
+   "y": -13.7,
+   "z": 201.04,
+   "w": 0.06,
+   "h": 0.06,
+   "d": 60.828,
+   "mat": "neon_ciano",
+   "semColisao": true,
+   "ry": 90.0,
+   "rx": 9.46
+  },
+  {
+   "x": 104.0,
+   "y": -18.7,
+   "z": 201.04,
+   "w": 0.06,
+   "h": 0.06,
+   "d": 28.0,
+   "mat": "neon_ciano",
+   "semColisao": true,
+   "ry": 90.0
+  },
+  {
+   "x": 125.5,
+   "y": -21.2,
+   "z": 201.04,
+   "w": 0.06,
+   "h": 0.06,
+   "d": 15.811,
+   "mat": "neon_ciano",
+   "semColisao": true,
+   "ry": 90.0,
+   "rx": 18.43
+  },
+  {
+   "x": 136.4,
+   "y": -23.7,
+   "z": 201.04,
+   "w": 0.06,
+   "h": 0.06,
+   "d": 6.8,
+   "mat": "neon_ciano",
+   "semColisao": true,
+   "ry": 90.0
   }
  ],
  "escadas": [],
@@ -7566,6 +7695,111 @@
     -3.5,
     209.0
    ]
+  }
+ ],
+ "letreiros": [
+  {
+   "id": "duto_antes_fenda_a",
+   "texto": "estacao_aurora",
+   "x": 0.0,
+   "y": -0.1,
+   "z": 90.0,
+   "r": 180,
+   "largura": 5.4,
+   "altura": 1.0,
+   "cor": "ciano",
+   "seta": "frente",
+   "sub": "superficie",
+   "suspenso": 1.5
+  },
+  {
+   "id": "duto_antes_fenda_b",
+   "texto": "estacao_aurora",
+   "x": 0.0,
+   "y": -1.1,
+   "z": 146.0,
+   "r": 180,
+   "largura": 5.4,
+   "altura": 1.0,
+   "cor": "ciano",
+   "seta": "frente",
+   "sub": "superficie",
+   "suspenso": 0.5
+  },
+  {
+   "id": "duto_curva",
+   "texto": "estacao_aurora",
+   "x": 0.0,
+   "y": -6.1,
+   "z": 197.0,
+   "r": 180,
+   "largura": 5.4,
+   "altura": 1.0,
+   "cor": "ciano",
+   "seta": "direita",
+   "sub": "superficie",
+   "suspenso": -4.5
+  },
+  {
+   "id": "duto_leste_1",
+   "texto": "estacao_aurora",
+   "x": 45.0,
+   "y": -8.6,
+   "z": 205.0,
+   "r": 270,
+   "largura": 5.4,
+   "altura": 1.0,
+   "cor": "ciano",
+   "seta": "frente",
+   "sub": "superficie",
+   "suspenso": -7.0
+  },
+  {
+   "id": "duto_leste_2",
+   "texto": "estacao_aurora",
+   "x": 95.0,
+   "y": -16.1,
+   "z": 205.0,
+   "r": 270,
+   "largura": 5.4,
+   "altura": 1.0,
+   "cor": "ciano",
+   "seta": "frente",
+   "sub": "superficie",
+   "suspenso": -14.5
+  },
+  {
+   "id": "duto_portao",
+   "texto": "estacao_aurora",
+   "x": 139.45,
+   "y": -20.15,
+   "z": 205.0,
+   "r": 270,
+   "largura": 4.2,
+   "altura": 0.6,
+   "cor": "ambar"
+  },
+  {
+   "id": "duto_fenda_a",
+   "texto": "fenda",
+   "x": 3.93,
+   "y": -1.65,
+   "z": 103.0,
+   "r": 270,
+   "largura": 3.4,
+   "altura": 0.5,
+   "cor": "verde"
+  },
+  {
+   "id": "duto_fenda_b",
+   "texto": "fenda",
+   "x": 3.93,
+   "y": -1.65,
+   "z": 155.0,
+   "r": 270,
+   "largura": 3.4,
+   "altura": 0.5,
+   "cor": "verde"
   }
  ]
 }

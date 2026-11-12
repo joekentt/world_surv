@@ -62,6 +62,8 @@ P3 = (50.0, 53.0, -27.0, 10.0)             # passarela leste
 P4 = (-1.5, 1.5)                           # ponte sobre a praça (largura em x)
 YP4 = 8.0
 ESCADA_P3 = dict(x=50.05, z=-5.0, y0=0.0, y1=YP, tipo="escada", yaw=90)
+# ponto inicial do jogo na praça (x, z, yaw em radianos)
+INICIO_JOGO = (2.5, -19.0, -0.12)
 
 
 def r3(v):
@@ -570,6 +572,9 @@ def praca_reservatorio() -> Area:
     a = Area("vila_praca", "Praça do Reservatório", "subsolo", "vila", None, -25.0, 25.0)
     a.d["zonaPadrao"] = "vila"
     a.caixa((-25.0, -2.0, -20.0), (25.0, 7.0, 20.0))
+    # início do jogo pelo menu (Novo jogo): sul da praça, olhando para o norte (yaw em radianos, como as
+    # demais entradas lidas por Jogo.teleportar), com o letreiro da rota sob a ponte e a vila à frente
+    a.d["entradas"]["inicio"] = dict(x=INICIO_JOGO[0], y=0.0, z=INICIO_JOGO[1], yaw=INICIO_JOGO[2])
     return a
 
 
@@ -857,7 +862,8 @@ def galerias_secas() -> Area:
 
 
 def todas():
-    return [caverna(), praca_reservatorio(), capela_vigilia(), galerias_secas()]
+    from sinalizacao import sinalizar
+    return sinalizar([caverna(), praca_reservatorio(), capela_vigilia(), galerias_secas()])
 
 
 if __name__ == "__main__":

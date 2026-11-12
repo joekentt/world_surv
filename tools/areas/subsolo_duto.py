@@ -888,7 +888,8 @@ def galeria_contrabandistas() -> Area:
 
 
 def todas():
-    return [duto_tunel(), caverna_fenda(), galeria_contrabandistas()]
+    from sinalizacao import sinalizar
+    return sinalizar([duto_tunel(), caverna_fenda(), galeria_contrabandistas()])
 
 
 if __name__ == "__main__":

@@ -674,7 +674,8 @@ def todas():
     stub = superficie_provisoria()
     if stub:
         lista.append(stub)
-    return lista
+    from sinalizacao import sinalizar
+    return sinalizar(lista)
 
 
 if __name__ == "__main__":

@@ -13,14 +13,8 @@ for (const render of ["webgpu", "webgl2"] as const) {
     await page.waitForSelector(".titulo button", { timeout: 180_000 });
     await page.screenshot({ path: `tests/screenshots/fase-7/${render}_01_titulo.png` });
     await page.click(".titulo button[data-v='novo']");
-    // introdução: avança até fechar
-    for (let i = 0; i < 40; i++) {
-      const aberto = await page.evaluate(() => (window.__vc.jogo as { ui?: { dialogo: { aberto: boolean } } })?.ui?.dialogo.aberto);
-      if (!aberto && i > 3) break;
-      await page.evaluate(() => (window.__vc.avancar as (() => void) | undefined)?.());
-      await page.waitForTimeout(300);
-    }
-    await page.waitForFunction(() => (window.__vc.missoes as () => Record<string, { estado: string }>)().m1?.estado === "ativa", null, { timeout: 60_000 });
+    // revisão 2: o novo jogo começa na praça da Vila Cisterna, sem a introdução da revisão 1 (volta nas fases 4 e 5)
+    await page.waitForFunction(() => (window.__vc.estado as () => { area?: string })().area === "vila_praca", null, { timeout: 60_000 });
     await page.waitForTimeout(12_000);
     await page.screenshot({ path: `tests/screenshots/fase-7/${render}_02_inicio.png` });
     const ativo = await page.evaluate(() => window.__vc.renderizador);

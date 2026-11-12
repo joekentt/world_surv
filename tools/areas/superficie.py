@@ -970,9 +970,10 @@ def colina_area() -> Area:
 
 
 def todas():
-    return [area_base(), boca(), ruinas(), escotilha("superficie_escotilha_oeste", "Escotilha Oeste", ESC_OESTE),
+    from sinalizacao import sinalizar
+    return sinalizar([area_base(), boca(), ruinas(), escotilha("superficie_escotilha_oeste", "Escotilha Oeste", ESC_OESTE),
             escotilha("superficie_escotilha_leste", "Escotilha Leste", ESC_LESTE), rio(), marco(), torre(),
-            viaduto_area(), colina_area()]
+            viaduto_area(), colina_area()])
 
 
 def salvar(area: Area):

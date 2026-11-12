@@ -24,6 +24,14 @@ import { textos } from "../ui/textos";
 import { CFG } from "../config";
 
 const CFG_CAMERA = CFG.camera;
+
+/**
+ * Início do jogo pelo menu (Novo jogo, Continuar com save antigo): praça da Vila Cisterna, no mundo "subsolo" da
+ * revisão 2. As faixas lineares da revisão 1 (mundo "vila") só abrem por URL (`?area=praca`).
+ */
+export const INICIO_JOGO = { area: "vila_praca", entrada: "inicio" };
+/** Mundos do subsolo onde o jogo salva (a revisão 1 salvava só na vila). */
+const MUNDOS_SALVAVEIS = ["vila", "subsolo"];
 const CFG_MOV = CFG.movimento;
 import { Audio } from "./audio";
 import { Estado } from "./estado";
@@ -35,6 +43,7 @@ import { Jogador } from "../player/jogador";
 import { GerenciadorAreas, AREAS } from "../world/areas";
 import type { AreaCarregada } from "../world/construtor";
 import type { AreaDef } from "../world/tipos";
+import { textoLetreiro } from "../world/letreiros";
 import { BibliotecaAnimacoes, Carregador } from "./carregador";
 import { Entrada } from "./entrada";
 import { ligarFisica } from "./fisica";
@@ -99,7 +108,7 @@ export class Jogo {
 
   async salvar(): Promise<void> {
     const a = this.areaAtual;
-    if (a && a.mundo === "vila") this.estado.d.local = { area: a.id, entrada: "inicio" };
+    if (a && MUNDOS_SALVAVEIS.includes(a.mundo)) this.estado.d.local = a.entradas?.inicio ? { area: a.id, entrada: "inicio" } : { ...INICIO_JOGO };
     try {
       await salvarJogo(this.estado.d);
       this.hud.mensagemCurta(textos("salvoAuto"), 1.5);
@@ -112,7 +121,11 @@ export class Jogo {
     const d = await carregarJogo();
     if (!d) return false;
     this.estado.carregar(d);
-    await this.transicionar(d.local.area, d.local.entrada);
+    // save que aponta para área da revisão 1 (ou que não existe mais) cai no início do mundo novo
+    const def = AREAS[d.local.area];
+    if (def?.mundo !== "subsolo" || !def.entradas?.[d.local.entrada]) this.estado.d.local = { ...INICIO_JOGO };
+    const local = this.estado.d.local;
+    await this.transicionar(local.area, local.entrada);
     this.roteiro.atualizarMuro();
     return true;
   }
@@ -376,7 +389,7 @@ export class Jogo {
       } else if (!a.superficie && this.epi.ativo) this.epi.sairSuperficie();
       this.ambienteSonoro(a);
       this.estado.avisar(`area:${a.id}`);
-      if (a.mundo === "vila" && anterior && anterior.mundo !== "vila" && !this.roteiro?.emEpilogo) void this.salvar();
+      if (MUNDOS_SALVAVEIS.includes(a.mundo) && anterior && anterior.mundo !== a.mundo && !this.roteiro?.emEpilogo) void this.salvar();
       if (anterior?.superficie && !a.superficie) {
         this.estado.definirFlag("voltou_recente", true);
         this.estado.definirFlag("voltou_dificil", this.epi.filtro < this.estado.capacidadeFiltro() * 0.25);
@@ -421,11 +434,26 @@ export class Jogo {
     }
   }
 
-  /** Novo jogo: estado inicial, primeira missão e introdução. */
+  /**
+   * Novo jogo. No mundo da revisão 2 (menu): começa na praça da Vila Cisterna, sem a introdução nem as missões
+   * da revisão 1, que dependem das faixas antigas e dos NPCs delas (voltam nas fases 4 e 5). Nas faixas da
+   * revisão 1 (`?area=praca&novo=1`): primeira missão e introdução, como antes.
+   */
   async novoJogo(): Promise<void> {
-    aplicarEfeitos(this, [{ missao: "m1", estado: "ativa", etapa: 0 }]);
-    this.teleportar(-56);
-    await this.roteiro.introducao();
+    if (this.areas.mundo === "vila") {
+      aplicarEfeitos(this, [{ missao: "m1", estado: "ativa", etapa: 0 }]);
+      this.teleportar(-56);
+      await this.roteiro.introducao();
+      return;
+    }
+    this.estado.d.local = { ...INICIO_JOGO };
+    const def = AREAS[INICIO_JOGO.area];
+    if (this.areas.mundo !== def.mundo) {
+      await this.transicionar(INICIO_JOGO.area, INICIO_JOGO.entrada);
+      return;
+    }
+    const ent = def.entradas![INICIO_JOGO.entrada];
+    this.teleportar(ent.x, ent.y, ent.z ?? 0, ent.yaw);
   }
 
   private somPasso(): void {
@@ -581,6 +609,12 @@ export class Jogo {
       await this.navegacaoNiveis.construir(mundo);
       return this.navegacaoNiveis.projetar(mundo, p, ext);
     };
+    /** Letreiros de rota de um mundo (todas as áreas, carregadas ou não), com o texto já resolvido. */
+    vc.letreiros = (mundo = this.areas.mundo) => this.areas.areasDoMundo(mundo).flatMap((a) => (a.letreiros ?? []).map((l) => ({
+      id: l.id, area: a.id, x: l.x, y: l.y, z: l.z, r: l.r, texto: textoLetreiro(l.texto), sub: l.sub ? textoLetreiro(l.sub) : undefined, seta: l.seta,
+    })));
+    /** Letreiros montados na cena agora (malhas das faces), para conferir que as áreas carregadas os construíram. */
+    vc.letreirosNaCena = () => this.cena.meshes.filter((m) => m.name.startsWith("letreiro_") && /_face\d$/.test(m.name)).map((m) => m.name);
     vc.epi = () => ({ filtro: this.epi.filtro, roupa: this.epi.roupa, saude: this.epi.saude, ativo: this.epi.ativo, tempestade: this.epi.tempestade, morto: this.epi.morto });
   }
 }
