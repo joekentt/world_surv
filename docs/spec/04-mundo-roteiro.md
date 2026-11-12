@@ -51,6 +51,6 @@ A história chega pelo cenário e por falas curtas, nunca por textos longos:
 - Fotos do céu azul são vendidas no mercado como relíquias.
 - Crianças brincam de "subida" com máscaras de papelão.
 - A fila das cotas cresce ao longo do jogo, mostrando que o estoque está acabando.
-- Placas do mundo antigo continuam nas paredes, como "Reservatório Municipal nº 3".
+- Placas e letreiros do mundo antigo continuam nas paredes, como "Reservatório Municipal nº 3" e neons de corporações extintas, alguns religados pelos moradores.
 - O rádio da Caravana cita Qarar e outras cidades pelo nome, plantando a expansão.
 - A vila tem gírias próprias, como "queimar o filtro" (gastar a proteção) e "ver o céu" (morrer na superfície).

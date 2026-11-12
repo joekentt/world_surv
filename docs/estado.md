@@ -1,6 +1,6 @@
 # Estado atual
 
-**Atualizado em:** 2026-11-09
+**Atualizado em:** 2026-11-12
 
 **Fase atual:** revisão 2, fase 2 (cenário em blocos) **fechada**. Próxima: fase 3 (EPI e superfície), aguardando o usuário.
 
@@ -19,6 +19,8 @@
 **Critérios da fase 2:** percurso Galerias → Antena sem travar (passa); teste de bloqueio (passa: ruínas 36,4 s, Marco 72,9 s, Antena 141,7 s); horizonte e marcos visíveis da Antena e das passarelas (screenshots `percurso_01` e `percurso_02`); 60 fps no hardware mínimo só pode ser medido na máquina do usuário.
 
 **Modo de trabalho (pedido do usuário):** as tarefas são delegadas a subagentes; a sessão principal revisa a entrega (testes, screenshots, critérios da especificação) antes do commit. Para rodar dois em paralelo, um usa worktree e `PORTA_TESTE` diferente de 5173.
+
+**Em andamento (12/11):** retorno do usuário: pelo menu o jogo abria as faixas da revisão 1 (mapa retangular, sem saída visível). Subagente troca o "Novo jogo" para a Vila Cisterna nova e põe letreiros de neon com a rota até a eclusa (`tests/fase2_rota.spec.ts`). Direção de arte mudou para cyberpunk pós-apocalíptico (seção 7 reescrita; arte final na fase 6).
 
 **Próximo passo:** com o aval do usuário, fase 3 (EPI e superfície), dividida em tarefas em `docs/spec/08-fases.md`. O usuário pode medir os fps da superfície em `http://localhost:5173/?area=superficie_aberta`.
 
