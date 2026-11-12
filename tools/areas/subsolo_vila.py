@@ -25,7 +25,7 @@ import random
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gerar_areas import AMBAR, FRIA, Area  # noqa: E402
+from gerar_areas import AMBAR, FRIA, Area, rad  # noqa: E402
 
 R = random.Random(42)
 DOURADO = [1.0, 0.86, 0.6]
@@ -562,8 +562,8 @@ def caverna() -> Area:
         V(a, lx - 0.015, lx + 0.015, ly + 0.12, TETO, lz - 0.015, lz + 0.015, "escuro")
 
     a.entrada("inicio", 0.0, 0.0)
-    a.d["entradas"]["inicio"].update(z=-12.0, yaw=0)
-    a.d["entradas"]["passarela"] = dict(x=-10.0, y=YP, z=23.5, yaw=90)
+    a.d["entradas"]["inicio"].update(z=-12.0, yaw=rad(0))
+    a.d["entradas"]["passarela"] = dict(x=-10.0, y=YP, z=23.5, yaw=rad(90))
     return a
 
 
@@ -587,7 +587,7 @@ def capela_vigilia() -> Area:
     x0, x1, z0, z1 = CAPELA
     a.caixa((x0 - 0.2, YP - 1.0, z0 - 0.2), (x1 + 0.2, YP + 7.0, z1 + 0.2))
     a.entrada("inicio", 50.0, YP)
-    a.d["entradas"]["inicio"].update(z=23.5, yaw=90)
+    a.d["entradas"]["inicio"].update(z=23.5, yaw=rad(90))
     return a
 
 
@@ -856,8 +856,8 @@ def galerias_secas() -> Area:
     a.luz(-40.0, FUNDO + 3.0, -22.0, FRIA, 0.9, 12)
 
     a.entrada("inicio", -35.75, YG)
-    a.d["entradas"]["inicio"].update(z=-5.0, yaw=180)
-    a.d["entradas"]["fundo_poco"] = dict(x=-40.0, y=FUNDO, z=-19.0, yaw=180)
+    a.d["entradas"]["inicio"].update(z=-5.0, yaw=rad(180))
+    a.d["entradas"]["fundo_poco"] = dict(x=-40.0, y=FUNDO, z=-19.0, yaw=rad(180))
     return a
 
 

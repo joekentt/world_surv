@@ -20,7 +20,7 @@
 
 **Modo de trabalho (pedido do usuário):** as tarefas são delegadas a subagentes; a sessão principal revisa a entrega (testes, screenshots, critérios da especificação) antes do commit. Para rodar dois em paralelo, um usa worktree e `PORTA_TESTE` diferente de 5173.
 
-**Em andamento (12/11):** retorno do usuário: pelo menu o jogo abria as faixas da revisão 1 (mapa retangular, sem saída visível). Subagente troca o "Novo jogo" para a Vila Cisterna nova e põe letreiros de neon com a rota até a eclusa (`tests/fase2_rota.spec.ts`). Direção de arte mudou para cyberpunk pós-apocalíptico (seção 7 reescrita; arte final na fase 6).
+**Feito em 12/11:** retorno do usuário (pelo menu abria o mapa da revisão 1, sem saída visível). "Novo jogo" e "Continuar" abrem a Vila Cisterna nova (sem NPCs e missões até as fases 4 e 5; faixas antigas em `?area=praca`); letreiros de neon e faixa de luz-guia da praça até a eclusa (`tools/areas/sinalizacao.py`, `src/world/letreiros.ts`, textos em `content/textos/letreiros.json`, teste `tests/fase2_rota.spec.ts`: rota de 444,8 m, 4 escadas). Yaw das entradas do subsolo em radianos; som ambiente do mundo "subsolo". Direção de arte mudou para cyberpunk pós-apocalíptico (seção 7 reescrita; arte final na fase 6).
 
 **Próximo passo:** com o aval do usuário, fase 3 (EPI e superfície), dividida em tarefas em `docs/spec/08-fases.md`. O usuário pode medir os fps da superfície em `http://localhost:5173/?area=superficie_aberta`.
 

@@ -32,7 +32,7 @@ import random
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gerar_areas import DESTINO, FRIA, Area  # noqa: E402
+from gerar_areas import DESTINO, FRIA, Area, rad  # noqa: E402
 from subsolo_duto import C, degraus, faixa_x  # noqa: E402
 from subsolo_vila import B, V, corrimao, laje, lance, r3, zona_tunel  # noqa: E402
 
@@ -221,10 +221,10 @@ def estacao() -> Area:
     a.luz(176.85, Y0 + 3.4, 201.2, VERMELHA, 0.9, 9)
 
     a.entrada("inicio", 146.0, Y0)
-    a.d["entradas"]["inicio"].update(z=205.0, yaw=90)
-    a.d["entradas"]["duto"] = dict(x=137.0, y=Y0, z=205.0, yaw=90)
-    a.d["entradas"]["mezanino"] = dict(x=190.0, y=YM, z=205.0, yaw=270)
-    a.d["entradas"]["poco"] = dict(x=XA, y=Y0, z=203.6, yaw=0)
+    a.d["entradas"]["inicio"].update(z=205.0, yaw=rad(90))
+    a.d["entradas"]["duto"] = dict(x=137.0, y=Y0, z=205.0, yaw=rad(90))
+    a.d["entradas"]["mezanino"] = dict(x=190.0, y=YM, z=205.0, yaw=rad(270))
+    a.d["entradas"]["poco"] = dict(x=XA, y=Y0, z=203.6, yaw=rad(0))
     return a
 
 
@@ -439,8 +439,8 @@ def boca() -> Area:
     poco(a)
     topo(a)
     a.entrada("inicio", XB, YP)
-    a.d["entradas"]["inicio"].update(z=203.6, yaw=270)
-    a.d["entradas"]["superficie"] = dict(x=ENTRADA_SUPERFICIE[0], y=YP, z=ENTRADA_SUPERFICIE[1], yaw=180)
+    a.d["entradas"]["inicio"].update(z=203.6, yaw=rad(270))
+    a.d["entradas"]["superficie"] = dict(x=ENTRADA_SUPERFICIE[0], y=YP, z=ENTRADA_SUPERFICIE[1], yaw=rad(180))
     a.d["saidas"].append(dict(x=SAIDA_ECLUSA[0], y=YP, z=SAIDA_ECLUSA[1], destino="superficie_boca", entrada="boca",
                               rotulo="Abrir a eclusa", tipo="eclusa"))
     return a
@@ -663,7 +663,7 @@ def superficie_provisoria():
     B(a, -2.0, 2.0, 0.0, 2.6, -3.0, -0.6, "concreto")          # casa da eclusa (provisória)
     V(a, -0.9, 0.9, 0.0, 2.2, -0.62, -0.58, "metal")
     a.entrada("boca", 0.0, 0.0)
-    a.d["entradas"]["boca"].update(z=3.0, yaw=0)
+    a.d["entradas"]["boca"].update(z=3.0, yaw=rad(0))
     a.d["saidas"].append(dict(x=0.0, y=0.0, z=0.4, destino="boca_estacao", entrada="superficie",
                               rotulo="Entrar na eclusa", tipo="eclusa"))
     return a

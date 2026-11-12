@@ -10,6 +10,7 @@ da câmera). O jogador anda em z = 0.
 from __future__ import annotations
 
 import json
+import math
 import os
 import random
 
@@ -22,6 +23,11 @@ FRIA = [0.55, 1.0, 0.9]
 DOURADA = [1.0, 0.86, 0.55]
 VERMELHA = [1.0, 0.12, 0.06]
 MUSGO = [0.3, 0.95, 0.75]
+
+
+def rad(graus):
+    """Yaw das entradas em radianos (Jogo.teleportar lê radianos), a partir de graus."""
+    return round(math.radians(graus), 4)
 
 
 class Area:

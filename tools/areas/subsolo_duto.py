@@ -30,7 +30,7 @@ import random
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gerar_areas import AMBAR, FRIA, MUSGO, Area  # noqa: E402
+from gerar_areas import AMBAR, FRIA, MUSGO, Area, rad  # noqa: E402
 from subsolo_vila import CORRIMAO, B, V, corrimao, r3, zona_tunel  # noqa: E402
 
 R = random.Random(303)
@@ -241,9 +241,9 @@ def duto_tunel() -> Area:
         a.luz(lx, r3(interp(PERFIL_E, lx) + 4.6), lz, cor, i, alc, **({"piscar": True} if pisca else {}))
 
     a.entrada("inicio", XT, 0.0)
-    a.d["entradas"]["inicio"].update(z=50.0, yaw=0)
-    a.d["entradas"]["curva"] = dict(x=0.0, y=-10.0, z=205.0, yaw=90)
-    a.d["entradas"]["fim"] = dict(x=137.0, y=-25.0, z=205.0, yaw=90)
+    a.d["entradas"]["inicio"].update(z=50.0, yaw=rad(0))
+    a.d["entradas"]["curva"] = dict(x=0.0, y=-10.0, z=205.0, yaw=rad(90))
+    a.d["entradas"]["fim"] = dict(x=137.0, y=-25.0, z=205.0, yaw=rad(90))
     return a
 
 
@@ -689,8 +689,8 @@ def caverna_fenda() -> Area:
     a.luz(26.0, YF + 3.5, 155.0, MUSGO, 0.6, 16)
 
     a.entrada("inicio", 20.0, YF)
-    a.d["entradas"]["inicio"].update(z=103.0, yaw=90)
-    a.d["entradas"]["mirante"] = dict(x=60.0, y=Y_MIRANTE, z=140.0, yaw=-120)
+    a.d["entradas"]["inicio"].update(z=103.0, yaw=rad(90))
+    a.d["entradas"]["mirante"] = dict(x=60.0, y=Y_MIRANTE, z=140.0, yaw=rad(-120))
     return a
 
 
@@ -882,8 +882,8 @@ def galeria_contrabandistas() -> Area:
     a.luz(1.5, yp + 2.6, 286.0, AMBAR, 0.8, 12)
     a.luz(0.0, y1 + 1.8, 320.8, VERMELHO, 0.7, 10)
     a.entrada("inicio", 0.0, -10.0)
-    a.d["entradas"]["inicio"].update(z=212.0, yaw=0)
-    a.d["entradas"]["escotilha"] = dict(x=0.0, y=y1, z=320.6, yaw=0)
+    a.d["entradas"]["inicio"].update(z=212.0, yaw=rad(0))
+    a.d["entradas"]["escotilha"] = dict(x=0.0, y=y1, z=320.6, yaw=rad(0))
     return a
 
 

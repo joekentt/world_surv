@@ -30,6 +30,12 @@ const CFG_CAMERA = CFG.camera;
  * revisão 2. As faixas lineares da revisão 1 (mundo "vila") só abrem por URL (`?area=praca`).
  */
 export const INICIO_JOGO = { area: "vila_praca", entrada: "inicio" };
+/** Ambiente sonoro das áreas do mundo "subsolo" pela estética (os mesmos laços dos mundos da revisão 1). */
+const AMBIENTE_POR_ESTETICA: Record<string, "vila" | "duto" | "boca"> = {
+  vila: "vila", praca: "vila", capela: "vila", galerias: "vila",
+  duto: "duto", fenda: "duto", contrabandistas: "duto",
+  estacao: "boca", boca: "boca",
+};
 /** Mundos do subsolo onde o jogo salva (a revisão 1 salvava só na vila). */
 const MUNDOS_SALVAVEIS = ["vila", "subsolo"];
 const CFG_MOV = CFG.movimento;
@@ -464,11 +470,13 @@ export class Jogo {
 
   /** Camadas de som por área: laços de fundo e emissores posicionados. */
   private ambienteSonoro(a: AreaDef): void {
-    const vila = a.mundo === "vila";
-    this.audio.laco("ambiente_vila", vila || a.mundo === "boca" ? 0.35 : 0);
-    this.audio.laco("goteira", a.mundo === "duto" ? 0.6 : vila ? 0.2 : 0);
+    // revisão 1: um mundo por ambiente; revisão 2 (mundo "subsolo"): o ambiente sai da estética da área
+    const amb = a.mundo === "subsolo" ? AMBIENTE_POR_ESTETICA[a.estetica] ?? "vila" : a.mundo;
+    const vila = amb === "vila";
+    this.audio.laco("ambiente_vila", vila || amb === "boca" ? 0.35 : 0);
+    this.audio.laco("goteira", amb === "duto" ? 0.6 : vila ? 0.2 : 0);
     this.audio.laco("ambiente_superficie", a.superficie ? 0.5 : 0);
-    this.audio.laco("vento", a.superficie ? 0.35 : a.mundo === "duto" ? 0.12 : 0);
+    this.audio.laco("vento", a.superficie ? 0.35 : amb === "duto" ? 0.12 : 0);
     const emissores: { som: string; x: number; y: number; raio: number; volume: number }[] = [];
     for (const area of this.areas.areasDoMundo(a.mundo)) {
       for (const i of area.interativos ?? []) {
